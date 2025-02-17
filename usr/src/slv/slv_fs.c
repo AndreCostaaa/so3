@@ -17,8 +17,9 @@
  *
  */
 
-#include <lvgl.h>
 #include <stdio.h>
+
+#include <lvgl.h>
 
 static bool fs_ready_cb(struct _lv_fs_drv_t *drv);
 static void *fs_open_cb(struct _lv_fs_drv_t *drv, const char *path,

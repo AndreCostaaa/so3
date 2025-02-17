@@ -17,8 +17,7 @@
  *
  */
 
-#include "indev/lv_indev.h"
-#include "unistd.h"
+#include <unistd.h>
 #include <bits/ioctl.h>
 #include <fcntl.h>
 #include <stdio.h>
