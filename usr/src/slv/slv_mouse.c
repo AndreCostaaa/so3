@@ -17,6 +17,7 @@
  *
  */
 
+#include "bits/alltypes.h"
 #include "indev/lv_indev.h"
 #include <fcntl.h>
 #include <unistd.h>
@@ -30,8 +31,8 @@ static void slv_mouse_cb(lv_indev_t *indev, lv_indev_data_t *data);
 
 int slv_mouse_init(uint16_t h, uint16_t v)
 {
-	int mfd = open("/dev/mouse", 0);
-	if (mfd == -1) {
+	ssize_t mfd = open("/dev/mouse", 0);
+	if (mfd < 0) {
 		printf("Couldn't open input device.\n");
 		return -1;
 	}
@@ -54,7 +55,7 @@ int slv_mouse_init(uint16_t h, uint16_t v)
 	lv_indev_t *mouse = lv_indev_create();
 	lv_indev_set_type(mouse, LV_INDEV_TYPE_POINTER);
 	lv_indev_set_read_cb(mouse, slv_mouse_cb);
-	lv_indev_set_user_data(mouse, (void *)mfd);
+	lv_indev_set_user_data(mouse, (void *)(ssize_t)mfd);
 
 	lv_obj_t *cursor_obj =
 		lv_image_create(lv_display_get_screen_active(NULL));
@@ -73,7 +74,7 @@ static void slv_mouse_cb(lv_indev_t *indev, lv_indev_data_t *data)
 {
 	/* Retrieve mouse state from the driver. */
 	static struct ps2_mouse mouse;
-	int mfd = (int)lv_indev_get_user_data(indev);
+	int mfd = (int)(ssize_t)lv_indev_get_user_data(indev);
 
 	ioctl(mfd, IOCTL_MOUSE_GET_STATE, &mouse);
 
