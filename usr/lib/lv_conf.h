@@ -347,7 +347,7 @@
 
     /** - 1: Print log with 'printf';
      *  - 0: User needs to register a callback with `lv_log_register_print_cb()`. */
-    #define LV_LOG_PRINTF 0
+    #define LV_LOG_PRINTF 1
 
     /** Set callback to print logs.
      *  E.g `my_print`. The prototype should be `void my_print(lv_log_level_t level, const char * buf)`.
@@ -1271,7 +1271,7 @@
 #define LV_USE_DEMO_RENDER 0
 
 /** Stress test for LVGL */
-#define LV_USE_DEMO_STRESS 0
+#define LV_USE_DEMO_STRESS 1
 
 /** Music player demo */
 #define LV_USE_DEMO_MUSIC 0
