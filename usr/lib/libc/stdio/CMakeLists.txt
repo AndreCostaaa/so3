@@ -4,6 +4,7 @@ target_sources(c
 		printf.c
 		fprintf.c
 		sprintf.c
+		vprintf.c
 		vsprintf.c
 		vsnprintf.c
 		snprintf.c
