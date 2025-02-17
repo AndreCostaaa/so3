@@ -17,6 +17,7 @@
  *
  */
 
+#include "unistd.h"
 #include <sys/mman.h>
 #include <bits/ioctl.h>
 #include <fcntl.h>
@@ -30,6 +31,7 @@
 #include "slv_fb.h"
 
 typedef struct {
+	int fd;
 	void *fbp;
 	size_t fb_size;
 } slv_fb_priv_t;
@@ -48,16 +50,16 @@ int slv_fb_init(slv_fb_t *fb)
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)fb->priv;
 
 	/* Get file descriptor. */
-	int fd = open("/dev/fb", 0);
-	if (fd == -1) {
+	priv->fd = open("/dev/fb", 0);
+	if (priv->fd < 0) {
 		printf("Couldn't open framebuffer.\n");
 		return -1;
 	}
 
 	/* Get screen resolution. */
-	if (ioctl(fd, IOCTL_FB_HRES, &fb->hres) ||
-	    ioctl(fd, IOCTL_FB_VRES, &fb->vres) ||
-	    ioctl(fd, IOCTL_FB_SIZE, &priv->fb_size)) {
+	if (ioctl(priv->fd, IOCTL_FB_HRES, &fb->hres) ||
+	    ioctl(priv->fd, IOCTL_FB_VRES, &fb->vres) ||
+	    ioctl(priv->fd, IOCTL_FB_SIZE, &priv->fb_size)) {
 		printf("Couldn't get framebuffer resolution.\n");
 		return -1;
 	}
@@ -69,7 +71,7 @@ int slv_fb_init(slv_fb_t *fb)
 	}
 
 	/* Map the framebuffer into process memory. */
-	priv->fbp = mmap(NULL, priv->fb_size, 0, 0, fd, 0);
+	priv->fbp = mmap(NULL, priv->fb_size, 0, 0, priv->fd, 0);
 	if (!priv->fbp) {
 		printf("Couldn't map framebuffer.\n");
 		return -1;
@@ -90,6 +92,8 @@ int slv_fb_init(slv_fb_t *fb)
 }
 void slv_fb_terminate(slv_fb_t *data)
 {
+	slv_fb_priv_t *priv = (slv_fb_priv_t *)data->priv;
+	close(priv->fd);
 	free(data->priv);
 }
 

@@ -18,6 +18,7 @@
  */
 
 #include <pthread.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <bits/ioctl.h>
@@ -52,9 +53,9 @@ int slv_init(slv_t *slv)
 		err = slv->mfd;
 		goto mouse_err;
 	}
+	slv->terminate = false;
 
-	pthread_t thread;
-	err = pthread_create(&thread, NULL, slv_tick, NULL);
+	err = pthread_create(&slv->tick_thread, NULL, slv_tick, slv);
 	if (err < 0) {
 		goto thread_err;
 	}
@@ -72,19 +73,26 @@ thread_err:
 	return err;
 }
 
-void slv_loop(void)
+void slv_loop(slv_t *slv)
 {
-	slv_loop_inner(NULL);
+	slv_loop_inner(slv);
 }
 
-int slv_loop_start(void)
+int slv_loop_start(slv_t *slv)
 {
-	pthread_t thread;
-	return pthread_create(&thread, NULL, slv_loop_inner, NULL);
+	int err = pthread_create(&slv->loop_thread, NULL, slv_loop_inner, NULL);
+	slv->has_loop_thread = err >= 0;
+	return err;
 }
 
 void slv_terminate(slv_t *slv)
 {
+	slv->terminate = true;
+	pthread_join(slv->tick_thread, NULL);
+	if (slv->has_loop_thread) {
+		pthread_join(slv->has_loop_thread, NULL);
+	}
+
 	lv_deinit();
 	slv_fs_terminate();
 	slv_fb_terminate(&slv->fb);
@@ -93,8 +101,8 @@ void slv_terminate(slv_t *slv)
 }
 static void *slv_loop_inner(void *args)
 {
-	(void)args;
-	while (1) {
+	slv_t *slv = (slv_t *)args;
+	while (!slv->terminate) {
 		lv_task_handler();
 		usleep(5000);
 	}
@@ -103,8 +111,8 @@ static void *slv_loop_inner(void *args)
 
 static void *slv_tick(void *args)
 {
-	(void)args;
-	while (1) {
+	slv_t *slv = (slv_t *)args;
+	while (!slv->terminate) {
 		/* Tell LVGL that 1 millisecond were elapsed */
 		usleep(1000);
 		lv_tick_inc(1);

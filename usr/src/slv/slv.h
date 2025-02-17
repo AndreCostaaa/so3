@@ -27,29 +27,35 @@
 #ifndef SLV_H
 #define SLV_H
 
+#include <stdbool.h>
+#include <pthread.h>
+
 #include "slv_fb.h"
 
 typedef struct {
 	int mfd, kfd;
 	slv_fb_t fb;
+	pthread_t tick_thread, loop_thread;
+	bool has_loop_thread;
+	bool terminate;
 } slv_t;
 
 /*
  * Inits LVGL and necessary drivers
  * Returns 0 on success or negative value on error.
  */
-int slv_init(slv_t *data);
+int slv_init(slv_t *slv);
 
 /*
  * Loops forever
  */
-void slv_loop(void);
+void slv_loop(slv_t *slv);
 
 /*
  * Start the Main Loop in a different thread.
  * Returns 0 on success or negative value on error.
  */
-int slv_loop_start(void);
+int slv_loop_start(slv_t *slv);
 
 /*
  * Terminates SLV and LVGL
