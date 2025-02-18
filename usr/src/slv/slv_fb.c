@@ -50,7 +50,7 @@ int slv_fb_init(slv_fb_t *fb)
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)fb->priv;
 
 	/* Get file descriptor. */
-	priv->fd = open("/dev/fb", 0);
+	priv->fd = open(FB_DEV, 0);
 	if (priv->fd < 0) {
 		printf("Couldn't open framebuffer.\n");
 		return -1;

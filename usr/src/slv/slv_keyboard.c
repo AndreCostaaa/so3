@@ -30,7 +30,7 @@ static void slv_keyboard_cb(lv_indev_t *indev, lv_indev_data_t *data);
 
 int slv_keyboard_init(void)
 {
-	int kfd = open("/dev/keyboard", 0);
+	int kfd = open(KB_DEV, 0);
 	if (kfd < 0) {
 		printf("Couldn't open input device.\n");
 		return -1;

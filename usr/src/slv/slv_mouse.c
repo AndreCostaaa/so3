@@ -29,7 +29,7 @@ static void slv_mouse_cb(lv_indev_t *indev, lv_indev_data_t *data);
 
 int slv_mouse_init(uint16_t h, uint16_t v)
 {
-	ssize_t mfd = open("/dev/mouse", 0);
+	ssize_t mfd = open(MOUSE_DEV, 0);
 	if (mfd < 0) {
 		printf("Couldn't open input device.\n");
 		return -1;
