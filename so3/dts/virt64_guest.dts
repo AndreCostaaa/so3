@@ -35,6 +35,11 @@
 		reg = <0x0 0x41000000 0x0 0x4000000>; /* 64 MB */
 	};
 
+	mem {
+		compatible = "mem";
+		status = "ok";
+	};
+
 	soo-serial {
 		compatible = "soo-serial";
 		status = "ok";

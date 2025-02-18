@@ -39,6 +39,11 @@
 	        domain-size = <0x10000000>; /* 256 MB */
 	};
 
+	mem {
+		compatible = "mem";
+		status = "ok";
+	};
+
 	fw-cfg@9020000 {
 		reg = <0x9020000 0x18>;
 		compatible = "qemu,fw-cfg-mmio";

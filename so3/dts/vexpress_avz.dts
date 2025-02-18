@@ -34,7 +34,11 @@
 		device_type = "memory";
 		reg = <0x80000000 0x00c00000>; /* 12 MB for the hypervisor */
 	};
-	
+
+	mem {
+		compatible = "mem";
+		status = "ok";
+	};
 
 	/* GIC interrupt controller */
 	gic:interrupt-controller@2c001000 {

@@ -38,7 +38,12 @@
 	agency {
 		domain-size = <0x10000000>;
 	};
-	
+
+	mem {
+		compatible = "mem";
+		status = "ok";
+	};
+
 	/* GIC interrupt controller */
 	gic:interrupt-controller@ff841000 {
 		compatible = "intc,gic";
