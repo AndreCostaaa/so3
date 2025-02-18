@@ -68,7 +68,7 @@
 	};
 	
 	configurations {
-		default = "so3_lvperf_ramfs";
+		default = "so3_ramfs";
 	
 		so3_ramfs {
 			description = "SO3 kernel image including device tree";
