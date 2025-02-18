@@ -44,7 +44,10 @@ static void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count)
 static int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 {
 	struct devclass *dev = devclass_by_fd(fd);
-	virtfb_priv_t *priv = (virtfb_priv_t *)devclass_get_priv(dev);
+	virtfb_priv_t *priv;
+	BUG_ON(!dev);
+	priv = (virtfb_priv_t *)devclass_get_priv(dev);
+	BUG_ON(!priv);
 
 	switch (cmd) {
 	case IOCTL_HRES:
@@ -98,8 +101,8 @@ static int virtfb_init(dev_t *dev, int fdt_offset)
 				    &priv->vres);
 	BUG_ON(err < 0);
 
-	dev_set_drvdata(dev, priv);
 	devclass_register(dev, &virtfb_cdev);
+	devclass_set_priv(&virtfb_cdev, priv);
 
 	return 0;
 }
