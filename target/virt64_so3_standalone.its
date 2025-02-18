@@ -42,6 +42,15 @@
 			load = <0x44a00000>;
 		};	
 
+		lvperf_fdt {
+			description = "Flattened Device Tree blob";
+			data = /incbin/("../so3/dts/virt64_lvperf.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x44a00000>;
+		};	
+
 		ramfs {
 			description = "SO3 environment minimal rootfs";
 			data = /incbin/("../rootfs/rootfs.fat");
@@ -63,12 +72,18 @@
 			fdt = "fdt";
 			ramdisk = "ramfs"; 
 		};
-                
 
 		so3_mmc {
 			description = "SO3 kernel image including device tree";
 			kernel = "so3";
 			fdt = "fdt";
+		};
+
+		so3_lvperf_ramfs {
+			description = "SO3 kernel image for lvgl perfomance tests";
+			kernel = "so3";
+			fdt = "lvperf_fdt";
+			ramdisk = "ramfs";
 		};
 	};
 
