@@ -19,3 +19,4 @@ obj-$(CONFIG_INPUT) += input/
 obj-y += timer/ irq/
 
 obj-y += mydev.o
+obj-y += mem.o

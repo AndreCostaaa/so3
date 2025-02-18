@@ -29,7 +29,7 @@
 #include <device/fb/soo_fb_fb.h>
 
 
-void *fb_mmap(int fd, uint32_t virt_addr, uint32_t page_count);
+void *fb_mmap(int fd, uint32_t virt_addr, uint32_t page_count, off_t offset);
 int fb_ioctl(int fd, unsigned long cmd, unsigned long args);
 
 struct file_operations vfb_fops = {
@@ -57,7 +57,7 @@ int fb_init(dev_t *dev)
 	return 0;
 }
 
-void *fb_mmap(int fd, uint32_t virt_addr, uint32_t page_count)
+void *fb_mmap(int fd, uint32_t virt_addr, uint32_t page_count, off_t offset)
 {
 	uint32_t i;
 	pcb_t *pcb = current()->pcb;

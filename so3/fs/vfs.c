@@ -778,7 +778,7 @@ void *do_mmap(addr_t start, size_t length, int prot, int fd, off_t offset)
 	}
 
 	/* Call the mmap fops that will do the actual mapping. */
-	return fops->mmap(fd, start, page_count);
+	return fops->mmap(fd, start, page_count, offset);
 }
 
 int do_ioctl(int fd, unsigned long cmd, unsigned long args)
