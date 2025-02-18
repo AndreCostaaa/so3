@@ -15,7 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         CONFIG: ['virt32_defconfig', 
-                 'virt64_defconfig']
+                 'virt64_defconfig',
+                 'virt32_lvperf_defconfig']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
