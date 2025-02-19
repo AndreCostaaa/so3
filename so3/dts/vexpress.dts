@@ -39,6 +39,11 @@
 	        domain-size = <0x10000000>; /* 256 MB */
 	};
 
+	mem {
+		compatible = "mem";
+		status = "ok";
+	};
+
 	/* GIC interrupt controller */
 	gic:interrupt-controller@2c001000 {
 		compatible = "intc,gic";

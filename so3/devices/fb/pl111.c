@@ -99,7 +99,7 @@
 
 static addr_t __vaddr;
 
-void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count)
+void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offset)
 {
 	uint32_t i;
 	addr_t page;

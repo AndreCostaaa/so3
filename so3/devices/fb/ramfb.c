@@ -256,7 +256,7 @@ int check_fw_cfg_dma(void *fw_cfg_base) {
     }    return 0;
 }
 
-void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count)
+void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offset)
 {
 	uint32_t i, page;
 	pcb_t *pcb = current()->pcb;

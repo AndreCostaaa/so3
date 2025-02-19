@@ -32,7 +32,12 @@
 	memory {
 		reg = <0 0>;
 	};
-	
+
+	mem {
+		compatible = "mem";
+		status = "ok";
+	};
+
 	soo-serial {
 		compatible = "soo-serial";
 		status = "ok";
