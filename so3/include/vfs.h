@@ -91,9 +91,6 @@
 #define DT_LNK		10	/* Symbolic link */
 #define DT_SOCK		12	/* Socket device */
 
-/* Return error values */
-#define MAP_FAILED ((void *) -1)	/* mmap fail */
-
 #ifndef __ASSEMBLY__
 
 #include <types.h>

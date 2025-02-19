@@ -20,10 +20,10 @@ static void *mem_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offse
 	/* Detect physical or virtual address overflow */
 	if (((offset + remaining_size) < offset)
 	    || ((virt_addr + remaining_size) < virt_addr))
-		return MAP_FAILED;
+		return NULL;
 
 	if (!virt_addr)
-		return MAP_FAILED;
+		return NULL;
 
 	pcb = current()->pcb;
 	BUG_ON(pcb == NULL);
