@@ -757,16 +757,18 @@ void *do_mmap(addr_t start, size_t length, int prot, int fd, off_t offset)
 
 	gfd = vfs_get_gfd(fd);
 	if (-1 == gfd) {
-		printk("%s: could not get global fd.", __func__);
-		return NULL;
+		printk("%s: could not get global fd.\n", __func__);
+		set_errno(EBADF);
+		return MAP_FAILED;
 	}
 
 	mutex_lock(&vfs_lock);
 	fops = vfs_get_fops(gfd);
 	if (!fops) {
-		printk("%s: could not get the framebuffer fops.", __func__);
+		printk("%s: could not get device fops.\n", __func__);
 		mutex_unlock(&vfs_lock);
-		return NULL;
+		set_errno(EBADF);
+		return MAP_FAILED;
 	}
 
 	mutex_unlock(&vfs_lock);
@@ -775,6 +777,12 @@ void *do_mmap(addr_t start, size_t length, int prot, int fd, off_t offset)
 	page_count = length / PAGE_SIZE;
 	if (length % PAGE_SIZE != 0) {
 		page_count++;
+	}
+
+	if (!fops->mmap) {
+		printk("%s: device doesn't support mmap.\n", __func__);
+		set_errno(EACCES);
+		return MAP_FAILED;
 	}
 
 	/* Call the mmap fops that will do the actual mapping. */

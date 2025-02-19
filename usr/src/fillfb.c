@@ -68,6 +68,10 @@ int main(int argc, char **argv)
 
 	/* Map the framebuffer memory to a process virtual address. */
 	fbp = mmap(NULL, fb_size, 0, 0, fd, 0);
+	if (fbp == MAP_FAILED) {
+		printf("Couldn't map framebuffer.\n");
+		return -1;
+	}
 
 	/* Display lines of different colors. */
 	for (i = 0; i < vres; i++) {
