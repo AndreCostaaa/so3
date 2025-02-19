@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <vfs.h>
 #include <common.h>
 #include <process.h>
@@ -19,11 +20,15 @@ static void *mem_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offse
 
 	/* Detect physical or virtual address overflow */
 	if (((offset + remaining_size) < offset)
-	    || ((virt_addr + remaining_size) < virt_addr))
-		return NULL;
+	    || ((virt_addr + remaining_size) < virt_addr)) {
+		set_errno(EINVAL);
+		return MAP_FAILED;
+	}
 
-	if (!virt_addr)
-		return NULL;
+	if (!virt_addr) {
+		set_errno(EINVAL);
+		return MAP_FAILED;
+	}
 
 	pcb = current()->pcb;
 	BUG_ON(pcb == NULL);

@@ -158,7 +158,7 @@ int fb_init(void)
 
 	/* Map the framebuffer into process memory. */
 	fbp = mmap(NULL, fb_size, 0, 0, fd, 0);
-	if (!fbp) {
+	if (fbp == MAP_FAILED) {
 		printf("Couldn't map framebuffer.\n");
 		return -1;
 	}

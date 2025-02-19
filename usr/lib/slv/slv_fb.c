@@ -72,7 +72,7 @@ int slv_fb_init(slv_fb_t *fb)
 
 	/* Map the framebuffer into process memory. */
 	priv->fbp = mmap(NULL, priv->fb_size, 0, 0, priv->fd, 0);
-	if (!priv->fbp) {
+	if (priv->fbp == MAP_FAILED) {
 		printf("Couldn't map framebuffer.\n");
 		return -1;
 	}
