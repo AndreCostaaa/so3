@@ -29,7 +29,7 @@
 #include <lvgl.h>
 #include <demos/lv_demos.h>
 
-#include "slv/slv.h"
+#include <slv.h>
 
 int main(int argc, char **argv)
 {

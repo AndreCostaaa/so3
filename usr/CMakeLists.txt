@@ -21,6 +21,7 @@ include_directories(
      lib/libc/include
      lib/lvgl
      lib/lvgl/src
+     lib/slv
 )
 
 set(libgcc_cmd ${CMAKE_C_COMPILER} -print-libgcc-file-name)

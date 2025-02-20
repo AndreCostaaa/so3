@@ -7,3 +7,7 @@ add_subdirectory(lvgl)
 add_subdirectory(libxml2)
 
 set(CMAKE_C_FLAGS "${ORIGINAL_C_FLAGS}")
+
+# Non external libs 
+
+add_subdirectory(slv)

@@ -16,8 +16,9 @@
  *
  */
 
-#include "demos/lv_demos.h"
-#include "slv/slv.h"
+#include <demos/lv_demos.h>
+
+#include <slv.h>
 
 #include <stdlib.h>
 #include <stdio.h>

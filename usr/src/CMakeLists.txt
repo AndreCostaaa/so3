@@ -8,8 +8,6 @@ add_executable(mydev_test.elf mydev_test.c)
 add_executable(lvgl_demo.elf lvgl_demo.c)
 add_executable(lvgl_perf.elf lvgl_perf.c)
 
-add_subdirectory(slv)
-
 target_link_libraries(sh.elf c)
 target_link_libraries(ls.elf c)
 target_link_libraries(more.elf c)
