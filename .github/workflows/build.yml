@@ -14,8 +14,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ['virt32_defconfig', 
-                 'virt64_defconfig',
+        # We use the virtXX_fb configs as they're based on the normal virtXX configs with aditional fb support
+        CONFIG: ['virt32_fb_defconfig', 
+                 'virt64_fb_defconfig',
                  'virt32_lvperf_defconfig',
                  'virt64_lvperf_defconfig'
         ]
