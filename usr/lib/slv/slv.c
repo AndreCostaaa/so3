@@ -113,9 +113,9 @@ static void *slv_tick(void *args)
 {
 	slv_t *slv = (slv_t *)args;
 	while (!slv->terminate) {
-		/* Tell LVGL that 1 millisecond were elapsed */
-		usleep(1000);
-		lv_tick_inc(1);
+		/* Tell LVGL that 10 milliseconds were elapsed */
+		usleep(10000);
+		lv_tick_inc(10);
 	}
 	return NULL;
 }
