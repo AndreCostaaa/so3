@@ -23,7 +23,7 @@ set(CMAKE_ASM_COMPILER "arm-none-eabi-gcc")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99 -D_GNU_SOURCE -nostdlib -D__ARM__ -marm -mno-thumb-interwork -ffreestanding -fno-common")
  
-set(CMAKE_ASM_FLAGS_DEBUG "-D__ARM__ -D__ASSEMBLY__")
+set(CMAKE_ASM_FLAGS "-D__ARM__ -D__ASSEMBLY__")
 
 set(CMAKE_LINKER "arm-none-eabi-ld")
 

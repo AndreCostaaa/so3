@@ -23,6 +23,6 @@ set(CMAKE_ASM_COMPILER "aarch64-none-linux-gnu-gcc")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99 -D_GNU_SOURCE -nostdlib -D__ARM64__ -ffreestanding -fno-common")
  
-set(CMAKE_ASM_FLAGS_DEBUG "-D__ASSEMBLY__")
+set(CMAKE_ASM_FLAGS "-D__ARM64__ -D__ASSEMBLY__")
 
 set(CMAKE_LINKER "aarch64-none-linux-gnu-ld")
