@@ -3,7 +3,7 @@
 function usage {
   echo "$0 [OPTIONS]"
   echo "  -c        Clean"
-  echo "  -d        Debug build"
+  echo "  -r        Release build"
   echo "  -v        Verbose"
   echo "  -s        Single core"
   echo "  -h        Print this help"
@@ -44,13 +44,13 @@ debug=y
 verbose=n
 singlecore=n
 
-while getopts cdhvs option
+while getopts crhvs option
   do
     case "${option}"
       in
         c) clean=y;;
-        d) debug=y;;
-	    v) verbose=y;;
+        r) debug=n;;
+        v) verbose=y;;
         s) singlecore=y;;
         h) usage && exit 1;;
     esac
