@@ -10,4 +10,10 @@ config QEMU_RAMFB
 config SOO_FB
 	bool "SOO Virtualized FB device"
 	depends on SOO && !AVZ
+
+config VIRTFB
+	bool "Virtual Framebuffer"
+	help
+		Provides a virtual framebuffer device without physical display output.
+    		Useful for containerized environments or headless systems.
 endif

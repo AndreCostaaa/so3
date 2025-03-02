@@ -22,19 +22,18 @@
 	description = "Kernel and rootfs components for virt64 (armv8) environment";
 
 	images {
-
-	so3 {
+		so3 {
 			description = "SO3 OS kernel";
 			data = /incbin/("../so3/so3.bin");
 			type = "kernel";
 			arch = "arm64";
 			os = "linux";
 			compression = "none";
-            load = <0x41080000>;
+			load = <0x41080000>;
 			entry = <0x41080000>;
 		};
- 
-        fdt {
+
+		fdt {
 			description = "Flattened Device Tree blob";
 			data = /incbin/("../so3/dts/virt64.dtb");
 			type = "flat_dt";
@@ -43,17 +42,26 @@
 			load = <0x44a00000>;
 		};	
 
-        ramfs {
-        	description = "SO3 environment minimal rootfs";
+		lvperf_fdt {
+			description = "Flattened Device Tree blob";
+			data = /incbin/("../so3/dts/virt64_lvperf.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x44a00000>;
+		};	
+
+		ramfs {
+			description = "SO3 environment minimal rootfs";
 			data = /incbin/("../rootfs/rootfs.fat");
 			type = "ramdisk";
 			arch = "arm64";
 			os = "linux";
 			compression = "none";
 			load = <0x44c00000>;
-    	};
+		};
                 
-};
+	};
 
 	configurations {
 		default = "so3_ramfs";
@@ -62,13 +70,20 @@
 			description = "SO3 kernel image including device tree";
 			kernel = "so3";
 			fdt = "fdt";
-            ramdisk = "ramfs"; 
+			ramdisk = "ramfs"; 
 		};
-                
-        so3_mmc {
+
+		so3_mmc {
 			description = "SO3 kernel image including device tree";
 			kernel = "so3";
 			fdt = "fdt";
+		};
+
+		so3_lvperf_ramfs {
+			description = "SO3 kernel image for lvgl perfomance tests";
+			kernel = "so3";
+			fdt = "lvperf_fdt";
+			ramdisk = "ramfs";
 		};
 	};
 
