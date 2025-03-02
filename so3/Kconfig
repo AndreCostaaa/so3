@@ -21,6 +21,10 @@ config AVZ
 	bool "AVZ SO3 Hypervisor mode (Agency Virtualizer)"
 	depends on MMU
 
+config USER_INIT_PROGRAM
+	string "Specifies the initial user-space ELF executable to be started at system boot"
+	default "sh.elf"
+
 if !AVZ
 config SOO
 	bool "Configure SO3 as a Mobile Entity (ME)"
