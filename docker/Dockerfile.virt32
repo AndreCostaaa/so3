@@ -1,0 +1,63 @@
+FROM alpine:latest AS baseimage
+
+FROM baseimage AS builder
+
+RUN apk update; \
+    apk add make cmake gcc-arm-none-eabi libc-dev \
+    bison flex bash patch mount dtc \
+    dosfstools u-boot-tools net-tools \
+    bridge-utils iptables dnsmasq libressl-dev \
+    util-linux qemu-system-arm e2fsprogs
+
+COPY . /so3
+
+WORKDIR /so3
+
+RUN echo 'PLATFORM := virt32' > build.conf
+RUN cd so3; make virt32_defconfig; make -j`nproc`
+
+
+RUN cd filesystem;\
+    ./create_img.sh
+RUN cd u-boot;\
+    make virt32_defconfig;\
+    make -j`nproc`
+
+RUN cd rootfs;\
+    ./create_ramfs.sh
+
+RUN cd usr;\
+    ./build.sh
+
+# Create the filesystem
+RUN dd if=/dev/zero of=filesystem/sdcard.img.virt32 bs=256M count=1
+
+RUN cd rootfs;\
+    ./create_ramfs.sh
+
+RUN mkdir -p rootfs/fs
+RUN ls rootfs && mount $(losetup --partscan --find --show ./rootfs/rootfs.fat)p1 rootfs/fs
+RUN mkdir -p filesystem/fs
+RUN mount $(losetup --partscan --find --show ./filesystem/sdcard.img.virt32)p1 filesystem/fs
+
+# Deploy user space
+RUN cd rootfs;\
+    cp -r usr/out/* rootfs/fs;\
+    cp -r usr/build/deploy/* rootfs/fs;\
+
+# Deploy rootfs
+RUN cp -rf rootfs/fs/* filesystem/fs/
+
+# Deploy u-boot
+RUN cd target;\
+    mkimage -f virt32.its virt32.itb;
+
+RUN cp target/virt32.itb filesystem/fs;\
+    cp ../u-boot/uEnv.d/uEnv_virt32.txt fs/uEnv.txt;\
+
+RUN umount rootfs/fs;\
+    umount filesystem/fs;\
+    losetup -D;\
+    rm -rf rootfs/fs
+
+CMD ./st
