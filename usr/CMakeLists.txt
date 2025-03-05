@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(so3-usr LANGUAGES C ASM)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 option(MICROPYTHON "Support for micro-python apps" OFF)
 
 
@@ -19,6 +21,7 @@ include_directories(
      lib/libc/include
      lib/lvgl
      lib/lvgl/src
+     lib/slv
 )
 
 set(libgcc_cmd ${CMAKE_C_COMPILER} -print-libgcc-file-name)
