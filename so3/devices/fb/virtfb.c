@@ -30,10 +30,12 @@ typedef struct {
 	uint32_t hres, vres;
 } virtfb_priv_t;
 
-static void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count)
+static void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offset)
 {
 	struct devclass *dev = devclass_by_fd(fd);
 	virtfb_priv_t *priv = (virtfb_priv_t *)devclass_get_priv(dev);
+
+	(void)offset;
 
 	priv->vaddr = malloc(page_count * PAGE_SIZE);
 	BUG_ON(!priv->vaddr);
