@@ -229,12 +229,11 @@ extern unsigned long __bad_cmpxchg(volatile void *ptr, int size);
                                                                              \
 		do {                                                         \
 			asm volatile("// __cmpxchg_case_" #name "\n"         \
-				     "	ldxr" #sz "	%" #w "1, %2\n" \
+				     "	ldxr" #sz "	%" #w "1, %2\n"      \
 				     "	mov	%w0, #0\n"                        \
-				     "	cmp	%" #w "1, %" #w "3\n"   \
+				     "	cmp	%" #w "1, %" #w "3\n"        \
 				     "	b.ne	1f\n"                            \
-				     "	stxr" #sz "	%w0, %" #w      \
-				     "4, %2\n"                               \
+				     "	stxr" #sz "	%w0, %" #w "4, %2\n" \
 				     "1:\n"                                  \
 				     : "=&r"(res), "=&r"(oldval),            \
 				       "+Q"(*(unsigned long *)ptr)           \
