@@ -11,10 +11,8 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 /// Version info ///
 
@@ -23,15 +21,14 @@ extern "C"
 // Minor (bottom-nibble), incremented on feature additions
 #define LFS1_VERSION 0x00010007
 #define LFS1_VERSION_MAJOR (0xffff & (LFS1_VERSION >> 16))
-#define LFS1_VERSION_MINOR (0xffff & (LFS1_VERSION >>  0))
+#define LFS1_VERSION_MINOR (0xffff & (LFS1_VERSION >> 0))
 
 // Version of On-disk data structures
 // Major (top-nibble), incremented on backwards incompatible changes
 // Minor (bottom-nibble), incremented on feature additions
 #define LFS1_DISK_VERSION 0x00010001
 #define LFS1_DISK_VERSION_MAJOR (0xffff & (LFS1_DISK_VERSION >> 16))
-#define LFS1_DISK_VERSION_MINOR (0xffff & (LFS1_DISK_VERSION >>  0))
-
+#define LFS1_DISK_VERSION_MINOR (0xffff & (LFS1_DISK_VERSION >> 0))
 
 /// Definitions ///
 
@@ -39,8 +36,8 @@ extern "C"
 typedef uint32_t lfs1_size_t;
 typedef uint32_t lfs1_off_t;
 
-typedef int32_t  lfs1_ssize_t;
-typedef int32_t  lfs1_soff_t;
+typedef int32_t lfs1_ssize_t;
+typedef int32_t lfs1_soff_t;
 
 typedef uint32_t lfs1_block_t;
 
@@ -57,238 +54,235 @@ typedef uint32_t lfs1_block_t;
 // Possible error codes, these are negative to allow
 // valid positive return values
 enum lfs1_error {
-    LFS1_ERR_OK       = 0,    // No error
-    LFS1_ERR_IO       = -5,   // Error during device operation
-    LFS1_ERR_CORRUPT  = -52,  // Corrupted
-    LFS1_ERR_NOENT    = -2,   // No directory entry
-    LFS1_ERR_EXIST    = -17,  // Entry already exists
-    LFS1_ERR_NOTDIR   = -20,  // Entry is not a dir
-    LFS1_ERR_ISDIR    = -21,  // Entry is a dir
-    LFS1_ERR_NOTEMPTY = -39,  // Dir is not empty
-    LFS1_ERR_BADF     = -9,   // Bad file number
-    LFS1_ERR_FBIG     = -27,  // File too large
-    LFS1_ERR_INVAL    = -22,  // Invalid parameter
-    LFS1_ERR_NOSPC    = -28,  // No space left on device
-    LFS1_ERR_NOMEM    = -12,  // No more memory available
+	LFS1_ERR_OK = 0, // No error
+	LFS1_ERR_IO = -5, // Error during device operation
+	LFS1_ERR_CORRUPT = -52, // Corrupted
+	LFS1_ERR_NOENT = -2, // No directory entry
+	LFS1_ERR_EXIST = -17, // Entry already exists
+	LFS1_ERR_NOTDIR = -20, // Entry is not a dir
+	LFS1_ERR_ISDIR = -21, // Entry is a dir
+	LFS1_ERR_NOTEMPTY = -39, // Dir is not empty
+	LFS1_ERR_BADF = -9, // Bad file number
+	LFS1_ERR_FBIG = -27, // File too large
+	LFS1_ERR_INVAL = -22, // Invalid parameter
+	LFS1_ERR_NOSPC = -28, // No space left on device
+	LFS1_ERR_NOMEM = -12, // No more memory available
 };
 
 // File types
 enum lfs1_type {
-    LFS1_TYPE_REG        = 0x11,
-    LFS1_TYPE_DIR        = 0x22,
-    LFS1_TYPE_SUPERBLOCK = 0x2e,
+	LFS1_TYPE_REG = 0x11,
+	LFS1_TYPE_DIR = 0x22,
+	LFS1_TYPE_SUPERBLOCK = 0x2e,
 };
 
 // File open flags
 enum lfs1_open_flags {
-    // open flags
-    LFS1_O_RDONLY = 1,        // Open a file as read only
-    LFS1_O_WRONLY = 2,        // Open a file as write only
-    LFS1_O_RDWR   = 3,        // Open a file as read and write
-    LFS1_O_CREAT  = 0x0100,   // Create a file if it does not exist
-    LFS1_O_EXCL   = 0x0200,   // Fail if a file already exists
-    LFS1_O_TRUNC  = 0x0400,   // Truncate the existing file to zero size
-    LFS1_O_APPEND = 0x0800,   // Move to end of file on every write
+	// open flags
+	LFS1_O_RDONLY = 1, // Open a file as read only
+	LFS1_O_WRONLY = 2, // Open a file as write only
+	LFS1_O_RDWR = 3, // Open a file as read and write
+	LFS1_O_CREAT = 0x0100, // Create a file if it does not exist
+	LFS1_O_EXCL = 0x0200, // Fail if a file already exists
+	LFS1_O_TRUNC = 0x0400, // Truncate the existing file to zero size
+	LFS1_O_APPEND = 0x0800, // Move to end of file on every write
 
-    // internally used flags
-    LFS1_F_DIRTY   = 0x10000, // File does not match storage
-    LFS1_F_WRITING = 0x20000, // File has been written since last flush
-    LFS1_F_READING = 0x40000, // File has been read since last flush
-    LFS1_F_ERRED   = 0x80000, // An error occured during write
+	// internally used flags
+	LFS1_F_DIRTY = 0x10000, // File does not match storage
+	LFS1_F_WRITING = 0x20000, // File has been written since last flush
+	LFS1_F_READING = 0x40000, // File has been read since last flush
+	LFS1_F_ERRED = 0x80000, // An error occured during write
 };
 
 // File seek flags
 enum lfs1_whence_flags {
-    LFS1_SEEK_SET = 0,   // Seek relative to an absolute position
-    LFS1_SEEK_CUR = 1,   // Seek relative to the current file position
-    LFS1_SEEK_END = 2,   // Seek relative to the end of the file
+	LFS1_SEEK_SET = 0, // Seek relative to an absolute position
+	LFS1_SEEK_CUR = 1, // Seek relative to the current file position
+	LFS1_SEEK_END = 2, // Seek relative to the end of the file
 };
-
 
 // Configuration provided during initialization of the littlefs
 struct lfs1_config {
-    // Opaque user provided context that can be used to pass
-    // information to the block device operations
-    void *context;
+	// Opaque user provided context that can be used to pass
+	// information to the block device operations
+	void *context;
 
-    // Read a region in a block. Negative error codes are propogated
-    // to the user.
-    int (*read)(const struct lfs1_config *c, lfs1_block_t block,
-            lfs1_off_t off, void *buffer, lfs1_size_t size);
+	// Read a region in a block. Negative error codes are propogated
+	// to the user.
+	int (*read)(const struct lfs1_config *c, lfs1_block_t block,
+		    lfs1_off_t off, void *buffer, lfs1_size_t size);
 
-    // Program a region in a block. The block must have previously
-    // been erased. Negative error codes are propogated to the user.
-    // May return LFS1_ERR_CORRUPT if the block should be considered bad.
-    int (*prog)(const struct lfs1_config *c, lfs1_block_t block,
-            lfs1_off_t off, const void *buffer, lfs1_size_t size);
+	// Program a region in a block. The block must have previously
+	// been erased. Negative error codes are propogated to the user.
+	// May return LFS1_ERR_CORRUPT if the block should be considered bad.
+	int (*prog)(const struct lfs1_config *c, lfs1_block_t block,
+		    lfs1_off_t off, const void *buffer, lfs1_size_t size);
 
-    // Erase a block. A block must be erased before being programmed.
-    // The state of an erased block is undefined. Negative error codes
-    // are propogated to the user.
-    // May return LFS1_ERR_CORRUPT if the block should be considered bad.
-    int (*erase)(const struct lfs1_config *c, lfs1_block_t block);
+	// Erase a block. A block must be erased before being programmed.
+	// The state of an erased block is undefined. Negative error codes
+	// are propogated to the user.
+	// May return LFS1_ERR_CORRUPT if the block should be considered bad.
+	int (*erase)(const struct lfs1_config *c, lfs1_block_t block);
 
-    // Sync the state of the underlying block device. Negative error codes
-    // are propogated to the user.
-    int (*sync)(const struct lfs1_config *c);
+	// Sync the state of the underlying block device. Negative error codes
+	// are propogated to the user.
+	int (*sync)(const struct lfs1_config *c);
 
-    // Minimum size of a block read. This determines the size of read buffers.
-    // This may be larger than the physical read size to improve performance
-    // by caching more of the block device.
-    lfs1_size_t read_size;
+	// Minimum size of a block read. This determines the size of read buffers.
+	// This may be larger than the physical read size to improve performance
+	// by caching more of the block device.
+	lfs1_size_t read_size;
 
-    // Minimum size of a block program. This determines the size of program
-    // buffers. This may be larger than the physical program size to improve
-    // performance by caching more of the block device.
-    // Must be a multiple of the read size.
-    lfs1_size_t prog_size;
+	// Minimum size of a block program. This determines the size of program
+	// buffers. This may be larger than the physical program size to improve
+	// performance by caching more of the block device.
+	// Must be a multiple of the read size.
+	lfs1_size_t prog_size;
 
-    // Size of an erasable block. This does not impact ram consumption and
-    // may be larger than the physical erase size. However, this should be
-    // kept small as each file currently takes up an entire block.
-    // Must be a multiple of the program size.
-    lfs1_size_t block_size;
+	// Size of an erasable block. This does not impact ram consumption and
+	// may be larger than the physical erase size. However, this should be
+	// kept small as each file currently takes up an entire block.
+	// Must be a multiple of the program size.
+	lfs1_size_t block_size;
 
-    // Number of erasable blocks on the device.
-    lfs1_size_t block_count;
+	// Number of erasable blocks on the device.
+	lfs1_size_t block_count;
 
-    // Number of blocks to lookahead during block allocation. A larger
-    // lookahead reduces the number of passes required to allocate a block.
-    // The lookahead buffer requires only 1 bit per block so it can be quite
-    // large with little ram impact. Should be a multiple of 32.
-    lfs1_size_t lookahead;
+	// Number of blocks to lookahead during block allocation. A larger
+	// lookahead reduces the number of passes required to allocate a block.
+	// The lookahead buffer requires only 1 bit per block so it can be quite
+	// large with little ram impact. Should be a multiple of 32.
+	lfs1_size_t lookahead;
 
-    // Optional, statically allocated read buffer. Must be read sized.
-    void *read_buffer;
+	// Optional, statically allocated read buffer. Must be read sized.
+	void *read_buffer;
 
-    // Optional, statically allocated program buffer. Must be program sized.
-    void *prog_buffer;
+	// Optional, statically allocated program buffer. Must be program sized.
+	void *prog_buffer;
 
-    // Optional, statically allocated lookahead buffer. Must be 1 bit per
-    // lookahead block.
-    void *lookahead_buffer;
+	// Optional, statically allocated lookahead buffer. Must be 1 bit per
+	// lookahead block.
+	void *lookahead_buffer;
 
-    // Optional, statically allocated buffer for files. Must be program sized.
-    // If enabled, only one file may be opened at a time.
-    void *file_buffer;
+	// Optional, statically allocated buffer for files. Must be program sized.
+	// If enabled, only one file may be opened at a time.
+	void *file_buffer;
 };
 
 // Optional configuration provided during lfs1_file_opencfg
 struct lfs1_file_config {
-    // Optional, statically allocated buffer for files. Must be program sized.
-    // If NULL, malloc will be used by default.
-    void *buffer;
+	// Optional, statically allocated buffer for files. Must be program sized.
+	// If NULL, malloc will be used by default.
+	void *buffer;
 };
 
 // File info structure
 struct lfs1_info {
-    // Type of the file, either LFS1_TYPE_REG or LFS1_TYPE_DIR
-    uint8_t type;
+	// Type of the file, either LFS1_TYPE_REG or LFS1_TYPE_DIR
+	uint8_t type;
 
-    // Size of the file, only valid for REG files
-    lfs1_size_t size;
+	// Size of the file, only valid for REG files
+	lfs1_size_t size;
 
-    // Name of the file stored as a null-terminated string
-    char name[LFS1_NAME_MAX+1];
+	// Name of the file stored as a null-terminated string
+	char name[LFS1_NAME_MAX + 1];
 };
-
 
 /// littlefs data structures ///
 typedef struct lfs1_entry {
-    lfs1_off_t off;
+	lfs1_off_t off;
 
-    struct lfs1_disk_entry {
-        uint8_t type;
-        uint8_t elen;
-        uint8_t alen;
-        uint8_t nlen;
-        union {
-            struct {
-                lfs1_block_t head;
-                lfs1_size_t size;
-            } file;
-            lfs1_block_t dir[2];
-        } u;
-    } d;
+	struct lfs1_disk_entry {
+		uint8_t type;
+		uint8_t elen;
+		uint8_t alen;
+		uint8_t nlen;
+		union {
+			struct {
+				lfs1_block_t head;
+				lfs1_size_t size;
+			} file;
+			lfs1_block_t dir[2];
+		} u;
+	} d;
 } lfs1_entry_t;
 
 typedef struct lfs1_cache {
-    lfs1_block_t block;
-    lfs1_off_t off;
-    uint8_t *buffer;
+	lfs1_block_t block;
+	lfs1_off_t off;
+	uint8_t *buffer;
 } lfs1_cache_t;
 
 typedef struct lfs1_file {
-    struct lfs1_file *next;
-    lfs1_block_t pair[2];
-    lfs1_off_t poff;
+	struct lfs1_file *next;
+	lfs1_block_t pair[2];
+	lfs1_off_t poff;
 
-    lfs1_block_t head;
-    lfs1_size_t size;
+	lfs1_block_t head;
+	lfs1_size_t size;
 
-    const struct lfs1_file_config *cfg;
-    uint32_t flags;
-    lfs1_off_t pos;
-    lfs1_block_t block;
-    lfs1_off_t off;
-    lfs1_cache_t cache;
+	const struct lfs1_file_config *cfg;
+	uint32_t flags;
+	lfs1_off_t pos;
+	lfs1_block_t block;
+	lfs1_off_t off;
+	lfs1_cache_t cache;
 } lfs1_file_t;
 
 typedef struct lfs1_dir {
-    struct lfs1_dir *next;
-    lfs1_block_t pair[2];
-    lfs1_off_t off;
+	struct lfs1_dir *next;
+	lfs1_block_t pair[2];
+	lfs1_off_t off;
 
-    lfs1_block_t head[2];
-    lfs1_off_t pos;
+	lfs1_block_t head[2];
+	lfs1_off_t pos;
 
-    struct lfs1_disk_dir {
-        uint32_t rev;
-        lfs1_size_t size;
-        lfs1_block_t tail[2];
-    } d;
+	struct lfs1_disk_dir {
+		uint32_t rev;
+		lfs1_size_t size;
+		lfs1_block_t tail[2];
+	} d;
 } lfs1_dir_t;
 
 typedef struct lfs1_superblock {
-    lfs1_off_t off;
+	lfs1_off_t off;
 
-    struct lfs1_disk_superblock {
-        uint8_t type;
-        uint8_t elen;
-        uint8_t alen;
-        uint8_t nlen;
-        lfs1_block_t root[2];
-        uint32_t block_size;
-        uint32_t block_count;
-        uint32_t version;
-        char magic[8];
-    } d;
+	struct lfs1_disk_superblock {
+		uint8_t type;
+		uint8_t elen;
+		uint8_t alen;
+		uint8_t nlen;
+		lfs1_block_t root[2];
+		uint32_t block_size;
+		uint32_t block_count;
+		uint32_t version;
+		char magic[8];
+	} d;
 } lfs1_superblock_t;
 
 typedef struct lfs1_free {
-    lfs1_block_t off;
-    lfs1_block_t size;
-    lfs1_block_t i;
-    lfs1_block_t ack;
-    uint32_t *buffer;
+	lfs1_block_t off;
+	lfs1_block_t size;
+	lfs1_block_t i;
+	lfs1_block_t ack;
+	uint32_t *buffer;
 } lfs1_free_t;
 
 // The littlefs type
 typedef struct lfs1 {
-    const struct lfs1_config *cfg;
+	const struct lfs1_config *cfg;
 
-    lfs1_block_t root[2];
-    lfs1_file_t *files;
-    lfs1_dir_t *dirs;
+	lfs1_block_t root[2];
+	lfs1_file_t *files;
+	lfs1_dir_t *dirs;
 
-    lfs1_cache_t rcache;
-    lfs1_cache_t pcache;
+	lfs1_cache_t rcache;
+	lfs1_cache_t pcache;
 
-    lfs1_free_t free;
-    bool deorphaned;
-    bool moving;
+	lfs1_free_t free;
+	bool deorphaned;
+	bool moving;
 } lfs1_t;
-
 
 /// Filesystem functions ///
 
@@ -339,7 +333,6 @@ int lfs1_rename(lfs1_t *lfs1, const char *oldpath, const char *newpath);
 // Returns a negative error code on failure.
 int lfs1_stat(lfs1_t *lfs1, const char *path, struct lfs1_info *info);
 
-
 /// File operations ///
 
 // Open a file
@@ -348,8 +341,8 @@ int lfs1_stat(lfs1_t *lfs1, const char *path, struct lfs1_info *info);
 // are values from the enum lfs1_open_flags that are bitwise-ored together.
 //
 // Returns a negative error code on failure.
-int lfs1_file_open(lfs1_t *lfs1, lfs1_file_t *file,
-        const char *path, int flags);
+int lfs1_file_open(lfs1_t *lfs1, lfs1_file_t *file, const char *path,
+		   int flags);
 
 // Open a file with extra configuration
 //
@@ -361,9 +354,8 @@ int lfs1_file_open(lfs1_t *lfs1, lfs1_file_t *file,
 // config struct must be zeroed for defaults and backwards compatibility.
 //
 // Returns a negative error code on failure.
-int lfs1_file_opencfg(lfs1_t *lfs1, lfs1_file_t *file,
-        const char *path, int flags,
-        const struct lfs1_file_config *config);
+int lfs1_file_opencfg(lfs1_t *lfs1, lfs1_file_t *file, const char *path,
+		      int flags, const struct lfs1_file_config *config);
 
 // Close a file
 //
@@ -383,8 +375,8 @@ int lfs1_file_sync(lfs1_t *lfs1, lfs1_file_t *file);
 //
 // Takes a buffer and size indicating where to store the read data.
 // Returns the number of bytes read, or a negative error code on failure.
-lfs1_ssize_t lfs1_file_read(lfs1_t *lfs1, lfs1_file_t *file,
-        void *buffer, lfs1_size_t size);
+lfs1_ssize_t lfs1_file_read(lfs1_t *lfs1, lfs1_file_t *file, void *buffer,
+			    lfs1_size_t size);
 
 // Write data to file
 //
@@ -393,14 +385,14 @@ lfs1_ssize_t lfs1_file_read(lfs1_t *lfs1, lfs1_file_t *file,
 //
 // Returns the number of bytes written, or a negative error code on failure.
 lfs1_ssize_t lfs1_file_write(lfs1_t *lfs1, lfs1_file_t *file,
-        const void *buffer, lfs1_size_t size);
+			     const void *buffer, lfs1_size_t size);
 
 // Change the position of the file
 //
 // The change in position is determined by the offset and whence flag.
 // Returns the old position of the file, or a negative error code on failure.
-lfs1_soff_t lfs1_file_seek(lfs1_t *lfs1, lfs1_file_t *file,
-        lfs1_soff_t off, int whence);
+lfs1_soff_t lfs1_file_seek(lfs1_t *lfs1, lfs1_file_t *file, lfs1_soff_t off,
+			   int whence);
 
 // Truncates the size of the file to the specified size
 //
@@ -424,7 +416,6 @@ int lfs1_file_rewind(lfs1_t *lfs1, lfs1_file_t *file);
 // Similar to lfs1_file_seek(lfs1, file, 0, LFS1_SEEK_END)
 // Returns the size of the file, or a negative error code on failure.
 lfs1_soff_t lfs1_file_size(lfs1_t *lfs1, lfs1_file_t *file);
-
 
 /// Directory operations ///
 
@@ -472,7 +463,6 @@ lfs1_soff_t lfs1_dir_tell(lfs1_t *lfs1, lfs1_dir_t *dir);
 // Returns a negative error code on failure.
 int lfs1_dir_rewind(lfs1_t *lfs1, lfs1_dir_t *dir);
 
-
 /// Miscellaneous littlefs specific operations ///
 
 // Traverse through all blocks in use by the filesystem
@@ -482,7 +472,7 @@ int lfs1_dir_rewind(lfs1_t *lfs1, lfs1_dir_t *dir);
 // blocks are in use or how much of the storage is available.
 //
 // Returns a negative error code on failure.
-int lfs1_traverse(lfs1_t *lfs1, int (*cb)(void*, lfs1_block_t), void *data);
+int lfs1_traverse(lfs1_t *lfs1, int (*cb)(void *, lfs1_block_t), void *data);
 
 // Prunes any recoverable errors that may have occured in the filesystem
 //
@@ -492,7 +482,6 @@ int lfs1_traverse(lfs1_t *lfs1, int (*cb)(void*, lfs1_block_t), void *data);
 //
 // Returns a negative error code on failure.
 int lfs1_deorphan(lfs1_t *lfs1);
-
 
 #ifdef __cplusplus
 } /* extern "C" */

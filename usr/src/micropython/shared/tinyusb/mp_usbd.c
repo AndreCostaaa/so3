@@ -36,8 +36,9 @@
 #include "device/usbd_pvt.h"
 #endif
 
-void usbd_task(void) {
-    tud_task_ext(0, false);
+void usbd_task(void)
+{
+	tud_task_ext(0, false);
 }
 
 #endif

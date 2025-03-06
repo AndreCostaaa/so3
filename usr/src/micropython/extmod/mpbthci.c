@@ -34,5 +34,4 @@
 
 #include "extmod/mpbthci.h"
 
-
 #endif // MICROPY_PY_BLUETOOTH

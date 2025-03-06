@@ -43,24 +43,24 @@
 #define MICROPY_HW_USB_CDC_INTERFACE_STRING "Board CDC"
 #endif
 
-#define CFG_TUSB_RHPORT0_MODE   (OPT_MODE_DEVICE)
+#define CFG_TUSB_RHPORT0_MODE (OPT_MODE_DEVICE)
 
 #if MICROPY_HW_USB_CDC
-#define CFG_TUD_CDC             (1)
+#define CFG_TUD_CDC (1)
 #else
-#define CFG_TUD_CDC             (0)
+#define CFG_TUD_CDC (0)
 #endif
 
 #if MICROPY_HW_USB_MSC
-#define CFG_TUD_MSC             (1)
+#define CFG_TUD_MSC (1)
 #else
-#define CFG_TUD_MSC             (0)
+#define CFG_TUD_MSC (0)
 #endif
 
 // CDC Configuration
 #if CFG_TUD_CDC
-#define CFG_TUD_CDC_RX_BUFSIZE  (256)
-#define CFG_TUD_CDC_TX_BUFSIZE  (256)
+#define CFG_TUD_CDC_RX_BUFSIZE (256)
+#define CFG_TUD_CDC_TX_BUFSIZE (256)
 #endif
 
 // MSC Configuration
@@ -74,10 +74,9 @@
 
 // Define static descriptor size and interface count based on the above config
 
-#define USBD_STATIC_DESC_LEN (TUD_CONFIG_DESC_LEN +                     \
-    (CFG_TUD_CDC ? (TUD_CDC_DESC_LEN) : 0) +  \
-    (CFG_TUD_MSC ? (TUD_MSC_DESC_LEN) : 0)    \
-    )
+#define USBD_STATIC_DESC_LEN                                            \
+	(TUD_CONFIG_DESC_LEN + (CFG_TUD_CDC ? (TUD_CDC_DESC_LEN) : 0) + \
+	 (CFG_TUD_MSC ? (TUD_MSC_DESC_LEN) : 0))
 
 #define USBD_STR_0 (0x00)
 #define USBD_STR_MANUF (0x01)
@@ -120,7 +119,7 @@
 #elif CFG_TUD_CDC
 #define USBD_ITF_STATIC_MAX (USBD_ITF_CDC + 2)
 #define USBD_STR_STATIC_MAX (USBD_STR_CDC + 1)
-#define USBD_EP_STATIC_MAX (((EPNUM_CDC_EP_IN)&~TUSB_DIR_IN_MASK) + 1)
+#define USBD_EP_STATIC_MAX (((EPNUM_CDC_EP_IN) & ~TUSB_DIR_IN_MASK) + 1)
 #else // !CFG_TUD_MSC && !CFG_TUD_CDC
 #define USBD_ITF_STATIC_MAX (0)
 #define USBD_STR_STATIC_MAX (0)

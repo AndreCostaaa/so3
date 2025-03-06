@@ -31,35 +31,44 @@
 #include "drivers/bus/spi.h"
 
 // Temporary support for legacy construction of SoftSPI via SPI type.
-#define MP_MACHINE_SPI_CHECK_FOR_LEGACY_SOFTSPI_CONSTRUCTION(n_args, n_kw, all_args) \
-    do { \
-        if (n_args == 0 || all_args[0] == MP_OBJ_NEW_SMALL_INT(-1)) { \
-            mp_print_str(MICROPY_ERROR_PRINTER, "Warning: SPI(-1, ...) is deprecated, use SoftSPI(...) instead\n"); \
-            if (n_args != 0) { \
-                --n_args; \
-                ++all_args; \
-            } \
-            return MP_OBJ_TYPE_GET_SLOT(&mp_machine_soft_spi_type, make_new)(&mp_machine_soft_spi_type, n_args, n_kw, all_args); \
-        } \
-    } while (0)
+#define MP_MACHINE_SPI_CHECK_FOR_LEGACY_SOFTSPI_CONSTRUCTION(n_args, n_kw,                          \
+							     all_args)                              \
+	do {                                                                                        \
+		if (n_args == 0 || all_args[0] == MP_OBJ_NEW_SMALL_INT(-1)) {                       \
+			mp_print_str(                                                               \
+				MICROPY_ERROR_PRINTER,                                              \
+				"Warning: SPI(-1, ...) is deprecated, use SoftSPI(...) instead\n"); \
+			if (n_args != 0) {                                                          \
+				--n_args;                                                           \
+				++all_args;                                                         \
+			}                                                                           \
+			return MP_OBJ_TYPE_GET_SLOT(&mp_machine_soft_spi_type,                      \
+						    make_new)(                                      \
+				&mp_machine_soft_spi_type, n_args, n_kw,                            \
+				all_args);                                                          \
+		}                                                                                   \
+	} while (0)
 
 // SPI protocol
 typedef struct _mp_machine_spi_p_t {
-    void (*init)(mp_obj_base_t *obj, size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args);
-    void (*deinit)(mp_obj_base_t *obj); // can be NULL
-    void (*transfer)(mp_obj_base_t *obj, size_t len, const uint8_t *src, uint8_t *dest);
+	void (*init)(mp_obj_base_t *obj, size_t n_args,
+		     const mp_obj_t *pos_args, mp_map_t *kw_args);
+	void (*deinit)(mp_obj_base_t *obj); // can be NULL
+	void (*transfer)(mp_obj_base_t *obj, size_t len, const uint8_t *src,
+			 uint8_t *dest);
 } mp_machine_spi_p_t;
 
 typedef struct _mp_machine_soft_spi_obj_t {
-    mp_obj_base_t base;
-    mp_soft_spi_obj_t spi;
+	mp_obj_base_t base;
+	mp_soft_spi_obj_t spi;
 } mp_machine_soft_spi_obj_t;
 
 extern const mp_machine_spi_p_t mp_machine_soft_spi_p;
 extern const mp_obj_type_t mp_machine_soft_spi_type;
 extern const mp_obj_dict_t mp_machine_spi_locals_dict;
 
-mp_obj_t mp_machine_spi_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args);
+mp_obj_t mp_machine_spi_make_new(const mp_obj_type_t *type, size_t n_args,
+				 size_t n_kw, const mp_obj_t *args);
 
 MP_DECLARE_CONST_FUN_OBJ_VAR_BETWEEN(mp_machine_spi_read_obj);
 MP_DECLARE_CONST_FUN_OBJ_VAR_BETWEEN(mp_machine_spi_readinto_obj);

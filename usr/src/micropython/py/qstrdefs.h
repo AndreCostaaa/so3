@@ -40,18 +40,18 @@ Q(*)
 Q(_)
 Q(/)
 #if MICROPY_PY_SYS_PS1_PS2
-Q(>>> )
-Q(... )
+Q(>>>)
+Q(...)
 #endif
 #if MICROPY_PY_BUILTINS_STR_OP_MODULO
-Q(%#o)
-Q(%#x)
+Q(% #o)
+Q(% #x)
 #else
-Q({:#o})
-Q({:#x})
+Q({: #o })
+Q({: #x })
 #endif
-Q({:#b})
-Q( )
+Q({: #b })
+Q()
 Q(\n)
 Q(maximum recursion depth exceeded)
 Q(<module>)
@@ -62,7 +62,7 @@ Q(<setcomp>)
 Q(<genexpr>)
 Q(<string>)
 Q(<stdin>)
-Q(utf-8)
+Q(utf - 8)
 
 #if MICROPY_MODULE_FROZEN
 Q(.frozen)

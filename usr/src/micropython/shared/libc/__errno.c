@@ -9,5 +9,5 @@ int *__errno_location(void)
 int *__errno(void)
 #endif
 {
-    return &embed_errno;
+	return &embed_errno;
 }

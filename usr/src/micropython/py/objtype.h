@@ -31,23 +31,27 @@
 // instance object
 // creating an instance of a class makes one of these objects
 typedef struct _mp_obj_instance_t {
-    mp_obj_base_t base;
-    mp_map_t members;
-    mp_obj_t subobj[];
-    // TODO maybe cache __getattr__ and __setattr__ for efficient lookup of them
+	mp_obj_base_t base;
+	mp_map_t members;
+	mp_obj_t subobj[];
+	// TODO maybe cache __getattr__ and __setattr__ for efficient lookup of them
 } mp_obj_instance_t;
 
 #if MICROPY_CPYTHON_COMPAT
 // this is needed for object.__new__
-mp_obj_instance_t *mp_obj_new_instance(const mp_obj_type_t *cls, const mp_obj_type_t **native_base);
+mp_obj_instance_t *mp_obj_new_instance(const mp_obj_type_t *cls,
+				       const mp_obj_type_t **native_base);
 #endif
 
 // these need to be exposed so mp_obj_is_callable can work correctly
 bool mp_obj_instance_is_callable(mp_obj_t self_in);
-mp_obj_t mp_obj_instance_call(mp_obj_t self_in, size_t n_args, size_t n_kw, const mp_obj_t *args);
+mp_obj_t mp_obj_instance_call(mp_obj_t self_in, size_t n_args, size_t n_kw,
+			      const mp_obj_t *args);
 
-#define mp_obj_is_instance_type(type) ((type)->flags & MP_TYPE_FLAG_INSTANCE_TYPE)
-#define mp_obj_is_native_type(type) (!((type)->flags & MP_TYPE_FLAG_INSTANCE_TYPE))
+#define mp_obj_is_instance_type(type) \
+	((type)->flags & MP_TYPE_FLAG_INSTANCE_TYPE)
+#define mp_obj_is_native_type(type) \
+	(!((type)->flags & MP_TYPE_FLAG_INSTANCE_TYPE))
 
 // this needs to be exposed for mp_getiter
 mp_obj_t mp_obj_instance_getiter(mp_obj_t self_in, mp_obj_iter_buf_t *iter_buf);

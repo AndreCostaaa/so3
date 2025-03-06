@@ -38,9 +38,12 @@ extern const mp_obj_type_t machine_pwm_type;
 // A port must provide implementations of these low-level PWM functions, either as global
 // linker symbols, or included directly if MICROPY_PY_MACHINE_PWM_INCLUDEFILE is defined.
 #ifndef MICROPY_PY_MACHINE_PWM_INCLUDEFILE
-void mp_machine_pwm_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind);
-mp_obj_t mp_machine_pwm_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args);
-void mp_machine_pwm_init_helper(machine_pwm_obj_t *self, size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args);
+void mp_machine_pwm_print(const mp_print_t *print, mp_obj_t self_in,
+			  mp_print_kind_t kind);
+mp_obj_t mp_machine_pwm_make_new(const mp_obj_type_t *type, size_t n_args,
+				 size_t n_kw, const mp_obj_t *args);
+void mp_machine_pwm_init_helper(machine_pwm_obj_t *self, size_t n_args,
+				const mp_obj_t *pos_args, mp_map_t *kw_args);
 void mp_machine_pwm_deinit(machine_pwm_obj_t *self);
 mp_obj_t mp_machine_pwm_freq_get(machine_pwm_obj_t *self);
 void mp_machine_pwm_freq_set(machine_pwm_obj_t *self, mp_int_t freq);
