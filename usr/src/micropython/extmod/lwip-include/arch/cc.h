@@ -21,7 +21,7 @@ typedef u32_t mem_ptr_t;
 #define S32_F "d"
 #define X32_F "x"
 
-#define X8_F  "02x"
+#define X8_F "02x"
 #define SZT_F "u"
 
 #define BYTE_ORDER LITTLE_ENDIAN
@@ -30,7 +30,10 @@ typedef u32_t mem_ptr_t;
 
 #include <assert.h>
 #define LWIP_PLATFORM_DIAG(x)
-#define LWIP_PLATFORM_ASSERT(x)  { assert(1); }
+#define LWIP_PLATFORM_ASSERT(x) \
+	{                       \
+		assert(1);      \
+	}
 
 //#define PACK_STRUCT_FIELD(x) x __attribute__((packed))
 #define PACK_STRUCT_FIELD(x) x

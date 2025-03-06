@@ -30,7 +30,8 @@
 #include "py/obj.h"
 #include "py/mphal.h"
 
-void machine_bitstream_high_low(mp_hal_pin_obj_t pin, uint32_t *timing_ns, const uint8_t *buf, size_t len);
+void machine_bitstream_high_low(mp_hal_pin_obj_t pin, uint32_t *timing_ns,
+				const uint8_t *buf, size_t len);
 
 MP_DECLARE_CONST_FUN_OBJ_VAR_BETWEEN(machine_bitstream_obj);
 

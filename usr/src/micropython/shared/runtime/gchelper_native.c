@@ -35,13 +35,15 @@
 // provided by gchelper_*.s
 uintptr_t gc_helper_get_regs_and_sp(uintptr_t *regs);
 
-MP_NOINLINE void gc_helper_collect_regs_and_stack(void) {
-    // get the registers and the sp
-    gc_helper_regs_t regs;
-    uintptr_t sp = gc_helper_get_regs_and_sp(regs);
+MP_NOINLINE void gc_helper_collect_regs_and_stack(void)
+{
+	// get the registers and the sp
+	gc_helper_regs_t regs;
+	uintptr_t sp = gc_helper_get_regs_and_sp(regs);
 
-    // trace the stack, including the registers (since they live on the stack in this function)
-    gc_collect_root((void **)sp, ((uintptr_t)MP_STATE_THREAD(stack_top) - sp) / sizeof(uintptr_t));
+	// trace the stack, including the registers (since they live on the stack in this function)
+	gc_collect_root((void **)sp, ((uintptr_t)MP_STATE_THREAD(stack_top) -
+				      sp) / sizeof(uintptr_t));
 }
 
 #endif

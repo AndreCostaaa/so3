@@ -34,21 +34,24 @@
 
 static mp_sched_node_t mp_bootloader_sched_node;
 
-STATIC void usbd_cdc_run_bootloader_task(mp_sched_node_t *node) {
-    mp_hal_delay_ms(250);
-    machine_bootloader(0, NULL);
+STATIC void usbd_cdc_run_bootloader_task(mp_sched_node_t *node)
+{
+	mp_hal_delay_ms(250);
+	machine_bootloader(0, NULL);
 }
 
-void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts) {
-    if (dtr == false && rts == false) {
-        // Device is disconnected.
-        cdc_line_coding_t line_coding;
-        tud_cdc_n_get_line_coding(itf, &line_coding);
-        if (line_coding.bit_rate == 1200) {
-            // Delay bootloader jump to allow the USB stack to service endpoints.
-            mp_sched_schedule_node(&mp_bootloader_sched_node, usbd_cdc_run_bootloader_task);
-        }
-    }
+void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
+{
+	if (dtr == false && rts == false) {
+		// Device is disconnected.
+		cdc_line_coding_t line_coding;
+		tud_cdc_n_get_line_coding(itf, &line_coding);
+		if (line_coding.bit_rate == 1200) {
+			// Delay bootloader jump to allow the USB stack to service endpoints.
+			mp_sched_schedule_node(&mp_bootloader_sched_node,
+					       usbd_cdc_run_bootloader_task);
+		}
+	}
 }
 
 #endif

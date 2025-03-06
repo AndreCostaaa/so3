@@ -6,7 +6,5 @@ int __signbitd(double x)
 		double d;
 		uint64_t i;
 	} y = { x };
-	return y.i>>63;
+	return y.i >> 63;
 }
-
-

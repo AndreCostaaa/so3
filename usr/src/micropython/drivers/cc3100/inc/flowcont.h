@@ -37,8 +37,7 @@
 #ifndef __FLOWCONT_H__
 #define __FLOWCONT_H__
 
-
-#ifdef	__cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -53,9 +52,8 @@ extern "C" {
 extern void _SlDrvFlowContInit(void);
 extern void _SlDrvFlowContDeinit(void);
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __FLOWCONT_H__ */
-

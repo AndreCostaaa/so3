@@ -39,21 +39,21 @@
 #define SSL_CTX_LOCK(mutex)
 #define SSL_CTX_UNLOCK(mutex)
 
-#define SOCKET_READ(s, buf, size)       mp_stream_posix_read((void *)s, buf, size)
-#define SOCKET_WRITE(s, buf, size)      mp_stream_posix_write((void *)s, buf, size)
-#define SOCKET_CLOSE(A)                 UNUSED
-#define SOCKET_ERRNO()                  errno
+#define SOCKET_READ(s, buf, size) mp_stream_posix_read((void *)s, buf, size)
+#define SOCKET_WRITE(s, buf, size) mp_stream_posix_write((void *)s, buf, size)
+#define SOCKET_CLOSE(A) UNUSED
+#define SOCKET_ERRNO() errno
 
-#define SHA256_CTX                      CRYAL_SHA256_CTX
-#define SHA256_Init(ctx)                sha256_init(ctx)
-#define SHA256_Update(ctx, buf, size)   sha256_update(ctx, buf, size)
-#define SHA256_Final(hash, ctx)         sha256_final(ctx, hash)
+#define SHA256_CTX CRYAL_SHA256_CTX
+#define SHA256_Init(ctx) sha256_init(ctx)
+#define SHA256_Update(ctx, buf, size) sha256_update(ctx, buf, size)
+#define SHA256_Final(hash, ctx) sha256_final(ctx, hash)
 
 #define TTY_FLUSH()
 
 #ifdef WDEV_HWRNG
 // For esp8266 port: use the hardware RNG.
-#define PLATFORM_RNG_U8()               (*WDEV_HWRNG)
+#define PLATFORM_RNG_U8() (*WDEV_HWRNG)
 #endif
 
 #endif // AXTLS_OS_PORT_H

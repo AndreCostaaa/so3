@@ -41,12 +41,9 @@
 #include "simplelink.h"
 
 #ifndef __NETAPP_H__
-#define    __NETAPP_H__
+#define __NETAPP_H__
 
-
-
-
-#ifdef    __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -65,245 +62,244 @@ extern "C" {
 #define SL_ERROR_NETAPP_RX_BUFFER_LENGTH_ERROR (-230)
 
 /*  Http Server interface */
-#define MAX_INPUT_STRING                              (64) /*  because of WPA */
+#define MAX_INPUT_STRING (64) /*  because of WPA */
 
-#define MAX_AUTH_NAME_LEN                             (20)
-#define MAX_AUTH_PASSWORD_LEN                         (20)
-#define MAX_AUTH_REALM_LEN                            (20)
+#define MAX_AUTH_NAME_LEN (20)
+#define MAX_AUTH_PASSWORD_LEN (20)
+#define MAX_AUTH_REALM_LEN (20)
 
-#define MAX_DEVICE_URN_LEN (15+1)
-#define MAX_DOMAIN_NAME_LEN    (24+1)
+#define MAX_DEVICE_URN_LEN (15 + 1)
+#define MAX_DOMAIN_NAME_LEN (24 + 1)
 
-#define MAX_ACTION_LEN                                (30)
+#define MAX_ACTION_LEN (30)
 /* Important: in case the max len is changed, make sure the struct sl_NetAppHttpServerSendToken_t in protocol.h is padded correctly! */
-#define MAX_TOKEN_NAME_LEN                            (20)  
-#define MAX_TOKEN_VALUE_LEN        MAX_INPUT_STRING
+#define MAX_TOKEN_NAME_LEN (20)
+#define MAX_TOKEN_VALUE_LEN MAX_INPUT_STRING
 
-#define NETAPP_MAX_SERVICE_TEXT_SIZE                  (256)
-#define NETAPP_MAX_SERVICE_NAME_SIZE                  (60)
-#define NETAPP_MAX_SERVICE_HOST_NAME_SIZE             (64)
-
+#define NETAPP_MAX_SERVICE_TEXT_SIZE (256)
+#define NETAPP_MAX_SERVICE_NAME_SIZE (60)
+#define NETAPP_MAX_SERVICE_HOST_NAME_SIZE (64)
 
 /* Server Responses */
-#define SL_NETAPP_RESPONSE_NONE                       (0)
-#define SL_NETAPP_HTTPSETTOKENVALUE                   (1)
+#define SL_NETAPP_RESPONSE_NONE (0)
+#define SL_NETAPP_HTTPSETTOKENVALUE (1)
 
-#define SL_NETAPP_FAMILY_MASK                         (0x80)
+#define SL_NETAPP_FAMILY_MASK (0x80)
 
 /* mDNS types */
-#define SL_NET_APP_MASK_IPP_TYPE_OF_SERVICE           (0x00000001)
-#define SL_NET_APP_MASK_DEVICE_INFO_TYPE_OF_SERVICE   (0x00000002)
-#define SL_NET_APP_MASK_HTTP_TYPE_OF_SERVICE          (0x00000004)
-#define SL_NET_APP_MASK_HTTPS_TYPE_OF_SERVICE         (0x00000008)
-#define SL_NET_APP_MASK_WORKSATION_TYPE_OF_SERVICE    (0x00000010)
-#define SL_NET_APP_MASK_GUID_TYPE_OF_SERVICE          (0x00000020)
-#define SL_NET_APP_MASK_H323_TYPE_OF_SERVICE          (0x00000040)
-#define SL_NET_APP_MASK_NTP_TYPE_OF_SERVICE           (0x00000080)
-#define SL_NET_APP_MASK_OBJECITVE_TYPE_OF_SERVICE     (0x00000100)
-#define SL_NET_APP_MASK_RDP_TYPE_OF_SERVICE           (0x00000200)
-#define SL_NET_APP_MASK_REMOTE_TYPE_OF_SERVICE        (0x00000400)
-#define SL_NET_APP_MASK_RTSP_TYPE_OF_SERVICE          (0x00000800)
-#define SL_NET_APP_MASK_SIP_TYPE_OF_SERVICE           (0x00001000)
-#define SL_NET_APP_MASK_SMB_TYPE_OF_SERVICE           (0x00002000)
-#define SL_NET_APP_MASK_SOAP_TYPE_OF_SERVICE          (0x00004000)
-#define SL_NET_APP_MASK_SSH_TYPE_OF_SERVICE           (0x00008000)
-#define SL_NET_APP_MASK_TELNET_TYPE_OF_SERVICE        (0x00010000)
-#define SL_NET_APP_MASK_TFTP_TYPE_OF_SERVICE          (0x00020000)
-#define SL_NET_APP_MASK_XMPP_CLIENT_TYPE_OF_SERVICE   (0x00040000)
-#define SL_NET_APP_MASK_RAOP_TYPE_OF_SERVICE          (0x00080000)
-#define SL_NET_APP_MASK_ALL_TYPE_OF_SERVICE           (0xFFFFFFFF)
+#define SL_NET_APP_MASK_IPP_TYPE_OF_SERVICE (0x00000001)
+#define SL_NET_APP_MASK_DEVICE_INFO_TYPE_OF_SERVICE (0x00000002)
+#define SL_NET_APP_MASK_HTTP_TYPE_OF_SERVICE (0x00000004)
+#define SL_NET_APP_MASK_HTTPS_TYPE_OF_SERVICE (0x00000008)
+#define SL_NET_APP_MASK_WORKSATION_TYPE_OF_SERVICE (0x00000010)
+#define SL_NET_APP_MASK_GUID_TYPE_OF_SERVICE (0x00000020)
+#define SL_NET_APP_MASK_H323_TYPE_OF_SERVICE (0x00000040)
+#define SL_NET_APP_MASK_NTP_TYPE_OF_SERVICE (0x00000080)
+#define SL_NET_APP_MASK_OBJECITVE_TYPE_OF_SERVICE (0x00000100)
+#define SL_NET_APP_MASK_RDP_TYPE_OF_SERVICE (0x00000200)
+#define SL_NET_APP_MASK_REMOTE_TYPE_OF_SERVICE (0x00000400)
+#define SL_NET_APP_MASK_RTSP_TYPE_OF_SERVICE (0x00000800)
+#define SL_NET_APP_MASK_SIP_TYPE_OF_SERVICE (0x00001000)
+#define SL_NET_APP_MASK_SMB_TYPE_OF_SERVICE (0x00002000)
+#define SL_NET_APP_MASK_SOAP_TYPE_OF_SERVICE (0x00004000)
+#define SL_NET_APP_MASK_SSH_TYPE_OF_SERVICE (0x00008000)
+#define SL_NET_APP_MASK_TELNET_TYPE_OF_SERVICE (0x00010000)
+#define SL_NET_APP_MASK_TFTP_TYPE_OF_SERVICE (0x00020000)
+#define SL_NET_APP_MASK_XMPP_CLIENT_TYPE_OF_SERVICE (0x00040000)
+#define SL_NET_APP_MASK_RAOP_TYPE_OF_SERVICE (0x00080000)
+#define SL_NET_APP_MASK_ALL_TYPE_OF_SERVICE (0xFFFFFFFF)
 
 /********************************************************************************************************/
 /* sl_NetAppDnsGetHostByName error codes     */
 
-#define SL_NET_APP_DNS_QUERY_NO_RESPONSE              (-159)  /* DNS query failed, no response                        */ 
-#define SL_NET_APP_DNS_NO_SERVER                      (-161)  /* No DNS server was specified                          */ 
-#define SL_NET_APP_DNS_PARAM_ERROR                    (-162)  /* mDNS parameters error                                */
-#define SL_NET_APP_DNS_QUERY_FAILED                   (-163)  /* DNS query failed; no DNS server sent an 'answer'     */ 
-#define SL_NET_APP_DNS_INTERNAL_1                     (-164)
-#define SL_NET_APP_DNS_INTERNAL_2                     (-165)
-#define SL_NET_APP_DNS_MALFORMED_PACKET               (-166)  /* Improperly formed or corrupted DNS packet received   */ 
-#define SL_NET_APP_DNS_INTERNAL_3                     (-167)
-#define SL_NET_APP_DNS_INTERNAL_4                     (-168)
-#define SL_NET_APP_DNS_INTERNAL_5                     (-169)
-#define SL_NET_APP_DNS_INTERNAL_6                     (-170)
-#define SL_NET_APP_DNS_INTERNAL_7                     (-171)
-#define SL_NET_APP_DNS_INTERNAL_8                     (-172)
-#define SL_NET_APP_DNS_INTERNAL_9                     (-173)
-#define SL_NET_APP_DNS_MISMATCHED_RESPONSE            (-174)  /* Server response type does not match the query request*/
-#define SL_NET_APP_DNS_INTERNAL_10                    (-175)
-#define SL_NET_APP_DNS_INTERNAL_11                    (-176)
-#define SL_NET_APP_DNS_NO_ANSWER                      (-177)  /* No response for one-shot query */
-#define SL_NET_APP_DNS_NO_KNOWN_ANSWER                (-178)  /* No known answer for query */
-#define SL_NET_APP_DNS_NAME_MISMATCH                  (-179)  /* Illegal service name according to the RFC            */
-#define SL_NET_APP_DNS_NOT_STARTED                    (-180)  /* mDNS is not running                                  */
-#define SL_NET_APP_DNS_HOST_NAME_ERROR                (-181)  /* Host name error. Host name format is not allowed according to RFC 1033,1034,1035, 6763 */
-#define SL_NET_APP_DNS_NO_MORE_ENTRIES                (-182)  /* No more entries be found.                            */
-                                                      
-#define SL_NET_APP_DNS_MAX_SERVICES_ERROR             (-200)  /* Maximum advertise services are already configured    */
-#define SL_NET_APP_DNS_IDENTICAL_SERVICES_ERROR       (-201)  /* Trying to register a service that is already exists  */
-#define SL_NET_APP_DNS_NOT_EXISTED_SERVICE_ERROR      (-203)  /* Trying to delete service that does not existed       */
-#define SL_NET_APP_DNS_ERROR_SERVICE_NAME_ERROR       (-204)  /* Illegal service name according to the RFC            */
-#define SL_NET_APP_DNS_RX_PACKET_ALLOCATION_ERROR     (-205)  /* Retry request                                        */
-#define SL_NET_APP_DNS_BUFFER_SIZE_ERROR              (-206)  /* List size buffer is bigger than internally allowed in the NWP */
-#define SL_NET_APP_DNS_NET_APP_SET_ERROR              (-207)  /* Illegal length of one of the mDNS Set functions      */
-#define SL_NET_APP_DNS_GET_SERVICE_LIST_FLAG_ERROR    (-208)
-#define SL_NET_APP_DNS_NO_CONFIGURATION_ERROR         (-209)
+#define SL_NET_APP_DNS_QUERY_NO_RESPONSE \
+	(-159) /* DNS query failed, no response                        */
+#define SL_NET_APP_DNS_NO_SERVER \
+	(-161) /* No DNS server was specified                          */
+#define SL_NET_APP_DNS_PARAM_ERROR \
+	(-162) /* mDNS parameters error                                */
+#define SL_NET_APP_DNS_QUERY_FAILED \
+	(-163) /* DNS query failed; no DNS server sent an 'answer'     */
+#define SL_NET_APP_DNS_INTERNAL_1 (-164)
+#define SL_NET_APP_DNS_INTERNAL_2 (-165)
+#define SL_NET_APP_DNS_MALFORMED_PACKET \
+	(-166) /* Improperly formed or corrupted DNS packet received   */
+#define SL_NET_APP_DNS_INTERNAL_3 (-167)
+#define SL_NET_APP_DNS_INTERNAL_4 (-168)
+#define SL_NET_APP_DNS_INTERNAL_5 (-169)
+#define SL_NET_APP_DNS_INTERNAL_6 (-170)
+#define SL_NET_APP_DNS_INTERNAL_7 (-171)
+#define SL_NET_APP_DNS_INTERNAL_8 (-172)
+#define SL_NET_APP_DNS_INTERNAL_9 (-173)
+#define SL_NET_APP_DNS_MISMATCHED_RESPONSE \
+	(-174) /* Server response type does not match the query request*/
+#define SL_NET_APP_DNS_INTERNAL_10 (-175)
+#define SL_NET_APP_DNS_INTERNAL_11 (-176)
+#define SL_NET_APP_DNS_NO_ANSWER (-177) /* No response for one-shot query */
+#define SL_NET_APP_DNS_NO_KNOWN_ANSWER (-178) /* No known answer for query */
+#define SL_NET_APP_DNS_NAME_MISMATCH \
+	(-179) /* Illegal service name according to the RFC            */
+#define SL_NET_APP_DNS_NOT_STARTED \
+	(-180) /* mDNS is not running                                  */
+#define SL_NET_APP_DNS_HOST_NAME_ERROR \
+	(-181) /* Host name error. Host name format is not allowed according to RFC 1033,1034,1035, 6763 */
+#define SL_NET_APP_DNS_NO_MORE_ENTRIES \
+	(-182) /* No more entries be found.                            */
+
+#define SL_NET_APP_DNS_MAX_SERVICES_ERROR \
+	(-200) /* Maximum advertise services are already configured    */
+#define SL_NET_APP_DNS_IDENTICAL_SERVICES_ERROR \
+	(-201) /* Trying to register a service that is already exists  */
+#define SL_NET_APP_DNS_NOT_EXISTED_SERVICE_ERROR \
+	(-203) /* Trying to delete service that does not existed       */
+#define SL_NET_APP_DNS_ERROR_SERVICE_NAME_ERROR \
+	(-204) /* Illegal service name according to the RFC            */
+#define SL_NET_APP_DNS_RX_PACKET_ALLOCATION_ERROR \
+	(-205) /* Retry request                                        */
+#define SL_NET_APP_DNS_BUFFER_SIZE_ERROR \
+	(-206) /* List size buffer is bigger than internally allowed in the NWP */
+#define SL_NET_APP_DNS_NET_APP_SET_ERROR \
+	(-207) /* Illegal length of one of the mDNS Set functions      */
+#define SL_NET_APP_DNS_GET_SERVICE_LIST_FLAG_ERROR (-208)
+#define SL_NET_APP_DNS_NO_CONFIGURATION_ERROR (-209)
 
 /* Set Dev name error codes  (NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN) */
-#define SL_ERROR_DEVICE_NAME_LEN_ERR                   (-117) 
-#define SL_ERROR_DEVICE_NAME_INVALID                   (-118)
+#define SL_ERROR_DEVICE_NAME_LEN_ERR (-117)
+#define SL_ERROR_DEVICE_NAME_INVALID (-118)
 /* Set domain name error codes (NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME) */
-#define SL_ERROR_DOMAIN_NAME_LEN_ERR                   (-119)
-#define SL_ERROR_DOMAIN_NAME_INVALID                   (-120)
+#define SL_ERROR_DOMAIN_NAME_LEN_ERR (-119)
+#define SL_ERROR_DOMAIN_NAME_INVALID (-120)
 
 /********************************************************************************************************/
 
 /* NetApp application IDs */
-#define SL_NET_APP_HTTP_SERVER_ID                     (1)
-#define SL_NET_APP_DHCP_SERVER_ID                     (2)
-#define SL_NET_APP_MDNS_ID                            (4)
-#define SL_NET_APP_DNS_SERVER_ID                      (8)
-#define SL_NET_APP_DEVICE_CONFIG_ID                   (16)
-/* NetApp application set/get options */             
-#define NETAPP_SET_DHCP_SRV_BASIC_OPT                 (0)             
-/* HTTP server set/get options */                    
-#define NETAPP_SET_GET_HTTP_OPT_PORT_NUMBER           (0)
-#define NETAPP_SET_GET_HTTP_OPT_AUTH_CHECK            (1)
-#define NETAPP_SET_GET_HTTP_OPT_AUTH_NAME             (2)
-#define NETAPP_SET_GET_HTTP_OPT_AUTH_PASSWORD         (3)
-#define NETAPP_SET_GET_HTTP_OPT_AUTH_REALM            (4)
-#define NETAPP_SET_GET_HTTP_OPT_ROM_PAGES_ACCESS      (5)
-                                                     
-#define NETAPP_SET_GET_MDNS_CONT_QUERY_OPT            (1)
-#define NETAPP_SET_GET_MDNS_QEVETN_MASK_OPT           (2)
-#define NETAPP_SET_GET_MDNS_TIMING_PARAMS_OPT         (3)
+#define SL_NET_APP_HTTP_SERVER_ID (1)
+#define SL_NET_APP_DHCP_SERVER_ID (2)
+#define SL_NET_APP_MDNS_ID (4)
+#define SL_NET_APP_DNS_SERVER_ID (8)
+#define SL_NET_APP_DEVICE_CONFIG_ID (16)
+/* NetApp application set/get options */
+#define NETAPP_SET_DHCP_SRV_BASIC_OPT (0)
+/* HTTP server set/get options */
+#define NETAPP_SET_GET_HTTP_OPT_PORT_NUMBER (0)
+#define NETAPP_SET_GET_HTTP_OPT_AUTH_CHECK (1)
+#define NETAPP_SET_GET_HTTP_OPT_AUTH_NAME (2)
+#define NETAPP_SET_GET_HTTP_OPT_AUTH_PASSWORD (3)
+#define NETAPP_SET_GET_HTTP_OPT_AUTH_REALM (4)
+#define NETAPP_SET_GET_HTTP_OPT_ROM_PAGES_ACCESS (5)
+
+#define NETAPP_SET_GET_MDNS_CONT_QUERY_OPT (1)
+#define NETAPP_SET_GET_MDNS_QEVETN_MASK_OPT (2)
+#define NETAPP_SET_GET_MDNS_TIMING_PARAMS_OPT (3)
 
 /* DNS server set/get options */
-#define NETAPP_SET_GET_DNS_OPT_DOMAIN_NAME            (0)
+#define NETAPP_SET_GET_DNS_OPT_DOMAIN_NAME (0)
 
 /* Device Config set/get options */
-#define NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN        (0)
-#define NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME       (1)
-
+#define NETAPP_SET_GET_DEV_CONF_OPT_DEVICE_URN (0)
+#define NETAPP_SET_GET_DEV_CONF_OPT_DOMAIN_NAME (1)
 
 /*****************************************************************************/
 /* Structure/Enum declarations                                               */
 /*****************************************************************************/
 
-typedef struct
-{
-    _u32    PacketsSent;
-    _u32    PacketsReceived;
-    _u16    MinRoundTime;
-    _u16    MaxRoundTime;
-    _u16    AvgRoundTime;
-    _u32    TestTime;
-}SlPingReport_t;
+typedef struct {
+	_u32 PacketsSent;
+	_u32 PacketsReceived;
+	_u16 MinRoundTime;
+	_u16 MaxRoundTime;
+	_u16 AvgRoundTime;
+	_u32 TestTime;
+} SlPingReport_t;
 
-typedef struct
-{
-    _u32    PingIntervalTime;       /* delay between pings, in milliseconds */
-    _u16    PingSize;               /* ping packet size in bytes           */
-    _u16    PingRequestTimeout;     /* timeout time for every ping in milliseconds  */
-    _u32    TotalNumberOfAttempts;  /* max number of ping requests. 0 - forever    */
-    _u32    Flags;                  /* flag - 0 report only when finished, 1 - return response for every ping, 2 - stop after 1 successful ping.  */
-    _u32    Ip;                     /* IPv4 address or IPv6 first 4 bytes  */
-    _u32    Ip1OrPaadding;
-    _u32    Ip2OrPaadding;
-    _u32    Ip3OrPaadding;
-}SlPingStartCommand_t;
+typedef struct {
+	_u32 PingIntervalTime; /* delay between pings, in milliseconds */
+	_u16 PingSize; /* ping packet size in bytes           */
+	_u16 PingRequestTimeout; /* timeout time for every ping in milliseconds  */
+	_u32 TotalNumberOfAttempts; /* max number of ping requests. 0 - forever    */
+	_u32 Flags; /* flag - 0 report only when finished, 1 - return response for every ping, 2 - stop after 1 successful ping.  */
+	_u32 Ip; /* IPv4 address or IPv6 first 4 bytes  */
+	_u32 Ip1OrPaadding;
+	_u32 Ip2OrPaadding;
+	_u32 Ip3OrPaadding;
+} SlPingStartCommand_t;
 
-typedef struct _slHttpServerString_t
-{
-    _u8     len;
-    _u8     *data;
+typedef struct _slHttpServerString_t {
+	_u8 len;
+	_u8 *data;
 } slHttpServerString_t;
 
-typedef struct _slHttpServerData_t
-{
-    _u8     value_len;
-    _u8     name_len;
-    _u8     *token_value;
-    _u8     *token_name;
+typedef struct _slHttpServerData_t {
+	_u8 value_len;
+	_u8 name_len;
+	_u8 *token_value;
+	_u8 *token_name;
 } slHttpServerData_t;
 
-typedef struct _slHttpServerPostData_t
-{
-    slHttpServerString_t action;
-    slHttpServerString_t  token_name;
-    slHttpServerString_t token_value;
-}slHttpServerPostData_t;
+typedef struct _slHttpServerPostData_t {
+	slHttpServerString_t action;
+	slHttpServerString_t token_name;
+	slHttpServerString_t token_value;
+} slHttpServerPostData_t;
 
-typedef union
-{
-  slHttpServerString_t  httpTokenName; /* SL_NETAPP_HTTPGETTOKENVALUE */
-  slHttpServerPostData_t   httpPostData;  /* SL_NETAPP_HTTPPOSTTOKENVALUE */
+typedef union {
+	slHttpServerString_t httpTokenName; /* SL_NETAPP_HTTPGETTOKENVALUE */
+	slHttpServerPostData_t httpPostData; /* SL_NETAPP_HTTPPOSTTOKENVALUE */
 } SlHttpServerEventData_u;
 
-typedef union
-{
-  slHttpServerString_t token_value;
+typedef union {
+	slHttpServerString_t token_value;
 } SlHttpServerResponsedata_u;
 
-typedef struct
-{
-   _u32                    Event;
-   SlHttpServerEventData_u EventData;
-}SlHttpServerEvent_t;
+typedef struct {
+	_u32 Event;
+	SlHttpServerEventData_u EventData;
+} SlHttpServerEvent_t;
 
-typedef struct
-{
-   _u32                       Response;
-   SlHttpServerResponsedata_u ResponseData;
-}SlHttpServerResponse_t;
+typedef struct {
+	_u32 Response;
+	SlHttpServerResponsedata_u ResponseData;
+} SlHttpServerResponse_t;
 
-
-typedef struct
-{
-    _u32   lease_time;
-    _u32   ipv4_addr_start;
-    _u32   ipv4_addr_last;
-}SlNetAppDhcpServerBasicOpt_t; 
+typedef struct {
+	_u32 lease_time;
+	_u32 ipv4_addr_start;
+	_u32 ipv4_addr_last;
+} SlNetAppDhcpServerBasicOpt_t;
 
 /*mDNS parameters*/
-typedef enum
-{
-    SL_NET_APP_FULL_SERVICE_WITH_TEXT_IPV4_TYPE = 1,
-    SL_NET_APP_FULL_SERVICE_IPV4_TYPE,
-    SL_NET_APP_SHORT_SERVICE_IPV4_TYPE
- 
+typedef enum {
+	SL_NET_APP_FULL_SERVICE_WITH_TEXT_IPV4_TYPE = 1,
+	SL_NET_APP_FULL_SERVICE_IPV4_TYPE,
+	SL_NET_APP_SHORT_SERVICE_IPV4_TYPE
+
 } SlNetAppGetServiceListType_e;
 
-typedef struct
-{
-    _u32   service_ipv4;
-    _u16   service_port;
-    _u16   Reserved;
-}SlNetAppGetShortServiceIpv4List_t;
+typedef struct {
+	_u32 service_ipv4;
+	_u16 service_port;
+	_u16 Reserved;
+} SlNetAppGetShortServiceIpv4List_t;
 
-typedef struct
-{
-    _u32   service_ipv4;
-    _u16   service_port;
-    _u16   Reserved;
-    _u8    service_name[NETAPP_MAX_SERVICE_NAME_SIZE];
-    _u8    service_host[NETAPP_MAX_SERVICE_HOST_NAME_SIZE];
-}SlNetAppGetFullServiceIpv4List_t;
+typedef struct {
+	_u32 service_ipv4;
+	_u16 service_port;
+	_u16 Reserved;
+	_u8 service_name[NETAPP_MAX_SERVICE_NAME_SIZE];
+	_u8 service_host[NETAPP_MAX_SERVICE_HOST_NAME_SIZE];
+} SlNetAppGetFullServiceIpv4List_t;
 
-typedef struct
-{
-    _u32    service_ipv4;
-    _u16    service_port;
-    _u16    Reserved;
-    _u8     service_name[NETAPP_MAX_SERVICE_NAME_SIZE];
-    _u8     service_host[NETAPP_MAX_SERVICE_HOST_NAME_SIZE];
-    _u8     service_text[NETAPP_MAX_SERVICE_TEXT_SIZE];
-}SlNetAppGetFullServiceWithTextIpv4List_t;
+typedef struct {
+	_u32 service_ipv4;
+	_u16 service_port;
+	_u16 Reserved;
+	_u8 service_name[NETAPP_MAX_SERVICE_NAME_SIZE];
+	_u8 service_host[NETAPP_MAX_SERVICE_HOST_NAME_SIZE];
+	_u8 service_text[NETAPP_MAX_SERVICE_TEXT_SIZE];
+} SlNetAppGetFullServiceWithTextIpv4List_t;
 
-typedef struct
-{
-    /*The below parameters are used to configure the advertise times and interval
+typedef struct {
+	/*The below parameters are used to configure the advertise times and interval
     For example:
         If:
         Period is set to T
@@ -317,23 +313,22 @@ typedef struct
         advertise P time
         wait 16 * T  ... (till max time reached / configuration changed / query issued)
     */
-    _u32    t;              /* Number of ticks for the initial period. Default is 100 ticks for 1 second. */
-    _u32    p;              /* Number of repetitions. Default value is 1                                  */
-    _u32    k;              /* Telescopic factor. Default value is 2.                                     */
-    _u32    RetransInterval;/* Announcing retransmission interval                                         */
-    _u32    Maxinterval;     /* Announcing max period interval                                            */
-    _u32    max_time;       /* Announcing max time                                                        */
-}SlNetAppServiceAdvertiseTimingParameters_t;
+	_u32 t; /* Number of ticks for the initial period. Default is 100 ticks for 1 second. */
+	_u32 p; /* Number of repetitions. Default value is 1                                  */
+	_u32 k; /* Telescopic factor. Default value is 2.                                     */
+	_u32 RetransInterval; /* Announcing retransmission interval                                         */
+	_u32 Maxinterval; /* Announcing max period interval                                            */
+	_u32 max_time; /* Announcing max time                                                        */
+} SlNetAppServiceAdvertiseTimingParameters_t;
 
 /*****************************************************************************/
 /* Types declarations                                               */
 /*****************************************************************************/
-typedef void (*P_SL_DEV_PING_CALLBACK)(SlPingReport_t*);
+typedef void (*P_SL_DEV_PING_CALLBACK)(SlPingReport_t *);
 
 /*****************************************************************************/
 /* Function prototypes                                                       */
 /*****************************************************************************/
-
 
 /*!
     \brief Starts a network application
@@ -434,7 +429,8 @@ _i16 sl_NetAppStop(const _u32 AppBitMap);
     \endcode
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppDnsGetHostByName)
-_i16 sl_NetAppDnsGetHostByName(_i8 * hostname,const  _u16 usNameLen, _u32*  out_ip_addr,const _u8 family );
+_i16 sl_NetAppDnsGetHostByName(_i8 *hostname, const _u16 usNameLen,
+			       _u32 *out_ip_addr, const _u8 family);
 #endif
 
 /*!
@@ -493,14 +489,12 @@ _i16 sl_NetAppDnsGetHostByName(_i8 * hostname,const  _u16 usNameLen, _u32*  out_
         \warning      Text length can be 120 bytes only
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppDnsGetHostByService)
-_i32 sl_NetAppDnsGetHostByService(_i8  *pServiceName, /*  string containing all (or only part): name + subtype + service */
-                                  const _u8  ServiceLen,
-                                  const _u8  Family,        /*  4-IPv4 , 16-IPv6  */
-                                  _u32 pAddr[], 
-                                  _u32 *pPort,
-                                  _u16 *pTextLen,     /*  in: max len , out: actual len */
-                                  _i8  *pText
-                                 );
+_i32 sl_NetAppDnsGetHostByService(
+	_i8 *pServiceName, /*  string containing all (or only part): name + subtype + service */
+	const _u8 ServiceLen, const _u8 Family, /*  4-IPv4 , 16-IPv6  */
+	_u32 pAddr[], _u32 *pPort,
+	_u16 *pTextLen, /*  in: max len , out: actual len */
+	_i8 *pText);
 
 #endif
 
@@ -553,12 +547,9 @@ _i32 sl_NetAppDnsGetHostByService(_i8  *pServiceName, /*  string containing all 
 */
 
 #if _SL_INCLUDE_FUNC(sl_NetAppGetServiceList)
-_i16 sl_NetAppGetServiceList(const _u8   IndexOffest,
-                             const _u8   MaxServiceCount,
-                             const  _u8   Flags,
-                                   _i8   *pBuffer,
-                             const _u32  RxBufferLength
-                            );
+_i16 sl_NetAppGetServiceList(const _u8 IndexOffest, const _u8 MaxServiceCount,
+			     const _u8 Flags, _i8 *pBuffer,
+			     const _u32 RxBufferLength);
 
 #endif
 
@@ -586,7 +577,8 @@ _i16 sl_NetAppGetServiceList(const _u8   IndexOffest,
         The size of the service length should be smaller than 255.
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppMDNSUnRegisterService)
-_i16 sl_NetAppMDNSUnRegisterService(const _i8 *pServiceName,const _u8 ServiceNameLen);
+_i16 sl_NetAppMDNSUnRegisterService(const _i8 *pServiceName,
+				    const _u8 ServiceNameLen);
 #endif
 
 /*!
@@ -654,13 +646,10 @@ _i16 sl_NetAppMDNSUnRegisterService(const _i8 *pServiceName,const _u8 ServiceNam
                     attribute part (contain constant parameters)
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppMDNSRegisterService)
-_i16 sl_NetAppMDNSRegisterService( const _i8*  pServiceName, 
-                                   const _u8   ServiceNameLen,
-                                   const _i8*  pText,
-                                   const _u8   TextLen,
-                                   const _u16  Port,
-                                   const _u32  TTL,
-                                         _u32  Options);
+_i16 sl_NetAppMDNSRegisterService(const _i8 *pServiceName,
+				  const _u8 ServiceNameLen, const _i8 *pText,
+				  const _u8 TextLen, const _u16 Port,
+				  const _u32 TTL, _u32 Options);
 #endif
 
 /*!
@@ -724,7 +713,9 @@ _i16 sl_NetAppMDNSRegisterService( const _i8*  pServiceName,
     \endcode
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppPingStart)
-_i16 sl_NetAppPingStart(const SlPingStartCommand_t* pPingParams,const _u8 family,SlPingReport_t *pReport,const P_SL_DEV_PING_CALLBACK pPingCallback);
+_i16 sl_NetAppPingStart(const SlPingStartCommand_t *pPingParams,
+			const _u8 family, SlPingReport_t *pReport,
+			const P_SL_DEV_PING_CALLBACK pPingCallback);
 #endif
 
 /*!
@@ -791,7 +782,8 @@ _i16 sl_NetAppPingStart(const SlPingStartCommand_t* pPingParams,const _u8 family
 
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppSet)
-_i32 sl_NetAppSet(const _u8 AppId ,const _u8 Option,const _u8 OptionLen,const _u8 *pOptionValue);
+_i32 sl_NetAppSet(const _u8 AppId, const _u8 Option, const _u8 OptionLen,
+		  const _u8 *pOptionValue);
 #endif
 
 /*!
@@ -863,10 +855,9 @@ _i32 sl_NetAppSet(const _u8 AppId ,const _u8 Option,const _u8 OptionLen,const _u
     \endcode
 */
 #if _SL_INCLUDE_FUNC(sl_NetAppGet)
-_i32 sl_NetAppGet(const _u8 AppId,const  _u8 Option,_u8 *pOptionLen, _u8 *pOptionValue);
+_i32 sl_NetAppGet(const _u8 AppId, const _u8 Option, _u8 *pOptionLen,
+		  _u8 *pOptionValue);
 #endif
-
-
 
 /*!
 
@@ -875,10 +866,8 @@ _i32 sl_NetAppGet(const _u8 AppId,const  _u8 Option,_u8 *pOptionLen, _u8 *pOptio
 
  */
 
-
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif /*  __cplusplus */
 
-#endif    /*  __NETAPP_H__ */
-
+#endif /*  __NETAPP_H__ */
