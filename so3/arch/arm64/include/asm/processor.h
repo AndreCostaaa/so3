@@ -19,6 +19,7 @@
  *
  */
 
+/* clang-format off */
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
