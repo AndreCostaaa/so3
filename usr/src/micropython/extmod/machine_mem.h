@@ -29,8 +29,8 @@
 #include "py/obj.h"
 
 typedef struct _machine_mem_obj_t {
-    mp_obj_base_t base;
-    unsigned elem_size; // in bytes
+	mp_obj_base_t base;
+	unsigned elem_size; // in bytes
 } machine_mem_obj_t;
 
 extern const mp_obj_type_t machine_mem_type;

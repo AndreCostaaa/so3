@@ -34,29 +34,29 @@
 #include "lib/btstack/src/btstack.h"
 
 typedef struct _mp_bluetooth_btstack_root_pointers_t {
-    // This stores both the advertising data and the scan response data, concatenated together.
-    uint8_t *adv_data;
-    // Total length of both.
-    size_t adv_data_alloc;
+	// This stores both the advertising data and the scan response data, concatenated together.
+	uint8_t *adv_data;
+	// Total length of both.
+	size_t adv_data_alloc;
 
-    // Characteristic (and descriptor) value storage.
-    mp_gatts_db_t gatts_db;
+	// Characteristic (and descriptor) value storage.
+	mp_gatts_db_t gatts_db;
 
-    #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
-    // Registration for notify/indicate events.
-    gatt_client_notification_t notification;
+#if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT
+	// Registration for notify/indicate events.
+	gatt_client_notification_t notification;
 
-    // Active connections (only used for GATT clients).
-    btstack_linked_list_t active_connections;
-    #endif
+	// Active connections (only used for GATT clients).
+	btstack_linked_list_t active_connections;
+#endif
 } mp_bluetooth_btstack_root_pointers_t;
 
 enum {
-    MP_BLUETOOTH_BTSTACK_STATE_OFF,
-    MP_BLUETOOTH_BTSTACK_STATE_STARTING,
-    MP_BLUETOOTH_BTSTACK_STATE_ACTIVE,
-    MP_BLUETOOTH_BTSTACK_STATE_HALTING,
-    MP_BLUETOOTH_BTSTACK_STATE_TIMEOUT,
+	MP_BLUETOOTH_BTSTACK_STATE_OFF,
+	MP_BLUETOOTH_BTSTACK_STATE_STARTING,
+	MP_BLUETOOTH_BTSTACK_STATE_ACTIVE,
+	MP_BLUETOOTH_BTSTACK_STATE_HALTING,
+	MP_BLUETOOTH_BTSTACK_STATE_TIMEOUT,
 };
 
 extern volatile int mp_bluetooth_btstack_state;

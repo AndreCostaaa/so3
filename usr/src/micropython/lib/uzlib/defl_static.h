@@ -31,11 +31,11 @@
    code. */
 
 struct Outbuf {
-    unsigned char *outbuf;
-    int outlen, outsize;
-    unsigned long outbits;
-    int noutbits;
-    int comp_disabled;
+	unsigned char *outbuf;
+	int outlen, outsize;
+	unsigned long outbits;
+	int noutbits;
+	int comp_disabled;
 };
 
 void outbits(struct Outbuf *out, unsigned long bits, int nbits);

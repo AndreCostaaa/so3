@@ -27,15 +27,15 @@
 #define TINYTEST_H_INCLUDED_
 
 /** Flag for a test that needs to run in a subprocess. */
-#define TT_FORK  (1<<0)
+#define TT_FORK (1 << 0)
 /** Runtime flag for a test we've decided to skip. */
-#define TT_SKIP  (1<<1)
+#define TT_SKIP (1 << 1)
 /** Internal runtime flag for a test we've decided to run. */
-#define TT_ENABLED_  (1<<2)
+#define TT_ENABLED_ (1 << 2)
 /** Flag for a test that's off by default. */
-#define TT_OFF_BY_DEFAULT  (1<<3)
+#define TT_OFF_BY_DEFAULT (1 << 3)
 /** If you add your own flags, make them start at this point. */
-#define TT_FIRST_USER_FLAG (1<<4)
+#define TT_FIRST_USER_FLAG (1 << 4)
 
 typedef void (*testcase_fn)(void *);
 
@@ -64,7 +64,7 @@ struct testgroup_t {
 	const char *prefix; /**< Prefix to prepend to testnames. */
 	struct testcase_t *cases; /** Array, ending with END_OF_TESTCASES */
 };
-#define END_OF_GROUPS { NULL, NULL}
+#define END_OF_GROUPS { NULL, NULL }
 
 struct testlist_alias_t {
 	const char *name;
@@ -80,14 +80,15 @@ void tinytest_set_test_skipped_(void);
 int tinytest_get_verbosity_(void);
 /** Implementation: Set a flag on tests matching a name; returns number
  * of tests that matched. */
-int tinytest_set_flag_(struct testgroup_t *, const char *, int set, unsigned long);
+int tinytest_set_flag_(struct testgroup_t *, const char *, int set,
+		       unsigned long);
 
 /** Set all tests in 'groups' matching the name 'named' to be skipped. */
 #define tinytest_skip(groups, named) \
 	tinytest_set_flag_(groups, named, 1, TT_SKIP)
 
 /** Run a single testcase in a single group. */
-int testcase_run_one(const struct testgroup_t *,const struct testcase_t *);
+int testcase_run_one(const struct testgroup_t *, const struct testcase_t *);
 
 void tinytest_set_aliases(const struct testlist_alias_t *aliases);
 

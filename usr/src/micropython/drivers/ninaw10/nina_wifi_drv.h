@@ -29,80 +29,80 @@
 #ifndef MICROPY_INCLUDED_DRIVERS_NINAW10_NINA_WIFI_DRV_H
 #define MICROPY_INCLUDED_DRIVERS_NINAW10_NINA_WIFI_DRV_H
 
-#define NINA_FW_VER_LEN         (6)
-#define NINA_IPV4_ADDR_LEN      (4)
-#define NINA_MAC_ADDR_LEN       (6)
-#define NINA_MAX_SSID_LEN       (32)
-#define NINA_MAX_WEP_LEN        (13)
-#define NINA_MAX_WPA_LEN        (63)
-#define NINA_MAX_NETWORK_LIST   (10)
-#define NINA_MAX_SOCKET         (10)
+#define NINA_FW_VER_LEN (6)
+#define NINA_IPV4_ADDR_LEN (4)
+#define NINA_MAC_ADDR_LEN (6)
+#define NINA_MAX_SSID_LEN (32)
+#define NINA_MAX_WEP_LEN (13)
+#define NINA_MAX_WPA_LEN (63)
+#define NINA_MAX_NETWORK_LIST (10)
+#define NINA_MAX_SOCKET (10)
 
-#define NINA_FW_VER_MIN_MAJOR   (1)
-#define NINA_FW_VER_MIN_MINOR   (5)
-#define NINA_FW_VER_MIN_PATCH   (0)
+#define NINA_FW_VER_MIN_MAJOR (1)
+#define NINA_FW_VER_MIN_MINOR (5)
+#define NINA_FW_VER_MIN_PATCH (0)
 
-#define NINA_FW_VER_MAJOR_OFFS  (0)
-#define NINA_FW_VER_MINOR_OFFS  (2)
-#define NINA_FW_VER_PATCH_OFFS  (4)
+#define NINA_FW_VER_MAJOR_OFFS (0)
+#define NINA_FW_VER_MINOR_OFFS (2)
+#define NINA_FW_VER_PATCH_OFFS (4)
 
-#define NINA_ESP_REASON_AUTH_EXPIRE             (2)
-#define NINA_ESP_REASON_ASSOC_EXPIRE            (4)
-#define NINA_ESP_REASON_NOT_AUTHED              (6)
-#define NINA_ESP_REASON_4WAY_HANDSHAKE_TIMEOUT  (15)
-#define NINA_ESP_REASON_BEACON_TIMEOUT          (200)
-#define NINA_ESP_REASON_NO_AP_FOUND             (201)
-#define NINA_ESP_REASON_AUTH_FAIL               (202)
-#define NINA_ESP_REASON_ASSOC_FAIL              (203)
-#define NINA_ESP_REASON_HANDSHAKE_TIMEOUT       (204)
-#define NINA_ESP_REASON_CONNECTION_FAIL         (205)
+#define NINA_ESP_REASON_AUTH_EXPIRE (2)
+#define NINA_ESP_REASON_ASSOC_EXPIRE (4)
+#define NINA_ESP_REASON_NOT_AUTHED (6)
+#define NINA_ESP_REASON_4WAY_HANDSHAKE_TIMEOUT (15)
+#define NINA_ESP_REASON_BEACON_TIMEOUT (200)
+#define NINA_ESP_REASON_NO_AP_FOUND (201)
+#define NINA_ESP_REASON_AUTH_FAIL (202)
+#define NINA_ESP_REASON_ASSOC_FAIL (203)
+#define NINA_ESP_REASON_HANDSHAKE_TIMEOUT (204)
+#define NINA_ESP_REASON_CONNECTION_FAIL (205)
 
 typedef enum {
-    NINA_SEC_INVALID = 0,
-    NINA_SEC_OPEN,
-    NINA_SEC_WPA_PSK,
-    NINA_SEC_WEP
+	NINA_SEC_INVALID = 0,
+	NINA_SEC_OPEN,
+	NINA_SEC_WPA_PSK,
+	NINA_SEC_WEP
 } nina_security_t;
 
 typedef enum {
-    NINA_SOCKET_TYPE_TCP = 1,
-    NINA_SOCKET_TYPE_UDP = 2,
-    NINA_SOCKET_TYPE_RAW = 3,
+	NINA_SOCKET_TYPE_TCP = 1,
+	NINA_SOCKET_TYPE_UDP = 2,
+	NINA_SOCKET_TYPE_RAW = 3,
 } nina_socket_type_t;
 
 typedef enum {
-    NINA_STATUS_IDLE = 0,
-    NINA_STATUS_NO_SSID_AVAIL = 1,
-    NINA_STATUS_SCAN_COMPLETED = 2,
-    NINA_STATUS_CONNECTED = 3,
-    NINA_STATUS_CONNECT_FAILED = 4,
-    NINA_STATUS_CONNECTION_LOST = 5,
-    NINA_STATUS_DISCONNECTED = 6,
-    NINA_STATUS_AP_LISTENING = 7,
-    NINA_STATUS_AP_CONNECTED = 8,
-    NINA_STATUS_AP_FAILED = 9
+	NINA_STATUS_IDLE = 0,
+	NINA_STATUS_NO_SSID_AVAIL = 1,
+	NINA_STATUS_SCAN_COMPLETED = 2,
+	NINA_STATUS_CONNECTED = 3,
+	NINA_STATUS_CONNECT_FAILED = 4,
+	NINA_STATUS_CONNECTION_LOST = 5,
+	NINA_STATUS_DISCONNECTED = 6,
+	NINA_STATUS_AP_LISTENING = 7,
+	NINA_STATUS_AP_CONNECTED = 8,
+	NINA_STATUS_AP_FAILED = 9
 } nina_status_t;
 
 typedef struct {
-    uint8_t ip_addr[NINA_IPV4_ADDR_LEN];
-    uint8_t subnet_addr[NINA_IPV4_ADDR_LEN];
-    uint8_t gateway_addr[NINA_IPV4_ADDR_LEN];
-    uint8_t dns_addr[NINA_IPV4_ADDR_LEN];
+	uint8_t ip_addr[NINA_IPV4_ADDR_LEN];
+	uint8_t subnet_addr[NINA_IPV4_ADDR_LEN];
+	uint8_t gateway_addr[NINA_IPV4_ADDR_LEN];
+	uint8_t dns_addr[NINA_IPV4_ADDR_LEN];
 } nina_ifconfig_t;
 
 typedef struct {
-    int32_t rssi;
-    uint8_t security;
-    uint8_t channel;
-    uint8_t bssid[NINA_MAC_ADDR_LEN];
-    char ssid[NINA_MAX_SSID_LEN];
+	int32_t rssi;
+	uint8_t security;
+	uint8_t channel;
+	uint8_t bssid[NINA_MAC_ADDR_LEN];
+	char ssid[NINA_MAX_SSID_LEN];
 } nina_scan_result_t;
 
 typedef struct {
-    int32_t rssi;
-    uint8_t security;
-    char ssid[NINA_MAX_SSID_LEN];
-    uint8_t bssid[NINA_MAC_ADDR_LEN];
+	int32_t rssi;
+	uint8_t security;
+	char ssid[NINA_MAX_SSID_LEN];
+	uint8_t bssid[NINA_MAC_ADDR_LEN];
 } nina_netinfo_t;
 
 typedef int (*nina_scan_callback_t)(nina_scan_result_t *, void *);
@@ -111,8 +111,10 @@ int nina_init(void);
 int nina_deinit(void);
 int nina_connection_status(void);
 int nina_connection_reason(void);
-int nina_connect(const char *ssid, uint8_t security, const char *key, uint16_t channel);
-int nina_start_ap(const char *ssid, uint8_t security, const char *key, uint16_t channel);
+int nina_connect(const char *ssid, uint8_t security, const char *key,
+		 uint16_t channel);
+int nina_start_ap(const char *ssid, uint8_t security, const char *key,
+		  uint16_t channel);
 int nina_disconnect(void);
 int nina_isconnected(void);
 int nina_connected_sta(uint32_t *sta_ip);
@@ -133,11 +135,15 @@ int nina_socket_accept(int fd, uint8_t *ip, uint16_t *port, int *fd_out);
 int nina_socket_connect(int fd, uint8_t *ip, uint16_t port);
 int nina_socket_send(int fd, const uint8_t *buf, uint32_t len);
 int nina_socket_recv(int fd, uint8_t *buf, uint32_t len);
-int nina_socket_sendto(int fd, const uint8_t *buf, uint32_t len, uint8_t *ip, uint16_t port);
-int nina_socket_recvfrom(int fd, uint8_t *buf, uint32_t len, uint8_t *ip, uint16_t *port);
+int nina_socket_sendto(int fd, const uint8_t *buf, uint32_t len, uint8_t *ip,
+		       uint16_t port);
+int nina_socket_recvfrom(int fd, uint8_t *buf, uint32_t len, uint8_t *ip,
+			 uint16_t *port);
 int nina_socket_ioctl(int fd, uint32_t cmd, void *argval, uint32_t arglen);
 int nina_socket_poll(int fd, uint8_t *flags);
-int nina_socket_setsockopt(int fd, uint32_t level, uint32_t opt, const void *optval, uint16_t optlen);
-int nina_socket_getsockopt(int fd, uint32_t level, uint32_t opt, void *optval, uint16_t optlen);
+int nina_socket_setsockopt(int fd, uint32_t level, uint32_t opt,
+			   const void *optval, uint16_t optlen);
+int nina_socket_getsockopt(int fd, uint32_t level, uint32_t opt, void *optval,
+			   uint16_t optlen);
 int nina_socket_getpeername(int fd, uint8_t *ip, uint16_t *port);
 #endif // MICROPY_INCLUDED_DRIVERS_NINAW10_NINA_WIFI_DRV_H

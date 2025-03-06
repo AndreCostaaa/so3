@@ -31,9 +31,9 @@
 #include "extmod/vfs.h"
 
 typedef struct _fs_user_mount_t {
-    mp_obj_base_t base;
-    mp_vfs_blockdev_t blockdev;
-    FATFS fatfs;
+	mp_obj_base_t base;
+	mp_vfs_blockdev_t blockdev;
+	FATFS fatfs;
 } fs_user_mount_t;
 
 extern const byte fresult_to_errno_table[20];
