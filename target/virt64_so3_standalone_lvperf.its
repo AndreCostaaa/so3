@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Daniel Rossier <daniel.rossier@heig-vd.ch>
+ * Copyright (C) 2025 André Costa <andre_miguel_costa@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,6 +15,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
+
+/* Based on virt64_so3_standalone.its */
 
 /dts-v1/;
 
@@ -33,9 +35,9 @@
 			entry = <0x41080000>;
 		};
 
-		fdt {
+		lvperf_fdt {
 			description = "Flattened Device Tree blob";
-			data = /incbin/("../so3/dts/virt64.dtb");
+			data = /incbin/("../so3/dts/virt64_lvperf.dtb");
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";
@@ -55,19 +57,13 @@
 	};
 
 	configurations {
-		default = "so3_ramfs";
-                
-		so3_ramfs {
-			description = "SO3 kernel image including device tree";
-			kernel = "so3";
-			fdt = "fdt";
-			ramdisk = "ramfs"; 
-		};
+		default = "so3_lvperf_ramfs";
 
-		so3_mmc {
-			description = "SO3 kernel image including device tree";
+		so3_lvperf_ramfs {
+			description = "SO3 kernel image for lvgl perfomance tests";
 			kernel = "so3";
-			fdt = "fdt";
+			fdt = "lvperf_fdt";
+			ramdisk = "ramfs";
 		};
 	};
 
