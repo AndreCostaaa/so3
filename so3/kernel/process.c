@@ -671,9 +671,9 @@ void load_process(elf_img_info_t *elf_img_info)
 				    section_name_dots++)
 					break; // Base name stops at second '.'
 			} while (section_base_name[l++] != '\0');
-			section_base_name[l] =
-				'\0'; // Terminate string correctly (replace second
-				// '.' if stopped by it)
+
+			/* Terminate string correctly (replace second '.' if stopped by it) */
+			section_base_name[l] = '\0';
 
 			/* Not all sections are supported */
 			section_supported = false;
