@@ -33,19 +33,16 @@ EOF
 
 rm -rf /so3/tmp
 
-mkdir rootfs/fs
 mkdir filesystem/fs
 
 # 2. Make u-boot
 mkimage -f target/virt32_lvperf.its target/virt32_lvperf.itb;
 
-mount $(losetup --partscan --find --show rootfs/rootfs.fat)p1 rootfs/fs
 mount $(losetup --partscan --find --show filesystem/sdcard.img.virt32)p1 filesystem/fs
 
-cp target/virt32_lvperf.itb filesystem/fs;
-cp ../u-boot/uEnv.d/uEnv_virt32.txt fs/uEnv.txt;\
+cp target/virt32_lvperf.itb filesystem/fs
+cp ../u-boot/uEnv.d/uEnv_virt32.txt fs/uEnv.txt
 
-umount rootfs/fs
 umount filesystem/fs
 losetup -D
 
