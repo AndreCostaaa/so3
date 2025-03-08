@@ -10,8 +10,8 @@ cd usr; ./build.sh -r; cd ..
 
 mkdir rootfs/fs
 
-mount $(losetup --partscan --find --show ./rootfs/rootfs.fat)p1 rootfs/fs
-mount $(losetup --partscan --find --show ./filesystem/sdcard.img.virt32)p1 filesystem/fs
+mount $(losetup --partscan --find --show rootfs/rootfs.fat)p1 rootfs/fs
+mount $(losetup --partscan --find --show filesystem/sdcard.img.virt32)p1 filesystem/fs
 
 cp -r usr/out/* rootfs/fs
 cp -r usr/build/deploy/* rootfs/fs
