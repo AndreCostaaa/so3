@@ -30,3 +30,6 @@ EOF
   # Delete temporary directory
   rm -r "${tmp_dir}"
 fi
+
+# rootfs/rootfs.fat is used inside the .its file
+ln -sf $target_path rootfs/rootfs.fat
