@@ -34,7 +34,7 @@ create_filesystem_img() {
   
   # Append the formatted partition
   dd if=/dev/zero of="${partition}" bs=${partition_size} count=1 status=none
-  mkfs.vfat "${partition}" > /dev/null
+  mkfs.vfat "${partition}"
   dd if="${partition}" status=none >> "${image_name}"
   
   # Set the partition table
