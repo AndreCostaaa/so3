@@ -27,7 +27,7 @@ RUN cd u-boot;\
 # Make the image leaner by removing unneeded files 
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
-RUN find /so3/so3 -mindepth 1 ! -name 'so3.bin' -delete
+RUN find /so3/so3 -mindepth 1 ! -name 'so3.bin' ! -name 'virt32*.dtb' -delete
 
 # This version is faster than find ...
 RUN mv /so3/u-boot/u-boot /so3/u-boot/uEnv.d / && \
