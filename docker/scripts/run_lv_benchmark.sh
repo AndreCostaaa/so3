@@ -2,8 +2,10 @@
 
 set -e
 
-ROOTFS_PATH="/persistence/rootfs.fat.virt32"
-FILESYSTEM_PATH="/persistence/sdcard.img.virt32"
+PLATFORM=$1
+
+ROOTFS_PATH="/persistence/rootfs.fat.$PLATFORM"
+FILESYSTEM_PATH="/persistence/sdcard.img.$PLATFORM"
 
 mount_rootfs() {
   mkdir -p rootfs/fs
@@ -60,10 +62,10 @@ deploy_rootfs() {
 }
 
 deploy_uboot() {
-    mkimage -f target/virt32_lvperf.its target/virt32_lvperf.itb
+    mkimage -f target/$PLATFORM_lvperf.its target/virt32_lvperf.itb
     mount_filesystem
-    cp target/virt32_lvperf.itb filesystem/fs/virt32.itb
-    cp u-boot/uEnv.d/uEnv_virt32.txt filesystem/fs/uEnv.txt
+    cp target/$PLATFORM_lvperf.itb filesystem/fs/virt32.itb
+    cp u-boot/uEnv.d/uEnv_$PLATFORM.txt filesystem/fs/uEnv.txt
     umount_filesystem
 }
 

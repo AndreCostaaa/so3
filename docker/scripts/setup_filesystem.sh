@@ -2,7 +2,9 @@
 
 set -e
 
-target_path="/persistence/sdcard.img.virt32"
+PLATFORM=$1
+
+target_path="/persistence/sdcard.img.$PLATFORM"
 
 if [ -f "$target_path" ]; then
     echo "Found existing filesystem image in $target_path."
