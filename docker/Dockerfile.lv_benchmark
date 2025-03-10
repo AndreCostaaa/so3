@@ -28,6 +28,12 @@ RUN cd u-boot;\
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
 RUN find /so3/so3 -mindepth 1 ! -name 'so3.bin' -delete
+
+# This version is faster than find ...
+RUN mv /so3/u-boot/u-boot /so3/u-boot/uEnv.d / && \
+    rm -rf /so3/u-boot && mkdir /so3/u-boot \
+    mv /u-boot /uEnv.d /so3/u-boot
+
 RUN find /so3/u-boot -mindepth 1 ! -name 'u-boot' ! -path '/so3/u-boot/uEnv.d*' -delete
 RUN rm -rf avz doc ci bsp jtag scripts qemu
 
