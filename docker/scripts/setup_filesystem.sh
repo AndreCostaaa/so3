@@ -2,8 +2,6 @@
 
 set -e
 
-PLATFORM=$1
-
 target_path="/persistence/sdcard.img.$PLATFORM"
 
 if [ -f "$target_path" ]; then

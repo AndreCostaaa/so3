@@ -58,4 +58,6 @@ RUN mkdir -p rootfs
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
 
-CMD ./docker/scripts/setup_ramfs.sh virt64 && ./docker/scripts/setup_filesystem.sh virt64 && ./docker/scripts/run_lv_benchmark.sh virt64
+ENV PLATFORM=virt64
+
+CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh

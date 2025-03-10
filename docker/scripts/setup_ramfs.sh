@@ -2,8 +2,6 @@
 
 set -e
 
-PLATFORM=$1
-
 target_path="/persistence/rootfs.fat.$PLATFORM"
 
 if [ -f "$target_path" ]; then

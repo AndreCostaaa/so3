@@ -2,8 +2,6 @@
 
 set -e
 
-PLATFORM=$1
-
 ROOTFS_PATH="/persistence/rootfs.fat.$PLATFORM"
 FILESYSTEM_PATH="/persistence/sdcard.img.$PLATFORM"
 
