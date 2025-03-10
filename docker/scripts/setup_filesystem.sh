@@ -21,6 +21,5 @@ else
   fi
   
   mkfs.fat -F32 -v /dev/"$devname"p1
-  mkfs.ext4 /dev/"$devname"p2
   losetup -D
 fi
