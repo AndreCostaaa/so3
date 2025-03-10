@@ -16,10 +16,9 @@ create_ramfs () {
       export devname="${devname}p"
   fi
   
-  mkfs.fat -F32 -v /dev/"$devname"1
-  mkfs.ext4 /dev/"$devname"2
+  mkfs.fat -F32 -v /dev/"$devname"p1
+  mkfs.ext4 /dev/"$devname"p2
   losetup -D
-
 }
 
 create_filesystem_img() {
