@@ -88,14 +88,14 @@ if [ "$PLATFORM" == "virt32" -o "$PLATFORM" == "vexpress" -o "$PLATFORM" == "rpi
   default_toolchain="arm_toolchain.cmake"
 elif [ "$PLATFORM" == "virt64" -o "$PLATFORM" == "rpi4_64" ]; then
   default_toolchain="aarch64_toolchain.cmake"
-elif [ -z "$TOOLCHAIN_FILE" ]; then
+elif [ -z "$USR_BUILD_TOOLCHAIN_FILE" ]; then
   # Only fail if no custom toolchain is provided
   echo "Unsupported PLATFORM ($PLATFORM) and no TOOLCHAIN_FILE specified"
   exit 1
 fi
 
 # Use custom toolchain if TOOLCHAIN_FILE is set, otherwise use the default
-toolchain_file="${TOOLCHAIN_FILE:-$default_toolchain}"
+toolchain_file="${USR_BUILD_TOOLCHAIN_FILE:-$default_toolchain}"
 
 # Run cmake with the selected toolchain
 cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=../"$toolchain_file" ..
