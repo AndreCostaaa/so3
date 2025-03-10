@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 target_path="/persistence/rootfs.fat.virt32"
 
 if [ -f "$target_path" ]; then

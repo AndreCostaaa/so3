@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ROOTFS_PATH="/persistence/rootfs.fat.virt32"
 FILESYSTEM_PATH="/persistence/sdcard.img.virt32"
 
