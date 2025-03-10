@@ -18,6 +18,7 @@ set(CMAKE_INSTALL_SO_NO_EXE 0)
 
 # This toolchain file can be used both inside and outside Buildroot.
 set(CMAKE_C_COMPILER "aarch64-none-elf-gcc")
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_CXX_COMPILER "aarch64-none-elf-g++")
 set(CMAKE_C_LINK_EXECUTABLE "aarch64-none-elf-ld <OBJECTS> -o <TARGET>  <LINK_LIBRARIES> <LINK_FLAGS> <LINK_LIBRARIES>")
 set(CMAKE_ASM_COMPILER "aarch64-none-elf-gcc")
