@@ -71,6 +71,31 @@ umount_filesystem() {
   losetup -D
 }
 
+build_usr()  {
+
+  mkdir -p usr/build
+  
+  cd usr/build
+  
+  cmake --no-warn-unused-cli \
+        -Wno-dev \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_TOOLCHAIN_FILE=../arm_toolchain.cmake  \
+        .. 
+  
+  if [ $? -ne '0' ]; then 
+    exit 1
+  fi
+  
+  make -j`nproc`
+  
+  if [ $? -ne '0' ]; then 
+    exit 1
+  fi
+
+  cd ../..
+}
+
 deploy_usr() {
   mount_rootfs
   cp -r usr/out/* rootfs/fs
@@ -105,10 +130,10 @@ deploy () {
   deploy_uboot
 }
 
-cd usr; ./build.sh -r; cd ..
-
 create_ramfs
 create_filesystem_image
+
+build_usr
 deploy
 
 
