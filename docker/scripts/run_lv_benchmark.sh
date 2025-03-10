@@ -22,7 +22,7 @@ mount_filesystem() {
   mkdir -p filesystem/fs
 
   devname=$(losetup --partscan --find --show $FILESYSTEM_PATH)
-  mount ${devname}p$1 filesystem/fs 
+  mount ${devname}p1 filesystem/fs 
 }
 
 umount_filesystem() {
@@ -64,7 +64,7 @@ deploy_usr() {
 
 deploy_rootfs() {
   mount_rootfs
-  mount_filesystem 1
+  mount_filesystem
   rm -rf filesystem/fs/*
   cp -rf rootfs/fs/* filesystem/fs/
   
@@ -77,7 +77,7 @@ deploy_rootfs() {
 
 deploy_uboot() {
     mkimage -f target/virt32_lvperf.its target/virt32_lvperf.itb
-    mount_filesystem 1
+    mount_filesystem
     cp target/virt32_lvperf.itb filesystem/fs/virt32.itb
     cp u-boot/uEnv.d/uEnv_virt32.txt filesystem/fs/uEnv.txt
     umount_filesystem
