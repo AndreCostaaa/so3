@@ -110,7 +110,7 @@ cd -
 
 mkdir -p build/deploy/
 
-install_directory_root usr/out
+install_directory_root out
 
 install_file_elf
 
