@@ -55,6 +55,7 @@ COPY target/virt32_lvperf.its target
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
 
+ENV QEMU_ARCH=arm
 ENV PLATFORM=virt32
 
 CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh

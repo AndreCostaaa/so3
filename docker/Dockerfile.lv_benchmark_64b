@@ -56,6 +56,7 @@ COPY docker/scripts docker/scripts
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
 
+ENV QEMU_ARCH=aarch64
 ENV PLATFORM=virt64
 
 CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh

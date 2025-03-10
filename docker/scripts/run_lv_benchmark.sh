@@ -76,12 +76,22 @@ deploy () {
 build_usr
 deploy
 
-qemu-system-arm \
+if [ "$QEMU_ARCH" = "aarch64" ]; then
+    CPU="cortex-a72"
+elif [ "$QEMU_ARCH" = "arm" ]; then
+    CPU="cortex-a15"
+else
+    echo "Error: Unsupported architecture: $QEMU_ARCH" >&2
+    echo "Supported architectures: arm, aarch64" >&2
+    exit 1
+fi
+
+qemu-system-${QEMU_ARCH} \
   -semihosting \
   -smp 4 \
   -icount shift=auto,sleep=off,align=off \
   -serial mon:stdio  \
-  -M virt   -cpu cortex-a15 \
+  -M virt -cpu ${CPU} \
   -device virtio-blk-device,drive=hd0 \
   -drive if=none,file=$FILESYSTEM_PATH,id=hd0,format=raw,file.locking=off \
   -m 1024 \
