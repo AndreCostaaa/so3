@@ -91,15 +91,17 @@ else
   echo "Unsupported PLATFORM ($PLATFORM)"
   exit 1
 fi
+
 if [ $? -ne '0' ]; then 
   exit 1
 fi
 
 if [ $singlecore == y ]; then
-    NRPROC=1
+  NRPROC=1
 else
-    NRPROC=$((`cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l` + 1))
+  NRPROC=$(nproc)
 fi
+
 if [ $verbose == y ]; then
 	make VERBOSE=1 -j1
 else
@@ -109,6 +111,7 @@ fi
 if [ $? -ne '0' ]; then 
   exit 1
 fi
+
 cd -
 
 mkdir -p build/deploy/
