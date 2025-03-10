@@ -12,14 +12,8 @@ else
   dd if=/dev/zero of=$target_path bs="$dd_size" count=1
   devname=$(losetup --partscan --find --show $target_path)
   
-  devname=${devname#"/dev/"}
+  (echo o; echo n; echo p; echo; echo; echo; echo t; echo c; echo w) | fdisk $devname
   
-  (echo o; echo n; echo p; echo; echo; echo; echo t; echo c; echo w) | fdisk /dev/"$devname"
-  
-  if [[ "$devname" = *[0-9] ]]; then
-      export devname="${devname}p"
-  fi
-  
-  mkfs.fat -F32 -v /dev/"$devname"p1
+  mkfs.fat -F32 -v "$devname"p1
   losetup -D
 fi
