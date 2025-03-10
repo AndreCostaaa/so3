@@ -5,3 +5,7 @@ config PL050_KMI
 config SOO_INPUT
 	bool "SOO Virtualized input device"
 	depends on SOO && !AVZ
+
+config VIRT_INPUT
+	bool "Virtual input device"
+	depends on VIRT32 || VIRT64
