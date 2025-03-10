@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-create_ramfs () {
+create_filesystem_image() {
   dd_size=256M
   dd if=/dev/zero of=filesystem/sdcard.img.virt32 bs="$dd_size" count=1
   devname=$(losetup --partscan --find --show filesystem/sdcard.img.virt32)
@@ -21,7 +21,7 @@ create_ramfs () {
   losetup -D
 }
 
-create_filesystem_img() {
+create_ramfs() {
   start_sector=2048
   partition_size=16M # This image will be copied into the .itb and written to SD card image so it must be small enough
   partition_type=c
@@ -108,7 +108,7 @@ deploy () {
 cd usr; ./build.sh -r; cd ..
 
 create_ramfs
-create_filesystem_img
+create_filesystem_image
 deploy
 
 
