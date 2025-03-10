@@ -3,7 +3,7 @@ FROM alpine:latest AS baseimage
 FROM baseimage AS builder
 
 RUN apk update; \
-    apk add --no-cache make cmake gcc-aarch64-none-eabi \
+    apk add --no-cache make cmake gcc-aarch64-none-elf \
     qemu-system-aarch64 \
     bison flex libc-dev  libressl-dev dtc
 
@@ -26,8 +26,8 @@ RUN cd u-boot;\
 FROM baseimage AS runner
 
 RUN apk update; \
-    apk add --no-cache make cmake gcc-aarch64-none-eabi \
-    g++-aarch64-none-eabi qemu-system-aarch64 \
+    apk add --no-cache make cmake gcc-aarch64-none-elf \
+    g++-aarch64-none-elf qemu-system-aarch64 \
     util-linux dtc u-boot-tools dosfstools
 
 WORKDIR /so3
