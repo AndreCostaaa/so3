@@ -32,4 +32,4 @@ RUN find /so3/so3 -mindepth 1 ! -name 'so3.bin' ! -name 'virt32*.dtb' -delete
 RUN find /so3/u-boot -mindepth 1 ! -name 'u-boot' ! -path '/so3/u-boot/uEnv.d*' -delete
 RUN rm -rf avz doc ci bsp jtag scripts qemu
 
-CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh
+CMD ./docker/scripts/setup_ramfs.sh virt32 && ./docker/scripts/setup_filesystem.sh virt32 && ./docker/scripts/run_lv_benchmark.sh virt32
