@@ -2,7 +2,9 @@
 
 set -e
 
-target_path="/persistence/rootfs.fat.virt32"
+PLATFORM=$1
+
+target_path="/persistence/rootfs.fat.$PLATFORM"
 
 if [ -f "$target_path" ]; then
     echo "Found existing rootfs image in $target_path."
