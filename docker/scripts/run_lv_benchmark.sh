@@ -81,6 +81,7 @@ deploy
 qemu-system-arm \
   -semihosting \
   -smp 4 \
+  -icount shift=auto,sleep=off,align=off \
   -serial mon:stdio  \
   -M virt   -cpu cortex-a15 \
   -device virtio-blk-device,drive=hd0 \
