@@ -31,28 +31,16 @@ umount_filesystem() {
 }
 
 build_usr()  {
-
   mkdir -p usr/build
-  
-  cd usr/build
-  
-  cmake --no-warn-unused-cli \
-        -Wno-dev \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_TOOLCHAIN_FILE=../arm_toolchain.cmake  \
-        .. 
-  
-  if [ $? -ne '0' ]; then 
-    exit 1
-  fi
-  
-  make -j`nproc`
-  
+
+  cd usr
+
+  ./build.sh
   if [ $? -ne '0' ]; then 
     exit 1
   fi
 
-  cd ../..
+  cd ..
 }
 
 deploy_usr() {
