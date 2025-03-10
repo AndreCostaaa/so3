@@ -9,6 +9,7 @@ target_path="/persistence/sdcard.img.$PLATFORM"
 if [ -f "$target_path" ]; then
     echo "Found existing filesystem image in $target_path."
 else 
+  mkdir -p /persistence
   echo "No existing rootfs image found in $target_path. Creating new one..."
   dd_size=256M
   dd if=/dev/zero of=$target_path bs="$dd_size" count=1
