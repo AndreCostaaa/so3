@@ -9,6 +9,7 @@ target_path="/persistence/rootfs.fat.$PLATFORM"
 if [ -f "$target_path" ]; then
     echo "Found existing rootfs image in $target_path."
 else 
+  mkdir -p /persistence
   echo "No existing rootfs image found in $target_path. Creating new one..."
   start_sector=2048
   partition_size=16M # This image will be copied into the .itb and written to SD card image so it must be small enough
