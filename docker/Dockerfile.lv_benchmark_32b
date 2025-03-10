@@ -22,7 +22,7 @@ RUN cd so3;\
 
 RUN cd u-boot;\
     make virt32_defconfig;\
-    sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config\
+    sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config; \
     make -j`nproc`
 
 # Make the image leaner by removing unneeded files 
