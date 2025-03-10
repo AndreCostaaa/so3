@@ -3,7 +3,8 @@ FROM alpine:latest AS baseimage
 FROM baseimage AS builder
 
 RUN apk update; \
-    apk add --no-cache make cmake gcc-arm-none-eabi qemu-system-arm \
+    apk add --no-cache make cmake gcc-arm-none-eabi \
+    g++-arm-none-eabi qemu-system-arm \
     bison flex bash patch mount dtc \
     dosfstools u-boot-tools net-tools \
     bridge-utils iptables dnsmasq libressl-dev \
