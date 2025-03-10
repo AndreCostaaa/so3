@@ -62,9 +62,9 @@ deploy_rootfs() {
 }
 
 deploy_uboot() {
-    mkimage -f target/$PLATFORM_lvperf.its target/virt32_lvperf.itb
+    mkimage -f target/"$PLATFORM"_lvperf.its target/"$PLATFORM"_lvperf.itb
     mount_filesystem
-    cp target/$PLATFORM_lvperf.itb filesystem/fs/virt32.itb
+    cp target/"$PLATFORM"_lvperf.itb filesystem/fs/"$PLATFORM".itb
     cp u-boot/uEnv.d/uEnv_$PLATFORM.txt filesystem/fs/uEnv.txt
     umount_filesystem
 }
