@@ -19,9 +19,9 @@ RUN cd so3;\
     make -j`nproc`
 
 RUN cd u-boot;\
-    make virt64_defconfig;\
+    make CROSS_COMPILE=aarch64-none-elf- virt64_defconfig;\
     sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config; \
-    make -j`nproc`
+    make CROSS_COMPILE=aarch64-none-elf- -j`nproc`
 
 FROM baseimage AS runner
 
@@ -56,6 +56,10 @@ COPY docker/scripts docker/scripts
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
 
+# This env varialbe is read from the usr/build.sh script  in order to set a custom aarch64 toolchain
+# This may be removed if so3 is fully migrated to the aarch64-none-elf toolchain
+# Right now aarch64-none-linux-gnu is still used by default
+ENV USR_BUILD_TOOLCHAIN_FILE=aarch64_none_toolchain.cmake 
 ENV QEMU_ARCH=aarch64
 ENV PLATFORM=virt64
 
