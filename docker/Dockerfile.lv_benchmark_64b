@@ -1,0 +1,61 @@
+FROM alpine:latest AS baseimage
+
+FROM baseimage AS builder
+
+RUN apk update; \
+    apk add --no-cache make cmake gcc-aarch64-none-eabi \
+    qemu-system-aarch64 \
+    bison flex libc-dev  libressl-dev dtc
+
+WORKDIR /so3
+
+COPY u-boot u-boot
+COPY so3 so3
+
+RUN echo 'PLATFORM := virt64' > build.conf
+
+RUN cd so3;\
+    make virt64_lvperf_defconfig;\
+    make -j`nproc`
+
+RUN cd u-boot;\
+    make virt64_defconfig;\
+    sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config; \
+    make -j`nproc`
+
+FROM baseimage AS runner
+
+RUN apk update; \
+    apk add --no-cache make cmake gcc-aarch64-none-eabi \
+    g++-aarch64-none-eabi qemu-system-aarch64 \
+    util-linux dtc u-boot-tools dosfstools
+
+WORKDIR /so3
+
+RUN echo 'PLATFORM := virt64' > build.conf
+
+RUN mkdir -p so3/dts
+COPY --from=builder /so3/so3/dts/virt64_lvperf.dtb so3/dts
+COPY --from=builder /so3/so3/so3.bin so3/so3.bin
+
+RUN mkdir -p u-boot
+COPY --from=builder /so3/u-boot/u-boot u-boot
+
+COPY u-boot/uEnv.d u-boot/uEnv.d
+
+RUN mkdir -p docker/scripts
+
+RUN mkdir target
+COPY target/virt64_lvperf.its target
+
+COPY docker/scripts docker/scripts
+
+RUN mkdir -p usr
+COPY usr usr
+
+RUN mkdir -p rootfs
+
+RUN rm -rf /var/cache/apk/*
+RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
+
+CMD ./docker/scripts/setup_ramfs.sh virt64 && ./docker/scripts/setup_filesystem.sh virt64 && ./docker/scripts/run_lv_benchmark.sh virt64
