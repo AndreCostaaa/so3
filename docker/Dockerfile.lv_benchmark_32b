@@ -40,20 +40,17 @@ COPY --from=builder /so3/so3/so3.bin so3/so3.bin
 
 RUN mkdir -p u-boot
 COPY --from=builder /so3/u-boot/u-boot u-boot
-
 COPY u-boot/uEnv.d u-boot/uEnv.d
 
+RUN mkdir target
+RUN mkdir -p usr
+RUN mkdir -p rootfs
 RUN mkdir -p docker/scripts
 
-RUN mkdir target
+COPY usr usr
+COPY docker/scripts docker/scripts
 COPY target/virt32_lvperf.its target
 
-COPY docker/scripts docker/scripts
-
-RUN mkdir -p usr
-COPY usr usr
-
-RUN mkdir -p rootfs
 
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
