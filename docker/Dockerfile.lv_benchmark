@@ -3,14 +3,11 @@ FROM alpine:latest AS baseimage
 FROM baseimage AS builder
 
 RUN apk update; \
-    apk add make cmake gcc-arm-none-eabi libc-dev \
+    apk add --no-cache make cmake gcc-arm-none-eabi qemu-system-arm \
     bison flex bash patch mount dtc \
     dosfstools u-boot-tools net-tools \
     bridge-utils iptables dnsmasq libressl-dev \
-    util-linux qemu-system-arm e2fsprogs clang 
-
-#RUN wget https://github.com/smartobjectoriented/so3/archive/refs/heads/main.zip; \
-#    unzip main.zip; mv so3-* so3; \
+    util-linux libc-dev e2fsprogs
 
 COPY . /so3
 
@@ -25,5 +22,12 @@ RUN cd so3;\
 RUN cd u-boot;\
     make virt32_defconfig;\
     make -j`nproc`
+
+# Make the image leaner by removing unneeded files 
+RUN rm -rf /var/cache/apk/*
+RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
+RUN find /so3/so3 -mindepth 1 ! -name 'so3.bin' -delete
+RUN find /so3/u-boot -mindepth 1 ! -name 'u-boot' ! -path '/so3/u-boot/uEnv.d*' -delete
+RUN cd so3 && rm -rf avz doc ci bsp jtag scripts qemu
 
 CMD ./docker/run_lv_benchmark.sh
