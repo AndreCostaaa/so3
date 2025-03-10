@@ -1,9 +1,11 @@
 #!/bin/sh
 
+ROOTFS_PATH="/persistence/rootfs.fat.virt32"
+FILESYSTEM_PATH="/persistence/sdcard.img.virt32"
 
 mount_rootfs() {
   mkdir -p rootfs/fs
-  device=$(losetup --partscan --find --show rootfs/rootfs.fat)
+  device=$(losetup --partscan --find --show $ROOTFS_PATH)
   mount ${device}p1 rootfs/fs
 }
 
@@ -17,7 +19,7 @@ mount_filesystem() {
   rm -rf filesystem/fs/*
   mkdir -p filesystem/fs
 
-  devname=$(losetup --partscan --find --show filesystem/sdcard.img.virt32)
+  devname=$(losetup --partscan --find --show $FILESYSTEM_PATH)
   mount ${devname}p$1 filesystem/fs 
 }
 
@@ -94,7 +96,7 @@ qemu-system-arm \
   -serial mon:stdio  \
   -M virt   -cpu cortex-a15 \
   -device virtio-blk-device,drive=hd0 \
-  -drive if=none,file=filesystem/sdcard.img.virt32,id=hd0,format=raw,file.locking=off \
+  -drive if=none,file=$FILESYSTEM_PATH,id=hd0,format=raw,file.locking=off \
   -m 1024 \
   -kernel u-boot/u-boot \
   -nographic 
