@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 target_path="/persistence/sdcard.img.virt32"
 
 if [ -f "$target_path" ]; then

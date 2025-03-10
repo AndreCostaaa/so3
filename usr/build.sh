@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 function usage {
   echo "$0 [OPTIONS]"
   echo "  -c        Clean"
@@ -92,10 +94,6 @@ else
   exit 1
 fi
 
-if [ $? -ne '0' ]; then 
-  exit 1
-fi
-
 if [ $singlecore == y ]; then
   NRPROC=1
 else
@@ -108,20 +106,12 @@ else
 	make -j$NRPROC
 fi
 
-if [ $? -ne '0' ]; then 
-  exit 1
-fi
-
 cd -
 
 mkdir -p build/deploy/
 
-# SO3 shell
 install_directory_root usr/out
 
 install_file_elf
 
-
-
-
-
+exit 0
