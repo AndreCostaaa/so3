@@ -1,51 +1,6 @@
 #!/bin/sh
 
 
-create_filesystem_image() {
-  dd_size=256M
-  dd if=/dev/zero of=filesystem/sdcard.img.virt32 bs="$dd_size" count=1
-  devname=$(losetup --partscan --find --show filesystem/sdcard.img.virt32)
-  
-  devname=${devname#"/dev/"}
-  
-  (echo o; echo n; echo p; echo; echo; echo; echo t; echo c; echo w) | fdisk /dev/"$devname"
-  
-  sleep 2s
-  
-  if [[ "$devname" = *[0-9] ]]; then
-      export devname="${devname}p"
-  fi
-  
-  mkfs.fat -F32 -v /dev/"$devname"p1
-  mkfs.ext4 /dev/"$devname"p2
-  losetup -D
-}
-
-create_ramfs() {
-  start_sector=2048
-  partition_size=16M # This image will be copied into the .itb and written to SD card image so it must be small enough
-  partition_type=c
-  tmp_dir=$(mktemp -d -t so3-rootfs-XXXXXXXX)
-  partition="${tmp_dir}/partition.img"
-  
-  # Create image first
-  image_name="rootfs/rootfs.fat"
-  dd if=/dev/zero of="${image_name}" count=${start_sector} status=none
-  
-  # Append the formatted partition
-  dd if=/dev/zero of="${partition}" bs=${partition_size} count=1 status=none
-  mkfs.vfat "${partition}"
-  dd if="${partition}" status=none >> "${image_name}"
-  
-  # Set the partition table
-sfdisk "${image_name}" <<EOF
-${start_sector}, ${partition_size}, ${partition_type}
-EOF
-  
-  # Delete temporary directory
-  rm -r "${tmp_dir}"
-}
-
 mount_rootfs() {
   mkdir -p rootfs/fs
   device=$(losetup --partscan --find --show rootfs/rootfs.fat)
@@ -130,12 +85,8 @@ deploy () {
   deploy_uboot
 }
 
-create_ramfs
-create_filesystem_image
-
 build_usr
 deploy
-
 
 qemu-system-arm \
   -semihosting \
