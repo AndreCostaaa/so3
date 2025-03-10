@@ -55,10 +55,6 @@ deploy_rootfs() {
   mount_filesystem
   rm -rf filesystem/fs/*
   cp -rf rootfs/fs/* filesystem/fs/
-  
-  # Sometimes, syncing between RAM and FS takes some time
-  sleep 1
-  
   umount_filesystem
   umount_rootfs
 }
