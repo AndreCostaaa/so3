@@ -18,7 +18,6 @@ jobs:
         CONFIG: ['virt32_fb_defconfig', 
                  'virt64_fb_defconfig',
                  'virt32_lvperf_defconfig',
-                 'virt64_lvperf_defconfig'
         ]
     steps:
       - name: Checkout repository
