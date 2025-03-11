@@ -2,16 +2,13 @@ name: Docker Image CI
 
 on:
   push:
-    paths:
-      - docker/Dockerfile.env
+    branches: ["main"]
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
   build-image:
-    # Only run if the push hits main
-    if: endsWith(github.ref, 'main') == true
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -20,6 +17,10 @@ jobs:
         include:
           - dockerfile: ./docker/Dockerfile.env
             image: ghcr.io/smartobjectoriented/so3-env
+          - dockerfile: ./docker/Dockerfile.lvperf_32b
+            image: ghcr.io/smartobjectoriented/so3-lvperf32b
+          - dockerfile: ./docker/Dockerfile.lvperf_64b
+            image: ghcr.io/smartobjectoriented/so3-lvperf64b
     permissions:
       contents: read
       packages: write
