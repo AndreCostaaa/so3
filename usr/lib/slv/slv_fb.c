@@ -40,6 +40,9 @@ typedef struct {
 static void my_fb_cb(lv_display_t *disp, const lv_area_t *area,
 		     uint8_t *px_map);
 
+static void dummy_fb_cb(lv_display_t *disp, const lv_area_t *area,
+			uint8_t *px_map);
+
 int slv_fb_init(slv_fb_t *fb)
 {
 	fb->priv = calloc(1, sizeof(slv_fb_priv_t));
@@ -96,21 +99,6 @@ int slv_fb_init(slv_fb_t *fb)
 			printf("Couldn't map framebuffer.\n");
 			return -1;
 		}
-	} else {
-		/*
-		 * Allocate some space in the heap so
-		 * we have somewhere to store the display result
-		 *
-		 * We could also not use `priv->fbp` if we don't 
-		 * have a real framebuffer but putting the data 
-		 * into memory could be useful for testing and provides
-		 * a more realistic flush_callback
-		 */
-		priv->fbp = malloc(priv->fb_size);
-		if (!priv->fbp) {
-			printf("Couldn't allocate framebuffer.\n");
-			return -1;
-		}
 	}
 
 	/*
@@ -121,7 +109,9 @@ int slv_fb_init(slv_fb_t *fb)
 	lv_display_t *disp = lv_display_create(fb->hres, fb->vres);
 	lv_display_set_buffers(disp, buf, NULL, priv->fb_size,
 			       LV_DISPLAY_RENDER_MODE_DIRECT);
-	lv_display_set_flush_cb(disp, my_fb_cb);
+
+	const lv_display_flush_cb_t cb = priv->is_real ? my_fb_cb : dummy_fb_cb;
+	lv_display_set_flush_cb(disp, cb);
 	lv_display_set_user_data(disp, priv);
 
 	return 0;
@@ -131,9 +121,6 @@ void slv_fb_terminate(slv_fb_t *data)
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)data->priv;
 	if (priv->fd > 0) {
 		close(priv->fd);
-	}
-	if (!priv->is_real) {
-		free(priv->fbp);
 	}
 	free(data->priv);
 }
@@ -149,5 +136,10 @@ static void my_fb_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)lv_display_get_user_data(disp);
 	memcpy(priv->fbp, px_map, priv->fb_size);
+	lv_display_flush_ready(disp);
+}
+static void dummy_fb_cb(lv_display_t *disp, const lv_area_t *area,
+			uint8_t *px_map)
+{
 	lv_display_flush_ready(disp);
 }
