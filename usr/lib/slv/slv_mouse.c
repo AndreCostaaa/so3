@@ -65,7 +65,9 @@ int slv_mouse_init(uint16_t h, uint16_t v)
 
 void slv_mouse_terminate(int fd)
 {
-	close(fd);
+	if (fd > 0) {
+		close(fd);
+	}
 }
 
 static void slv_mouse_cb(lv_indev_t *indev, lv_indev_data_t *data)

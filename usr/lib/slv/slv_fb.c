@@ -93,7 +93,9 @@ int slv_fb_init(slv_fb_t *fb)
 void slv_fb_terminate(slv_fb_t *data)
 {
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)data->priv;
-	close(priv->fd);
+	if (priv->fd > 0) {
+		close(priv->fd);
+	}
 	free(data->priv);
 }
 
