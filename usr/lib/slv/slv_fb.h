@@ -26,8 +26,9 @@
 #define IOCTL_FB_HRES 1
 #define IOCTL_FB_VRES 2
 #define IOCTL_FB_SIZE 3
+#define IOCTL_FB_IS_REAL 4
 
-#define FB_DEV	      "/dev/fb"
+#define FB_DEV "/dev/fb"
 
 typedef struct {
 	uint32_t hres, vres;

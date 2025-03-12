@@ -34,6 +34,7 @@ typedef struct {
 	int fd;
 	void *fbp;
 	size_t fb_size;
+	bool is_real;
 } slv_fb_priv_t;
 
 static void my_fb_cb(lv_display_t *disp, const lv_area_t *area,
@@ -41,7 +42,7 @@ static void my_fb_cb(lv_display_t *disp, const lv_area_t *area,
 
 int slv_fb_init(slv_fb_t *fb)
 {
-	fb->priv = malloc(sizeof(slv_fb_priv_t));
+	fb->priv = calloc(1, sizeof(slv_fb_priv_t));
 	if (!fb->priv) {
 		printf("Couldn't allocate fb data\n");
 		return -1;
@@ -64,17 +65,52 @@ int slv_fb_init(slv_fb_t *fb)
 		return -1;
 	}
 
+	/* 
+	 * We need to check if we're dealing with a real framebuffer or not
+	 * so we know if we can use mmap
+	 */
+	int is_real;
+	if (ioctl(priv->fd, IOCTL_FB_IS_REAL, &is_real)) {
+		/* Only a fake framebuffer defines this ioctl */
+		priv->is_real = true;
+	} else {
+		priv->is_real = is_real != 0;
+	}
+
 	uint8_t *buf = malloc(priv->fb_size);
 	if (!buf) {
 		printf("Couldn't allocate draw buffer\n");
 		return -1;
 	}
 
-	/* Map the framebuffer into process memory. */
-	priv->fbp = mmap(NULL, priv->fb_size, 0, 0, priv->fd, 0);
-	if (priv->fbp == MAP_FAILED) {
-		printf("Couldn't map framebuffer.\n");
-		return -1;
+	/* 
+	 * Unfortunately, there's not really a good way to
+	 * allocate memory for user-space from kernel space as
+	 * the prefix of the virtual addresses will not be the same 
+	 * for 64 bit architectures
+	 */
+	if (priv->is_real) {
+		/* Map the framebuffer into process memory. */
+		priv->fbp = mmap(NULL, priv->fb_size, 0, 0, priv->fd, 0);
+		if (priv->fbp == MAP_FAILED) {
+			printf("Couldn't map framebuffer.\n");
+			return -1;
+		}
+	} else {
+		/*
+		 * Allocate some space in the heap so
+		 * we have somewhere to store the display result
+		 *
+		 * We could also not use `priv->fbp` if we don't 
+		 * have a real framebuffer but putting the data 
+		 * into memory could be useful for testing and provides
+		 * a more realistic flush_callback
+		 */
+		priv->fbp = malloc(priv->fb_size);
+		if (!priv->fbp) {
+			printf("Couldn't allocate framebuffer.\n");
+			return -1;
+		}
 	}
 
 	/*
@@ -95,6 +131,9 @@ void slv_fb_terminate(slv_fb_t *data)
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)data->priv;
 	if (priv->fd > 0) {
 		close(priv->fd);
+	}
+	if (!priv->is_real) {
+		free(priv->fbp);
 	}
 	free(data->priv);
 }
