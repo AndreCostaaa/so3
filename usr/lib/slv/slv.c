@@ -106,7 +106,7 @@ static void *slv_loop_inner(void *args)
 	while (!slv->terminate) {
 		const uint32_t next_timer = lv_timer_handler();
 		if (next_timer == LV_NO_TIMER_READY) {
-			usleep(10000);
+			usleep(LV_DEF_REFR_PERIOD * 1000);
 		} else {
 			usleep((uint64_t)next_timer * 1000);
 		}
