@@ -35,7 +35,7 @@ build_usr()  {
 
   cd usr
 
-  ./build.sh
+  ./build.sh -r
   if [ $? -ne '0' ]; then 
     exit 1
   fi
