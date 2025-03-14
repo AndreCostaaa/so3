@@ -53,8 +53,8 @@ Example with mounted volumes:
 ```bash
 docker run -it --privileged \
     -v /dev:/dev \ 
-    -v ../so3-persistence:/persistence \
-    -v ../so3-usr-build-64b:/so3/usr/build \
+    -v $(pwd)../so3-persistence:/persistence \
+    -v $(pwd)../so3-usr-build-64b:/so3/usr/build \
     so3-lv_perf64b
 ```
 
