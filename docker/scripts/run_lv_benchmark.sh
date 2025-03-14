@@ -88,8 +88,8 @@ fi
 
 qemu-system-${QEMU_ARCH} \
   -semihosting \
-  -smp 4 \
-  -icount shift=auto,sleep=off,align=off \
+  -smp 2 \
+  -icount shift=0,sleep=on,align=on \
   -serial mon:stdio  \
   -M virt -cpu ${CPU} \
   -device virtio-blk-device,drive=hd0 \
