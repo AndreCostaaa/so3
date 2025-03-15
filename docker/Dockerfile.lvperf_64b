@@ -1,0 +1,66 @@
+FROM alpine:latest AS baseimage
+
+FROM baseimage AS builder
+
+RUN apk update; \
+    apk add --no-cache make cmake gcc-aarch64-none-elf \
+    qemu-system-aarch64 \
+    bison flex libc-dev  libressl-dev dtc
+
+WORKDIR /so3
+
+COPY u-boot u-boot
+COPY so3 so3
+
+RUN echo 'PLATFORM := virt64' > build.conf
+
+RUN cd so3;\
+    make virt64_lvperf_defconfig;\
+    make -j`nproc`
+
+RUN cd u-boot;\
+    make CROSS_COMPILE=aarch64-none-elf- virt64_defconfig;\
+    sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config; \
+    make CROSS_COMPILE=aarch64-none-elf- -j`nproc`
+
+FROM baseimage AS runner
+
+RUN apk update; \
+    apk add --no-cache make cmake gcc-aarch64-none-elf \
+    g++-aarch64-none-elf qemu-system-aarch64 \
+    util-linux dtc u-boot-tools dosfstools
+
+WORKDIR /so3
+
+RUN echo 'PLATFORM := virt64' > build.conf
+
+RUN mkdir -p so3/dts
+COPY --from=builder /so3/so3/dts/virt64_lvperf.dtb so3/dts
+COPY --from=builder /so3/so3/so3.bin so3/so3.bin
+
+RUN mkdir -p u-boot
+COPY --from=builder /so3/u-boot/u-boot u-boot
+
+COPY u-boot/uEnv.d u-boot/uEnv.d
+
+RUN mkdir target
+RUN mkdir -p usr
+RUN mkdir -p docker/scripts
+RUN mkdir -p rootfs
+
+COPY usr usr
+COPY target/virt64_lvperf.its target
+COPY docker/scripts docker/scripts
+
+
+RUN rm -rf /var/cache/apk/*
+RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
+
+# This env varialbe is read from the usr/build.sh script  in order to set a custom aarch64 toolchain
+# This may be removed if so3 is fully migrated to the aarch64-none-elf toolchain
+# Right now aarch64-none-linux-gnu is still used by default
+ENV USR_BUILD_TOOLCHAIN_FILE=aarch64_none_toolchain.cmake 
+ENV QEMU_ARCH=aarch64
+ENV PLATFORM=virt64
+
+CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh

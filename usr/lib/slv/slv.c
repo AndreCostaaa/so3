@@ -18,6 +18,7 @@
  */
 
 #include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -103,8 +104,12 @@ static void *slv_loop_inner(void *args)
 {
 	slv_t *slv = (slv_t *)args;
 	while (!slv->terminate) {
-		lv_task_handler();
-		usleep(5000);
+		const uint32_t next_timer = lv_timer_handler();
+		if (next_timer == LV_NO_TIMER_READY) {
+			usleep(LV_DEF_REFR_PERIOD * 1000);
+		} else {
+			usleep((uint64_t)next_timer * 1000);
+		}
 	}
 	return NULL;
 }

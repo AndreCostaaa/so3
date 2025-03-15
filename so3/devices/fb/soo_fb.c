@@ -23,8 +23,11 @@
 #include <vfs.h>
 #include <common.h>
 #include <process.h>
+#include <fb.h>
+
 #include <asm/io.h>
 #include <asm/mmu.h>
+
 #include <device/driver.h>
 #include <device/fb/soo_fb_fb.h>
 
@@ -73,15 +76,15 @@ void *fb_mmap(int fd, uint32_t virt_addr, uint32_t page_count, off_t offset)
 int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 {
 	switch (cmd) {
-	case IOCTL_HRES:
+	case IOCTL_FB_HRES:
 		*((uint32_t *)args) = fb_hres;
 		return 0;
 
-	case IOCTL_VRES:
+	case IOCTL_FB_VRES:
 		*((uint32_t *)args) = fb_vres;
 		return 0;
 
-	case IOCTL_SIZE:
+	case IOCTL_FB_SIZE:
 		*((uint32_t *)args) = fb_hres * fb_vres * 4; /* assume 24bpp */
 		return 0;
 

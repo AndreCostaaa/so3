@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
+
+set -e
 
 function usage {
   echo "$0 [OPTIONS]"
@@ -83,31 +85,39 @@ mkdir -p $SCRIPTPATH/build
 cd $SCRIPTPATH/build
 
 if [ "$PLATFORM" == "virt32" -o "$PLATFORM" == "vexpress" -o "$PLATFORM" == "rpi4" ]; then
-cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=../arm_toolchain.cmake ..
+  default_toolchain="arm_toolchain.cmake"
+elif [ "$PLATFORM" == "virt64" -o "$PLATFORM" == "rpi4_64" ]; then
+  default_toolchain="aarch64_toolchain.cmake"
+elif [ -z "$USR_BUILD_TOOLCHAIN_FILE" ]; then
+  # Only fail if no custom toolchain is provided
+  echo "Unsupported PLATFORM ($PLATFORM) and no TOOLCHAIN_FILE specified"
+  exit 1
 fi
-if [ "$PLATFORM" == "virt64" -o "$PLATFORM" == "rpi4_64" ]; then
-cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=../aarch64_toolchain.cmake ..
-fi
+
+# Use custom toolchain if TOOLCHAIN_FILE is set, otherwise use the default
+toolchain_file="${USR_BUILD_TOOLCHAIN_FILE:-$default_toolchain}"
+
+# Run cmake with the selected toolchain
+cmake -Wno-dev --no-warn-unused-cli -DCMAKE_BUILD_TYPE=$build_type -DCMAKE_TOOLCHAIN_FILE=../"$toolchain_file" ..
+
 if [ $singlecore == y ]; then
-    NRPROC=1
+  NRPROC=1
 else
-    NRPROC=$((`cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l` + 1))
+  NRPROC=$(nproc)
 fi
+
 if [ $verbose == y ]; then
 	make VERBOSE=1 -j1
 else
 	make -j$NRPROC
 fi
+
 cd -
 
 mkdir -p build/deploy/
 
-# SO3 shell
-install_directory_root usr/out
+install_directory_root out
 
 install_file_elf
 
-
-
-
-
+exit 0

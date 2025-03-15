@@ -2,16 +2,14 @@ name: Docker Image CI
 
 on:
   push:
-    paths:
-      - docker/Dockerfile.env
+    branches: ["main"]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
   build-image:
-    # Only run if the push hits main
-    if: endsWith(github.ref, 'main') == true
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -20,12 +18,22 @@ jobs:
         include:
           - dockerfile: ./docker/Dockerfile.env
             image: ghcr.io/smartobjectoriented/so3-env
+            submodules: 'false'
+          - dockerfile: ./docker/Dockerfile.lvperf_32b
+            image: ghcr.io/smartobjectoriented/so3-lvperf32b
+            submodules: 'true'
+          - dockerfile: ./docker/Dockerfile.lvperf_64b
+            image: ghcr.io/smartobjectoriented/so3-lvperf64b
+            submodules: 'true'
+
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: ${{ matrix.submodules }}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3

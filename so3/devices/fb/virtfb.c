@@ -18,31 +18,14 @@
 
 #include <process.h>
 #include <heap.h>
+#include <fb.h>
 
 #include <device/driver.h>
-
-#define IOCTL_HRES 1
-#define IOCTL_VRES 2
-#define IOCTL_SIZE 3
 
 typedef struct {
 	void *vaddr;
 	uint32_t hres, vres;
 } virtfb_priv_t;
-
-static void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count,
-		     off_t offset)
-{
-	struct devclass *dev = devclass_by_fd(fd);
-	virtfb_priv_t *priv = (virtfb_priv_t *)devclass_get_priv(dev);
-
-	(void)offset;
-
-	priv->vaddr = malloc(page_count * PAGE_SIZE);
-	BUG_ON(!priv->vaddr);
-
-	return (void *)priv->vaddr;
-}
 
 static int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 {
@@ -53,17 +36,20 @@ static int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 	BUG_ON(!priv);
 
 	switch (cmd) {
-	case IOCTL_HRES:
+	case IOCTL_FB_HRES:
 		*((uint32_t *)args) = priv->hres;
 		return 0;
 
-	case IOCTL_VRES:
+	case IOCTL_FB_VRES:
 		*((uint32_t *)args) = priv->vres;
 		return 0;
 
-	case IOCTL_SIZE:
+	case IOCTL_FB_SIZE:
 		*((uint32_t *)args) =
 			priv->hres * priv->vres * 4; /* assume 24bpp */
+		return 0;
+	case IOCTL_FB_IS_REAL:
+		*((uint32_t *)args) = 0;
 		return 0;
 
 	default:
@@ -80,9 +66,7 @@ static int fb_close(int fd)
 	return 0;
 }
 
-struct file_operations virtfb_fops = { .mmap = fb_mmap,
-				       .ioctl = fb_ioctl,
-				       .close = fb_close };
+struct file_operations virtfb_fops = { .ioctl = fb_ioctl, .close = fb_close };
 
 struct devclass virtfb_cdev = {
 	.class = DEV_CLASS_FB,

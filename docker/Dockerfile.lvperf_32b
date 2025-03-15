@@ -1,0 +1,61 @@
+FROM alpine:latest AS baseimage
+
+FROM baseimage AS builder
+
+RUN apk update; \
+    apk add --no-cache make cmake gcc-arm-none-eabi \
+    g++-arm-none-eabi qemu-system-arm \
+    bison flex libc-dev  libressl-dev dtc
+
+WORKDIR /so3
+
+COPY u-boot u-boot
+COPY so3 so3
+
+RUN echo 'PLATFORM := virt32' > build.conf
+
+RUN cd so3;\
+    make virt32_lvperf_defconfig;\
+    make -j`nproc`
+
+RUN cd u-boot;\
+    make virt32_defconfig;\
+    sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config; \
+    make -j`nproc`
+
+FROM baseimage AS runner
+
+RUN apk update; \
+    apk add --no-cache make cmake gcc-arm-none-eabi \
+    g++-arm-none-eabi qemu-system-arm \
+    util-linux dtc u-boot-tools dosfstools
+
+WORKDIR /so3
+
+RUN echo 'PLATFORM := virt32' > build.conf
+
+RUN mkdir -p so3/dts
+COPY --from=builder /so3/so3/dts/virt32_lvperf.dtb so3/dts
+COPY --from=builder /so3/so3/so3.bin so3/so3.bin
+
+RUN mkdir -p u-boot
+COPY --from=builder /so3/u-boot/u-boot u-boot
+COPY u-boot/uEnv.d u-boot/uEnv.d
+
+RUN mkdir target
+RUN mkdir -p usr
+RUN mkdir -p rootfs
+RUN mkdir -p docker/scripts
+
+COPY usr usr
+COPY docker/scripts docker/scripts
+COPY target/virt32_lvperf.its target
+
+
+RUN rm -rf /var/cache/apk/*
+RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
+
+ENV QEMU_ARCH=arm
+ENV PLATFORM=virt32
+
+CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh

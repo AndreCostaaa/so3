@@ -18,6 +18,7 @@ set(CMAKE_INSTALL_SO_NO_EXE 0)
 
 # This toolchain file can be used both inside and outside Buildroot.
 set(CMAKE_C_COMPILER "arm-none-eabi-gcc")
+set(CMAKE_CXX_COMPILER "arm-none-eabi-g++")
 set(CMAKE_C_LINK_EXECUTABLE "arm-none-eabi-ld <OBJECTS> -o <TARGET>  <LINK_LIBRARIES> <LINK_FLAGS> <LINK_LIBRARIES>")
 set(CMAKE_ASM_COMPILER "arm-none-eabi-gcc")
 

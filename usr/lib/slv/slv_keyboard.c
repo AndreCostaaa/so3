@@ -49,10 +49,9 @@ int slv_keyboard_init(void)
 
 void slv_keyboard_terminate(int kfd)
 {
-	if (kfd < 0) {
-		return;
+	if (kfd > 0) {
+		close(kfd);
 	}
-	close(kfd);
 }
 
 static void slv_keyboard_cb(lv_indev_t *indev, lv_indev_data_t *data)

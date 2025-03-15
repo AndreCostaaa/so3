@@ -34,14 +34,18 @@ typedef struct {
 	int fd;
 	void *fbp;
 	size_t fb_size;
+	bool is_real;
 } slv_fb_priv_t;
 
 static void my_fb_cb(lv_display_t *disp, const lv_area_t *area,
 		     uint8_t *px_map);
 
+static void dummy_fb_cb(lv_display_t *disp, const lv_area_t *area,
+			uint8_t *px_map);
+
 int slv_fb_init(slv_fb_t *fb)
 {
-	fb->priv = malloc(sizeof(slv_fb_priv_t));
+	fb->priv = calloc(1, sizeof(slv_fb_priv_t));
 	if (!fb->priv) {
 		printf("Couldn't allocate fb data\n");
 		return -1;
@@ -64,17 +68,37 @@ int slv_fb_init(slv_fb_t *fb)
 		return -1;
 	}
 
+	/* 
+	 * We need to check if we're dealing with a real framebuffer or not
+	 * so we know if we can use mmap
+	 */
+	int is_real;
+	if (ioctl(priv->fd, IOCTL_FB_IS_REAL, &is_real)) {
+		/* Only a fake framebuffer defines this ioctl */
+		priv->is_real = true;
+	} else {
+		priv->is_real = is_real != 0;
+	}
+
 	uint8_t *buf = malloc(priv->fb_size);
 	if (!buf) {
 		printf("Couldn't allocate draw buffer\n");
 		return -1;
 	}
 
-	/* Map the framebuffer into process memory. */
-	priv->fbp = mmap(NULL, priv->fb_size, 0, 0, priv->fd, 0);
-	if (priv->fbp == MAP_FAILED) {
-		printf("Couldn't map framebuffer.\n");
-		return -1;
+	/* 
+	 * Unfortunately, there's not really a good way to
+	 * allocate memory for user-space from kernel space as
+	 * the prefix of the virtual addresses will not be the same 
+	 * for 64 bit architectures
+	 */
+	if (priv->is_real) {
+		/* Map the framebuffer into process memory. */
+		priv->fbp = mmap(NULL, priv->fb_size, 0, 0, priv->fd, 0);
+		if (priv->fbp == MAP_FAILED) {
+			printf("Couldn't map framebuffer.\n");
+			return -1;
+		}
 	}
 
 	/*
@@ -85,7 +109,9 @@ int slv_fb_init(slv_fb_t *fb)
 	lv_display_t *disp = lv_display_create(fb->hres, fb->vres);
 	lv_display_set_buffers(disp, buf, NULL, priv->fb_size,
 			       LV_DISPLAY_RENDER_MODE_DIRECT);
-	lv_display_set_flush_cb(disp, my_fb_cb);
+
+	const lv_display_flush_cb_t cb = priv->is_real ? my_fb_cb : dummy_fb_cb;
+	lv_display_set_flush_cb(disp, cb);
 	lv_display_set_user_data(disp, priv);
 
 	return 0;
@@ -93,7 +119,9 @@ int slv_fb_init(slv_fb_t *fb)
 void slv_fb_terminate(slv_fb_t *data)
 {
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)data->priv;
-	close(priv->fd);
+	if (priv->fd > 0) {
+		close(priv->fd);
+	}
 	free(data->priv);
 }
 
@@ -108,5 +136,10 @@ static void my_fb_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
 	slv_fb_priv_t *priv = (slv_fb_priv_t *)lv_display_get_user_data(disp);
 	memcpy(priv->fbp, px_map, priv->fb_size);
+	lv_display_flush_ready(disp);
+}
+static void dummy_fb_cb(lv_display_t *disp, const lv_area_t *area,
+			uint8_t *px_map)
+{
 	lv_display_flush_ready(disp);
 }
