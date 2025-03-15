@@ -13,16 +13,14 @@
 #include <common.h>
 #include <heap.h>
 #include <memory.h>
+#include <process.h>
 #include <errno.h>
+#include <fb.h>
 
 #include <asm/mmu.h>
 
 #include <device/device.h>
 #include <device/driver.h>
-
-#define IOCTL_HRES 1
-#define IOCTL_VRES 2
-#define IOCTL_SIZE 3
 
 #define RAMFB_DRIVER_VIDEO_WIDTH 128
 #define RAMFB_DRIVER_VIDEO_HEIGHT 128
@@ -302,15 +300,15 @@ void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offset)
 int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 {
 	switch (cmd) {
-	case IOCTL_HRES:
+	case IOCTL_FB_HRES:
 		*((uint32_t *)args) = RAMFB_DRIVER_VIDEO_WIDTH;
 		return 0;
 
-	case IOCTL_VRES:
+	case IOCTL_FB_VRES:
 		*((uint32_t *)args) = RAMFB_DRIVER_VIDEO_HEIGHT;
 		return 0;
 
-	case IOCTL_SIZE:
+	case IOCTL_FB_SIZE:
 		*((uint32_t *)args) = RAMFB_DRIVER_VIDEO_HEIGHT *
 				      RAMFB_DRIVER_VIDEO_WIDTH *
 				      __fbi->mode.bpp / 8; /* assume 32bpp */

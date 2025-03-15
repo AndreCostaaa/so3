@@ -18,13 +18,9 @@
 
 #include <process.h>
 #include <heap.h>
+#include <fb.h>
 
 #include <device/driver.h>
-
-#define IOCTL_HRES 1
-#define IOCTL_VRES 2
-#define IOCTL_SIZE 3
-#define IOCTL_IS_REAL 4
 
 typedef struct {
 	void *vaddr;
@@ -40,19 +36,19 @@ static int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 	BUG_ON(!priv);
 
 	switch (cmd) {
-	case IOCTL_HRES:
+	case IOCTL_FB_HRES:
 		*((uint32_t *)args) = priv->hres;
 		return 0;
 
-	case IOCTL_VRES:
+	case IOCTL_FB_VRES:
 		*((uint32_t *)args) = priv->vres;
 		return 0;
 
-	case IOCTL_SIZE:
+	case IOCTL_FB_SIZE:
 		*((uint32_t *)args) =
 			priv->hres * priv->vres * 4; /* assume 24bpp */
 		return 0;
-	case IOCTL_IS_REAL:
+	case IOCTL_FB_IS_REAL:
 		*((uint32_t *)args) = 0;
 		return 0;
 
