@@ -84,33 +84,6 @@ void start_shell(void)
 	exit(1);
 }
 
-/**
- * Detect if its a escape sequence
- */
-int is_escape_sequence(const char *str)
-{
-	return str[0] == '\x1b' && str[1] == '[';
-}
-
-/**
- * Escape arrow key sequence to avoid interpret them
- */
-void escape_arrow_key(char *buffer, int size)
-{
-	int i, j;
-	char *new_buff = calloc(size, sizeof(char));
-	i = j = 0;
-	while (i < size) {
-		if (is_escape_sequence(&buffer[i])) {
-			i += 3;
-		} else {
-			new_buff[j++] = buffer[i++];
-		}
-	}
-	memcpy(buffer, new_buff, size);
-	free(new_buff);
-}
-
 /*
  * Processes a command which must be a NULL-terminated string
  *
