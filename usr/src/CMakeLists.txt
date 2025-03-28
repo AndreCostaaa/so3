@@ -1,4 +1,5 @@
 
+add_executable(init.elf init.c)
 add_executable(sh.elf sh.c)
 add_executable(ls.elf ls.c)
 add_executable(more.elf more.c)
@@ -9,6 +10,7 @@ add_executable(lvgl_demo.elf lvgl_demo.c)
 add_executable(lvgl_perf.elf lvgl_perf.c)
 add_executable(lvgl_benchmark.elf lvgl_benchmark.c)
 
+target_link_libraries(init.elf c)
 target_link_libraries(sh.elf c)
 target_link_libraries(ls.elf c)
 target_link_libraries(more.elf c)
