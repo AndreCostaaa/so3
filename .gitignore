@@ -57,7 +57,7 @@ so3/so3
 so3/so3.bin
 usr/lib/libc/include/asm
 rootfs/rootfs.fat
-filesystem/sdcard.img.virt32
+filesystem/sdcard.img.*
 so3/scripts/basic/fixdep
 so3/scripts/dtc/dtc
 so3/scripts/kconfig/conf
