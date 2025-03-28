@@ -23,7 +23,7 @@ config AVZ
 
 config USER_INIT_PROGRAM
 	string "Specifies the initial user-space ELF executable to be started at system boot"
-	default "sh.elf"
+	default "init.elf"
 
 if !AVZ
 config SOO
