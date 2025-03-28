@@ -39,7 +39,6 @@ if [[ "$devname" = *[0-9] ]]; then
 fi
 
 sudo mkfs.fat -F32 -v /dev/"$devname"1
-sudo mkfs.ext4 /dev/"$devname"2
 
 if [ "$1" == "virt32" -o "$1" == "virt64" ]; then
 	sudo losetup -D
