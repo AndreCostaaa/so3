@@ -61,8 +61,12 @@
 #define MAX_COMMAND_LEN 512
 
 int fd = -1;
+
 static void close_file(void);
 static void start_shell(void);
+static int process_cmd(const char *command);
+static void sigint_handler(int sig);
+static int process_file(int fd);
 
 void close_file(void)
 {
