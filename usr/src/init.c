@@ -95,6 +95,12 @@ void start_shell(void)
  */
 int process_cmd(const char *command)
 {
+	char buffer[MAX_COMMAND_LEN];
+	char *args[ARGS_MAX];
+	char *token;
+	size_t argc = 0;
+
+	strcpy(buffer, command);
 	if (command == NULL) {
 		printf("Command is null\n");
 		return -1;
@@ -105,12 +111,7 @@ int process_cmd(const char *command)
 		return -1;
 	}
 
-	char buffer[MAX_COMMAND_LEN];
-	char *args[ARGS_MAX];
-	size_t argc = 0;
-	strcpy(buffer, command);
-
-	char *token = strtok(buffer, " ");
+	token = strtok(buffer, " ");
 	while (token != NULL) {
 		if (argc >= ARGS_MAX - 1) {
 			printf("Too many command arguments found. Ignoring the command\n");
