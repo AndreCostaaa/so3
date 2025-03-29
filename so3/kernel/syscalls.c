@@ -218,11 +218,11 @@ long syscall_handle(syscall_args_t *a)
 	 * Mainly used for debugging purposes (kernel mutex validation) at the moment ... */
 
 	case SYSCALL_MUTEX_LOCK:
-		result = do_mutex_lock(&current()->pcb->lock[a->args[0]]);
+		result = do_mutex_lock(a->args[0]);
 		break;
 
 	case SYSCALL_MUTEX_UNLOCK:
-		result = do_mutex_unlock(&current()->pcb->lock[a->args[0]]);
+		result = do_mutex_unlock(a->args[0]);
 		break;
 
 #ifdef CONFIG_MMU
