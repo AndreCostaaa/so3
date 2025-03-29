@@ -30,10 +30,10 @@
 #include <asm/atomic.h>
 
 struct mutex {
-	/* 1: unlocked, 0: locked, negative: locked, possible waiters */
-	atomic_t count;
 	tcb_t *owner;
 	spinlock_t wait_lock;
+	/* 1: unlocked, 0: locked, negative: locked, possible waiters */
+	atomic_t count;
 
 	/* Allow to manage recursive locking */
 	uint32_t recursive_count;
