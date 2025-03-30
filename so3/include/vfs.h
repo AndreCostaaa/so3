@@ -176,9 +176,9 @@ void vfs_set_priv(int gfd, void *data);
 void *vfs_get_priv(int gfd);
 int vfs_clone_fd(int *gfd_src, int *gfd_dst);
 
-uint32_t vfs_get_access_mode(int fd);
-uint32_t vfs_get_open_mode(int fd);
-uint32_t vfs_get_operating_mode(int fd);
+uint32_t vfs_get_access_mode(int gfd);
+uint32_t vfs_get_open_mode(int gfd);
+uint32_t vfs_get_operating_mode(int gfd);
 
 void vfs_set_access_mode(int gfd, uint32_t flags_access_mode);
 int vfs_set_open_mode(int gfd, uint32_t flags_open_mode);
