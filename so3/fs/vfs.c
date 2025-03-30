@@ -291,7 +291,7 @@ int vfs_set_open_mode(int gfd, uint32_t flags_open_mode)
 
 uint32_t vfs_get_access_mode(int gfd)
 {
-	uint32_t ret;
+	uint32_t ret = 0;
 
 	mutex_lock(&vfs_lock);
 
@@ -314,7 +314,7 @@ void vfs_set_access_mode(int gfd, uint32_t flags_access_mode)
 
 uint32_t vfs_get_operating_mode(int gfd)
 {
-	uint32_t ret;
+	uint32_t ret = 0;
 	mutex_lock(&vfs_lock);
 
 	if (open_fds[gfd])
