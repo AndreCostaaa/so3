@@ -66,7 +66,7 @@ void set_errno(uint32_t val)
  * According to SO3 ABI, the syscall arguments are passed in r0-r5 on ARM and x0-x5 on ARM64.
  */
 
-long syscall_handle(syscall_args_t *a)
+long syscall_handle(syscall_args_t *syscall_args)
 {
 	long result = -1;
 	uint32_t syscall_no, *__errno_addr;
@@ -86,13 +86,15 @@ long syscall_handle(syscall_args_t *a)
 		/* a->args[1] contains a pointer to the timezone structure. */
 		/* Currently, this is not supported yet. */
 
-		result = do_get_time_of_day((struct timespec *)a->args[0]);
+		result = do_get_time_of_day(
+			(struct timespec *)syscall_args->args[0]);
 		break;
 
 	case SYSCALL_CLOCK_GETTIME:
 
-		result = do_get_clock_time(a->args[0],
-					   (struct timespec *)a->args[1]);
+		result = do_get_clock_time(
+			syscall_args->args[0],
+			(struct timespec *)syscall_args->args[1]);
 		break;
 
 	case SYSCALL_SETTIMEOFDAY:
@@ -104,12 +106,13 @@ long syscall_handle(syscall_args_t *a)
 		break;
 
 	case SYSCALL_EXIT:
-		do_exit(a->args[0]);
+		do_exit(syscall_args->args[0]);
 		break;
 
 	case SYSCALL_EXECVE:
-		result = do_execve((const char *)a->args[0],
-				   (char **)a->args[1], (char **)a->args[2]);
+		result = do_execve((const char *)syscall_args->args[0],
+				   (char **)syscall_args->args[1],
+				   (char **)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_FORK:
@@ -117,39 +120,48 @@ long syscall_handle(syscall_args_t *a)
 		break;
 
 	case SYSCALL_WAITPID:
-		result = do_waitpid(a->args[0], (uint32_t *)a->args[1],
-				    a->args[2]);
+		result = do_waitpid(syscall_args->args[0],
+				    (uint32_t *)syscall_args->args[1],
+				    syscall_args->args[2]);
 		break;
 #endif /* CONFIG_MMU */
 
 	case SYSCALL_READ:
-		result = do_read(a->args[0], (void *)a->args[1], a->args[2]);
+		result = do_read(syscall_args->args[0],
+				 (void *)syscall_args->args[1],
+				 syscall_args->args[2]);
 		break;
 
 	case SYSCALL_WRITE:
-		result = do_write(a->args[0], (void *)a->args[1], a->args[2]);
+		result = do_write(syscall_args->args[0],
+				  (void *)syscall_args->args[1],
+				  syscall_args->args[2]);
 		break;
 
 	case SYSCALL_OPEN:
-		result = do_open((const char *)a->args[0], a->args[1]);
+		result = do_open((const char *)syscall_args->args[0],
+				 syscall_args->args[1]);
 		break;
 
 	case SYSCALL_CLOSE:
-		do_close((int)a->args[0]);
+		do_close((int)syscall_args->args[0]);
 		result = 0;
 		break;
 
 	case SYSCALL_THREAD_CREATE:
-		result = do_thread_create((uint32_t *)a->args[0], a->args[1],
-					  a->args[2], a->args[3]);
+		result = do_thread_create((uint32_t *)syscall_args->args[0],
+					  syscall_args->args[1],
+					  syscall_args->args[2],
+					  syscall_args->args[3]);
 		break;
 
 	case SYSCALL_THREAD_JOIN:
-		result = do_thread_join(a->args[0], (int **)a->args[1]);
+		result = do_thread_join(syscall_args->args[0],
+					(int **)syscall_args->args[1]);
 		break;
 
 	case SYSCALL_THREAD_EXIT:
-		do_thread_exit((int *)a->args[0]);
+		do_thread_exit((int *)syscall_args->args[0]);
 		result = 0;
 		break;
 
@@ -159,57 +171,66 @@ long syscall_handle(syscall_args_t *a)
 		break;
 
 	case SYSCALL_READDIR:
-		result = do_readdir((int)a->args[0], (char *)a->args[1],
-				    a->args[2]);
+		result = do_readdir((int)syscall_args->args[0],
+				    (char *)syscall_args->args[1],
+				    syscall_args->args[2]);
 		break;
 
 	case SYSCALL_IOCTL:
-		result = do_ioctl((int)a->args[0], (unsigned long)a->args[1],
-				  (unsigned long)a->args[2]);
+		result = do_ioctl((int)syscall_args->args[0],
+				  (unsigned long)syscall_args->args[1],
+				  (unsigned long)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_FCNTL:
-		result = do_fcntl((int)a->args[0], (int)a->args[1],
-				  (unsigned long)a->args[2]);
+		result = do_fcntl((int)syscall_args->args[0],
+				  (int)syscall_args->args[1],
+				  (unsigned long)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_LSEEK:
-		result = do_lseek((int)a->args[0], (off_t)a->args[1],
-				  (int)a->args[2]);
+		result = do_lseek((int)syscall_args->args[0],
+				  (off_t)syscall_args->args[1],
+				  (int)syscall_args->args[2]);
 		break;
 
 #ifdef CONFIG_IPC_PIPE
 	case SYSCALL_PIPE:
-		result = do_pipe((int *)a->args[0]);
+		result = do_pipe((int *)syscall_args->args[0]);
 		break;
 #endif /* CONFIG_IPC_PIPE */
 
 	case SYSCALL_DUP:
-		result = do_dup((int)a->args[0]);
+		result = do_dup((int)syscall_args->args[0]);
 		break;
 
 	case SYSCALL_DUP2:
-		result = do_dup2((int)a->args[0], (int)a->args[1]);
+		result = do_dup2((int)syscall_args->args[0],
+				 (int)syscall_args->args[1]);
 		break;
 
 	case SYSCALL_STAT:
-		result = do_stat((char *)a->args[0], (struct stat *)a->args[1]);
+		result = do_stat((char *)syscall_args->args[0],
+				 (struct stat *)syscall_args->args[1]);
 		break;
 
 	case SYSCALL_MMAP:
-		result = (long)do_mmap((addr_t)a->args[0], (size_t)a->args[1],
-				       (int)a->args[2], (int)a->args[3],
-				       (off_t)a->args[4]);
+		result = (long)do_mmap((addr_t)syscall_args->args[0],
+				       (size_t)syscall_args->args[1],
+				       (int)syscall_args->args[2],
+				       (int)syscall_args->args[3],
+				       (off_t)syscall_args->args[4]);
 		break;
 
 	case SYSCALL_NANOSLEEP:
-		result = do_nanosleep((const struct timespec *)a->args[0],
-				      (struct timespec *)a->args[1]);
+		result = do_nanosleep(
+			(const struct timespec *)syscall_args->args[0],
+			(struct timespec *)syscall_args->args[1]);
 		break;
 
 #ifdef CONFIG_PROC_ENV
 	case SYSCALL_SBRK:
-		result = do_sbrk((unsigned long)a->args[0]);
+		result = do_sbrk((unsigned long)syscall_args->args[0]);
 		break;
 
 #endif /* CONFIG_PROC_ENV */
@@ -218,30 +239,32 @@ long syscall_handle(syscall_args_t *a)
 	 * Mainly used for debugging purposes (kernel mutex validation) at the moment ... */
 
 	case SYSCALL_MUTEX_LOCK:
-		result = do_mutex_lock(a->args[0]);
+		result = do_mutex_lock(syscall_args->args[0]);
 		break;
 
 	case SYSCALL_MUTEX_UNLOCK:
-		result = do_mutex_unlock(a->args[0]);
+		result = do_mutex_unlock(syscall_args->args[0]);
 		break;
 
 #ifdef CONFIG_MMU
 	case SYSCALL_PTRACE:
-		result = do_ptrace((enum __ptrace_request)a->args[0],
-				   (uint32_t)a->args[1], (void *)a->args[2],
-				   (void *)a->args[3]);
+		result = do_ptrace((enum __ptrace_request)syscall_args->args[0],
+				   (uint32_t)syscall_args->args[1],
+				   (void *)syscall_args->args[2],
+				   (void *)syscall_args->args[3]);
 		break;
 #endif
 
 #ifdef CONFIG_IPC_SIGNAL
 	case SYSCALL_SIGACTION:
-		result = do_sigaction((int)a->args[0],
-				      (sigaction_t *)a->args[1],
-				      (sigaction_t *)a->args[2]);
+		result = do_sigaction((int)syscall_args->args[0],
+				      (sigaction_t *)syscall_args->args[1],
+				      (sigaction_t *)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_KILL:
-		result = do_kill((int)a->args[0], (int)a->args[1]);
+		result = do_kill((int)syscall_args->args[0],
+				 (int)syscall_args->args[1]);
 		break;
 
 	case SYSCALL_SIGRETURN:
@@ -252,68 +275,81 @@ long syscall_handle(syscall_args_t *a)
 
 #ifdef CONFIG_NET
 	case SYSCALL_SOCKET:
-		result = do_socket((int)a->args[0], (int)a->args[1],
-				   (int)a->args[2]);
+		result = do_socket((int)syscall_args->args[0],
+				   (int)syscall_args->args[1],
+				   (int)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_BIND:
-		result = do_bind((int)a->args[0],
-				 (const struct sockaddr *)a->args[1],
-				 (socklen_t)a->args[2]);
+		result = do_bind((int)syscall_args->args[0],
+				 (const struct sockaddr *)syscall_args->args[1],
+				 (socklen_t)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_LISTEN:
-		result = do_listen((int)a->args[0], (int)a->args[1]);
+		result = do_listen((int)syscall_args->args[0],
+				   (int)syscall_args->args[1]);
 		break;
 
 	case SYSCALL_ACCEPT:
-		result = do_accept((int)a->args[0],
-				   (struct sockaddr *)a->args[1],
-				   (socklen_t *)a->args[2]);
+		result = do_accept((int)syscall_args->args[0],
+				   (struct sockaddr *)syscall_args->args[1],
+				   (socklen_t *)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_CONNECT:
-		result = do_connect((int)a->args[0],
-				    (const struct sockaddr *)a->args[1],
-				    (socklen_t)a->args[2]);
+		result = do_connect(
+			(int)syscall_args->args[0],
+			(const struct sockaddr *)syscall_args->args[1],
+			(socklen_t)syscall_args->args[2]);
 		break;
 
 	case SYSCALL_RECV:
-		result = do_recv((int)a->args[0], (void *)a->args[1],
-				 (size_t)a->args[2], (int)a->args[3]);
+		result = do_recv((int)syscall_args->args[0],
+				 (void *)syscall_args->args[1],
+				 (size_t)syscall_args->args[2],
+				 (int)syscall_args->args[3]);
 		break;
 
 	case SYSCALL_SEND:
-		result = do_send((int)a->args[0], (const void *)a->args[1],
-				 (size_t)a->args[2], (int)a->args[3]);
+		result = do_send((int)syscall_args->args[0],
+				 (const void *)syscall_args->args[1],
+				 (size_t)syscall_args->args[2],
+				 (int)syscall_args->args[3]);
 		break;
 
 	case SYSCALL_SENDTO:
-		result = do_sendto((int)a->args[0], (const void *)a->args[1],
-				   (size_t)a->args[2], (int)a->args[3],
-				   (const struct sockaddr *)a->args[4],
-				   (socklen_t)a->args[5]);
+		result = do_sendto(
+			(int)syscall_args->args[0],
+			(const void *)syscall_args->args[1],
+			(size_t)syscall_args->args[2],
+			(int)syscall_args->args[3],
+			(const struct sockaddr *)syscall_args->args[4],
+			(socklen_t)syscall_args->args[5]);
 		break;
 
 	case SYSCALL_SETSOCKOPT:
-		result = do_setsockopt((int)a->args[0], (int)a->args[1],
-				       (int)a->args[2],
-				       (const void *)a->args[3],
-				       (socklen_t)a->args[4]);
+		result = do_setsockopt((int)syscall_args->args[0],
+				       (int)syscall_args->args[1],
+				       (int)syscall_args->args[2],
+				       (const void *)syscall_args->args[3],
+				       (socklen_t)syscall_args->args[4]);
 		break;
 
 	case SYSCALL_RECVFROM:
-		result = do_recvfrom((int)a->args[0], (void *)a->args[1],
-				     (size_t)a->args[2], (int)a->args[3],
-				     (struct sockaddr *)a->args[4],
-				     (socklen_t *)a->args[5]);
+		result = do_recvfrom((int)syscall_args->args[0],
+				     (void *)syscall_args->args[1],
+				     (size_t)syscall_args->args[2],
+				     (int)syscall_args->args[3],
+				     (struct sockaddr *)syscall_args->args[4],
+				     (socklen_t *)syscall_args->args[5]);
 		break;
 
 #endif /* CONFIG_NET */
 
 	/* Sysinfo syscalls */
 	case SYSCALL_SYSINFO:
-		switch (a->args[0]) {
+		switch (syscall_args->args[0]) {
 		case SYSINFO_DUMP_HEAP:
 			dump_heap("Heap info asked from user.\n");
 			break;
@@ -334,7 +370,7 @@ long syscall_handle(syscall_args_t *a)
 			break;
 #endif
 		case SYSINFO_PRINTK:
-			printk("%s", (char *)a->args[1]);
+			printk("%s", (char *)syscall_args->args[1]);
 			break;
 		}
 		result = 0;
