@@ -16,6 +16,7 @@ RUN echo 'PLATFORM := virt64' > build.conf
 
 RUN cd so3;\
     make virt64_lvperf_defconfig;\
+    sed -i 's/CONFIG_USER_INIT_PROGRAM="lvgl_benchmark.elf"/CONFIG_USER_INIT_PROGRAM="init.elf"/g' .config; \
     make -j`nproc`
 
 RUN cd u-boot;\
@@ -49,6 +50,7 @@ RUN mkdir -p docker/scripts
 RUN mkdir -p rootfs
 
 COPY usr usr
+RUN printf "run lvgl_benchmark.elf\nexit\n" > usr/out/commands.ini
 COPY target/virt64_lvperf.its target
 COPY docker/scripts docker/scripts
 
