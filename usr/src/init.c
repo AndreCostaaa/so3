@@ -56,7 +56,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 
-#define INPUT_COMMAND_FILE "init_commands.txt"
+#define INPUT_COMMAND_FILE "commands.ini"
 #define ARGS_MAX 16
 #define MAX_COMMAND_LEN 512
 

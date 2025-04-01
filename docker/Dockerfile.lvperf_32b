@@ -49,7 +49,7 @@ RUN mkdir -p rootfs
 RUN mkdir -p docker/scripts
 
 COPY usr usr
-RUN printf "run lvgl_benchmark.elf\nexit\n" > usr/out/init_commands.txt
+RUN printf "run lvgl_benchmark.elf\nexit\n" > usr/out/commands.ini
 COPY docker/scripts docker/scripts
 COPY target/virt32_lvperf.its target
 
