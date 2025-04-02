@@ -37,6 +37,8 @@ static inline int spin_trylock(spinlock_t *lock)
 {
 	uint32_t tmp;
 
+	/* The spinlock must aligned in aarch64 */
+	BUG_ON((((uint64_t)&lock->lock) & 0x7) != 0);
 	__asm__ __volatile__("	ldaxr	%x0, [%1]\n"
 			     "	cbnz	%x0, 1f\n"
 			     "	stxr	%w0, %2, [%1]\n"
