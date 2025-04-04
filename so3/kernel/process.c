@@ -193,10 +193,19 @@ pcb_t *new_process(void)
 	/* Reset the ptrace request indicator */
 	pcb->ptrace_pending_req = PTRACE_NO_REQUEST;
 
-	/* Initialize the mutex belonging to this process */
-	for (i = 0; i < N_MUTEX; i++)
-		mutex_init(&pcb->lock[i]);
+	/* The spinlock inside the mutex must aligned in aarch64 */
+	pcb->lock = memalign(N_MUTEX * sizeof(mutex_t), 8);
 
+	if (!pcb->lock) {
+		printk("%s: failed to allocate memory for process mutex\n",
+		       __func__);
+		kernel_panic();
+	}
+
+	/* Initialize the mutex belonging to this process */
+	for (i = 0; i < N_MUTEX; i++) {
+		mutex_init(&pcb->lock[i]);
+	}
 	/* Init the list of pages */
 	INIT_LIST_HEAD(&pcb->page_list);
 

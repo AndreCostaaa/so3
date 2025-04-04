@@ -22,6 +22,7 @@
  *
  */
 
+#include <errno.h>
 #include <mutex.h>
 #include <schedule.h>
 #include <string.h>
@@ -149,17 +150,23 @@ void mutex_unlock(struct mutex *lock)
 /*
  * The following syscall implementation are a first attempt, mainly used for debugging kernel mutexes.
  */
-int do_mutex_lock(mutex_t *lock)
+int do_mutex_lock(unsigned long number)
 {
-	mutex_lock(lock);
-
+	if (number >= N_MUTEX) {
+		set_errno(EINVAL);
+		return -1;
+	}
+	mutex_lock(&current()->pcb->lock[number]);
 	return 0;
 }
 
-int do_mutex_unlock(mutex_t *lock)
+int do_mutex_unlock(unsigned long number)
 {
-	mutex_unlock(lock);
-
+	if (number >= N_MUTEX) {
+		set_errno(EINVAL);
+		return -1;
+	}
+	mutex_unlock(&current()->pcb->lock[number]);
 	return 0;
 }
 

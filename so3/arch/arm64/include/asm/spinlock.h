@@ -37,13 +37,15 @@ static inline int spin_trylock(spinlock_t *lock)
 {
 	uint32_t tmp;
 
-	__asm__ __volatile__("	ldaxr	%w0, [%1]\n"
-			     "	tbnz	%w0, #0, 1f\n"
+	/* The spinlock must aligned in aarch64 */
+	BUG_ON((((uint64_t)&lock->lock) & 0x7) != 0);
+	__asm__ __volatile__("	ldaxr	%x0, [%1]\n"
+			     "	cbnz	%x0, 1f\n"
 			     "	stxr	%w0, %2, [%1]\n"
 			     "1:"
 			     : "=&r"(tmp)
-			     : "r"(&lock->lock), "r"(1)
-			     : "cc");
+			     : "r"(&lock->lock), "r"(1ULL)
+			     : "cc", "memory");
 
 	if (tmp == 0) {
 		smp_mb();
@@ -66,10 +68,10 @@ static inline void spin_unlock(spinlock_t *lock)
 {
 	smp_mb();
 
-	__asm__ __volatile__("	stlr	wzr, [%0]\n"
+	__asm__ __volatile__("	stlr	xzr, [%0]\n"
 			     "	sev"
 			     :
 			     : "r"(&lock->lock)
-			     : "cc");
+			     : "cc", "memory");
 }
 #endif /* ASM_SPINLOCK_H */

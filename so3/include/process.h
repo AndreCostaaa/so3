@@ -38,7 +38,7 @@
 #define PROC_STACK_SIZE (PROC_THREAD_MAX * THREAD_STACK_SIZE)
 
 #define FD_MAX 64
-#define N_MUTEX 10
+#define N_MUTEX 5
 
 typedef enum {
 	PROC_STATE_NEW,
@@ -126,7 +126,7 @@ struct pcb {
 	enum __ptrace_request ptrace_pending_req;
 
 	/* Mutex lock to be used in conjunction with the user space (very temporary) */
-	mutex_t lock[N_MUTEX];
+	mutex_t *lock;
 };
 typedef struct pcb pcb_t;
 

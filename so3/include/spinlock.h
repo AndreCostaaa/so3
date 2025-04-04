@@ -21,12 +21,23 @@
 
 #include <asm/processor.h>
 
+#ifdef CONFIG_ARCH_ARM32
+typedef struct {
+	volatile uint32_t lock;
+} spinlock_t;
+
+#elif CONFIG_ARCH_ARM64
+
 /*
  * On Aarch64, the field has to be 64-bit aligned apparently.
  */
 typedef struct {
-	__attribute__((aligned(8))) volatile uint32_t lock;
+	volatile uint64_t lock;
 } spinlock_t;
+
+#else
+#error "Invalid ARCH config"
+#endif
 
 #include <asm/spinlock.h>
 
