@@ -252,7 +252,7 @@ __save_context:
 	b	__root_proc
 
 .LC_welcome:
-	.string "SO3: starting the initial process ...\n\n\n"
+	.string "SO3: starting the initial process\n"
 	.equ welcome_len, . - .LC_welcome
 
 .LC_exec:

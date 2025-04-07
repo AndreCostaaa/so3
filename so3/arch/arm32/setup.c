@@ -149,7 +149,7 @@ void setup_arch(void)
 #endif
 	vfp_enable();
 
-	lprintk("%s: CPU control register (CR) = %x\n", __func__, get_cr());
+	DBG("%s: CPU control register (CR) = %x\n", __func__, get_cr());
 
 	/* A low-level UART should be initialized here so that subsystems initialization (like MMC) can already print out logs ... */
 }

@@ -30,7 +30,7 @@ void calibrate_delay(void)
 {
 	u64 __jiffies = jiffies;
 
-	printk("%s: calibrating...", __func__);
+	DBG("%s: calibrating...", __func__);
 
 	jiffies_ref = 0;
 
@@ -54,5 +54,5 @@ void calibrate_delay(void)
 	while (jiffies == __jiffies)
 		jiffies_ref++;
 
-	printk("done. jiffies_ref = %llx\n", jiffies_ref);
+	DBG("done. jiffies_ref = %llx\n", jiffies_ref);
 }

@@ -178,8 +178,8 @@ void ramdev_init(void)
 	get_ramdev((void *)__fdt_addr);
 
 	if (ramdev_size > 0) {
-		printk("so3: rootfs in RAM detected (ramdev enabled) with size of %d bytes...\n",
-		       ramdev_size);
+		DBG("so3: rootfs in RAM detected (ramdev enabled) with size of %d bytes...\n",
+		    ramdev_size);
 
 		/* Mark all pfns dedicated to the (possible) ramdev as busy. */
 

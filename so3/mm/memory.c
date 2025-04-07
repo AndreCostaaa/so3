@@ -225,12 +225,12 @@ void dump_frame_table(void)
 {
 	int i;
 
-	printk("** Dump of frame table contents **\n\n");
+	DBG("** Dump of frame table contents **\n\n");
 
 	for (i = 0; i < mem_info.avail_pages; i++)
-		printk("  - Page address (phys) :%x, free: %d\n",
-		       virt_to_phys_pt((addr_t)&frame_table[i]),
-		       frame_table[i].free);
+		DBG("  - Page address (phys) :%x, free: %d\n",
+		    virt_to_phys_pt((addr_t)&frame_table[i]),
+		    frame_table[i].free);
 }
 
 /*
@@ -241,14 +241,14 @@ void dump_io_maplist(void)
 	io_map_t *cur = NULL;
 	struct list_head *pos;
 
-	printk("%s: ***** List of I/O mappings *****\n\n", __func__);
+	DBG("%s: ***** List of I/O mappings *****\n\n", __func__);
 
 	list_for_each(pos, &io_maplist) {
 		cur = list_entry(pos, io_map_t, list);
 
-		printk("    - vaddr: %x  mapped on   paddr: %x\n", cur->vaddr,
-		       cur->paddr);
-		printk("          with size: %d bytes\n", cur->size);
+		DBG("    - vaddr: %x  mapped on   paddr: %x\n", cur->vaddr,
+		    cur->paddr);
+		DBG("          with size: %d bytes\n", cur->size);
 	}
 }
 
@@ -354,8 +354,8 @@ void io_unmap(addr_t vaddr)
 	}
 
 	if (cur == NULL) {
-		lprintk("io_unmap failure: did not find entry for vaddr %x\n",
-			vaddr);
+		DBG("io_unmap failure: did not find entry for vaddr %x\n",
+		    vaddr);
 		kernel_panic();
 	}
 
@@ -377,9 +377,9 @@ void frame_table_init(addr_t frame_table_start)
 
 	frame_table = (page_t *)__va(ft_phys);
 
-	printk("SO3 Memory information:\n");
+	DBG("SO3 Memory information:\n");
 
-	printk("  - Memory size : %d bytes\n", mem_info.size);
+	DBG("  - Memory size : %d bytes\n", mem_info.size);
 
 	/* Size of the available memory (without the kernel region) */
 	mem_info.avail_pages =
@@ -387,13 +387,13 @@ void frame_table_init(addr_t frame_table_start)
 			 PAGE_SIZE) >>
 		PAGE_SHIFT;
 
-	printk("  - Available pages: %d (%lx)\n", mem_info.avail_pages,
-	       mem_info.avail_pages);
+	DBG("  - Available pages: %d (%lx)\n", mem_info.avail_pages,
+	    mem_info.avail_pages);
 
-	printk("  - Kernel size without frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs\n",
-	       (ft_phys - mem_info.phys_base), (ft_phys - mem_info.phys_base),
-	       (ft_phys - mem_info.phys_base) / SZ_1M,
-	       (ft_phys - mem_info.phys_base) >> PAGE_SHIFT);
+	DBG("  - Kernel size without frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs\n",
+	    (ft_phys - mem_info.phys_base), (ft_phys - mem_info.phys_base),
+	    (ft_phys - mem_info.phys_base) / SZ_1M,
+	    (ft_phys - mem_info.phys_base) >> PAGE_SHIFT);
 
 	/* Determine the length of the frame table in bytes */
 	ft_length = mem_info.avail_pages * sizeof(page_t);
@@ -421,15 +421,15 @@ void frame_table_init(addr_t frame_table_start)
 	/* First available pfn (right after the frame table) */
 	pfn_start = __pa(frame_table) >> PAGE_SHIFT;
 
-	printk("  - Kernel size including frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs\n",
-	       kernel_size, kernel_size, kernel_size / SZ_1M,
-	       kernel_size >> PAGE_SHIFT);
-	printk("  - Number of available page frames: 0x%x\n",
-	       mem_info.avail_pages);
-	printk("  - Frame table size is: %d bytes meaning %d (0x%0x) page frames\n",
-	       ft_length, ft_pages, ft_pages);
-	printk("  - Page frame number of the first available page: 0x%x\n",
-	       pfn_start);
+	DBG("  - Kernel size including frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs\n",
+	    kernel_size, kernel_size, kernel_size / SZ_1M,
+	    kernel_size >> PAGE_SHIFT);
+	DBG("  - Number of available page frames: 0x%x\n",
+	    mem_info.avail_pages);
+	DBG("  - Frame table size is: %d bytes meaning %d (0x%0x) page frames\n",
+	    ft_length, ft_pages, ft_pages);
+	DBG("  - Page frame number of the first available page: 0x%x\n",
+	    pfn_start);
 
 	spin_lock_init(&ft_lock);
 }
@@ -457,9 +457,9 @@ void memory_init(void)
 	heap_init();
 
 #ifdef CONFIG_MMU
-	lprintk("%s: Device tree virt addr: %lx\n", __func__, __fdt_addr);
-	lprintk("%s: relocating the device tree from 0x%x to 0x%p (size of %d bytes)\n",
-		__func__, __fdt_addr, __end, fdt_totalsize(__fdt_addr));
+	DBG("%s: Device tree virt addr: %lx\n", __func__, __fdt_addr);
+	DBG("%s: relocating the device tree from 0x%x to 0x%p (size of %d bytes)\n",
+	    __func__, __fdt_addr, __end, fdt_totalsize(__fdt_addr));
 
 	/* Move the device after the kernel stack (at &_end according to the linker script) */
 	fdt_move((const void *)__fdt_addr, __end, fdt_totalsize(__fdt_addr));
