@@ -4,6 +4,7 @@ target_sources(c
 		nanosleep.c
 		gettimeofday.c
 		time.c
+		clock.c
 		clock_gettime.c
 		ctime.c
 		localtime.c
