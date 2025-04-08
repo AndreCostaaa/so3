@@ -18,6 +18,8 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include <common.h>
+
 #define LOG_LEVEL_CRITICAL 1
 #define LOG_LEVEL_ERROR 2
 #define LOG_LEVEL_WARNING 3
