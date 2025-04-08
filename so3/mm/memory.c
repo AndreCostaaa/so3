@@ -25,6 +25,7 @@
 #include <process.h>
 #include <heap.h>
 #include <bitmap.h>
+#include <log.h>
 
 #include <device/ramdev.h>
 #include <device/fdt.h>
@@ -65,8 +66,8 @@ void early_memory_init(void *fdt_paddr)
 #endif
 
 	if (offset >= 0)
-		DBG("Found %d MB of RAM at 0x%08X\n", mem_info.size / SZ_1M,
-		    mem_info.phys_base);
+		LOG_DEBUG("Found %d MB of RAM at 0x%08X", mem_info.size / SZ_1M,
+			  mem_info.phys_base);
 }
 
 uint32_t get_kernel_size(void)
@@ -225,12 +226,12 @@ void dump_frame_table(void)
 {
 	int i;
 
-	printk("** Dump of frame table contents **\n\n");
+	LOG_DEBUG("** Dump of frame table contents **\n\n");
 
 	for (i = 0; i < mem_info.avail_pages; i++)
-		printk("  - Page address (phys) :%x, free: %d\n",
-		       virt_to_phys_pt((addr_t)&frame_table[i]),
-		       frame_table[i].free);
+		LOG_DEBUG("  - Page address (phys) :%x, free: %d\n",
+			  virt_to_phys_pt((addr_t)&frame_table[i]),
+			  frame_table[i].free);
 }
 
 /*
@@ -241,14 +242,13 @@ void dump_io_maplist(void)
 	io_map_t *cur = NULL;
 	struct list_head *pos;
 
-	printk("%s: ***** List of I/O mappings *****\n\n", __func__);
+	LOG_DEBUG("%s: ***** List of I/O mappings *****", __func__);
 
 	list_for_each(pos, &io_maplist) {
 		cur = list_entry(pos, io_map_t, list);
-
-		printk("    - vaddr: %x  mapped on   paddr: %x\n", cur->vaddr,
-		       cur->paddr);
-		printk("          with size: %d bytes\n", cur->size);
+		LOG_DEBUG("    - vaddr: %x  mapped on   paddr: %x", cur->vaddr,
+			  cur->paddr);
+		LOG_DEBUG("          with size: %d bytes", cur->size);
 	}
 }
 
@@ -354,7 +354,8 @@ void io_unmap(addr_t vaddr)
 	}
 
 	if (cur == NULL) {
-		lprintk("io_unmap failure: did not find entry for vaddr %x\n",
+		LOG_CRITICAL(
+			"io_unmap failure: did not find entry for vaddr %x",
 			vaddr);
 		kernel_panic();
 	}
@@ -377,9 +378,9 @@ void frame_table_init(addr_t frame_table_start)
 
 	frame_table = (page_t *)__va(ft_phys);
 
-	printk("SO3 Memory information:\n");
+	LOG_DEBUG("SO3 Memory information:");
 
-	printk("  - Memory size : %d bytes\n", mem_info.size);
+	LOG_DEBUG("  - Memory size : %d bytes", mem_info.size);
 
 	/* Size of the available memory (without the kernel region) */
 	mem_info.avail_pages =
@@ -387,13 +388,14 @@ void frame_table_init(addr_t frame_table_start)
 			 PAGE_SIZE) >>
 		PAGE_SHIFT;
 
-	printk("  - Available pages: %d (%lx)\n", mem_info.avail_pages,
-	       mem_info.avail_pages);
+	LOG_DEBUG("  - Available pages: %d (%lx)", mem_info.avail_pages,
+		  mem_info.avail_pages);
 
-	printk("  - Kernel size without frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs\n",
-	       (ft_phys - mem_info.phys_base), (ft_phys - mem_info.phys_base),
-	       (ft_phys - mem_info.phys_base) / SZ_1M,
-	       (ft_phys - mem_info.phys_base) >> PAGE_SHIFT);
+	LOG_DEBUG(
+		"  - Kernel size without frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs",
+		(ft_phys - mem_info.phys_base), (ft_phys - mem_info.phys_base),
+		(ft_phys - mem_info.phys_base) / SZ_1M,
+		(ft_phys - mem_info.phys_base) >> PAGE_SHIFT);
 
 	/* Determine the length of the frame table in bytes */
 	ft_length = mem_info.avail_pages * sizeof(page_t);
@@ -421,15 +423,17 @@ void frame_table_init(addr_t frame_table_start)
 	/* First available pfn (right after the frame table) */
 	pfn_start = __pa(frame_table) >> PAGE_SHIFT;
 
-	printk("  - Kernel size including frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs\n",
-	       kernel_size, kernel_size, kernel_size / SZ_1M,
-	       kernel_size >> PAGE_SHIFT);
-	printk("  - Number of available page frames: 0x%x\n",
-	       mem_info.avail_pages);
-	printk("  - Frame table size is: %d bytes meaning %d (0x%0x) page frames\n",
-	       ft_length, ft_pages, ft_pages);
-	printk("  - Page frame number of the first available page: 0x%x\n",
-	       pfn_start);
+	LOG_DEBUG(
+		"  - Kernel size including frame table is: %d (0x%x) bytes, %d MB / 0x%x PFNs",
+		kernel_size, kernel_size, kernel_size / SZ_1M,
+		kernel_size >> PAGE_SHIFT);
+	LOG_DEBUG("  - Number of available page frames: 0x%x",
+		  mem_info.avail_pages);
+	LOG_DEBUG(
+		"  - Frame table size is: %d bytes meaning %d (0x%0x) page frames",
+		ft_length, ft_pages, ft_pages);
+	LOG_DEBUG("  - Page frame number of the first available page: 0x%x",
+		  pfn_start);
 
 	spin_lock_init(&ft_lock);
 }
@@ -457,9 +461,10 @@ void memory_init(void)
 	heap_init();
 
 #ifdef CONFIG_MMU
-	lprintk("%s: Device tree virt addr: %lx\n", __func__, __fdt_addr);
-	lprintk("%s: relocating the device tree from 0x%x to 0x%p (size of %d bytes)\n",
-		__func__, __fdt_addr, __end, fdt_totalsize(__fdt_addr));
+	LOG_DEBUG("Device tree virt addr: %lx", __fdt_addr);
+	LOG_DEBUG(
+		"Relocating the device tree from 0x%x to 0x%p (size of %d bytes)",
+		__fdt_addr, __end, fdt_totalsize(__fdt_addr));
 
 	/* Move the device after the kernel stack (at &_end according to the linker script) */
 	fdt_move((const void *)__fdt_addr, __end, fdt_totalsize(__fdt_addr));

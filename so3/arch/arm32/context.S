@@ -252,14 +252,14 @@ __save_context:
 	b	__root_proc
 
 .LC_welcome:
-	.string "SO3: starting the initial process ...\n\n\n"
+	.string "[SO3 USR] Starting the initial process\n"
 	.equ welcome_len, . - .LC_welcome
 
 .LC_exec:
 	.string CONFIG_USER_INIT_PROGRAM
 
 .LCnoshell:
-	.string "so3: No init proc found ...\n"
+	.string "[SO3 USR] No init process found\n"
 	.equ noshell_len, . - .LCnoshell
 
 
@@ -271,21 +271,17 @@ __save_context:
 ENTRY(__root_proc)
 
 	@ write(stdout, buf, len)
-
-	mov	r0, #STDOUT
+	mov r0, #STDOUT
 	adr r1, .LC_welcome
 	mov r2, #welcome_len
 	mov r7, #SYSCALL_WRITE
-
 	@ No errno
 	mov r10, #0
-
 	@ Invoke the syscall - kernel side
 	svc	0
 
 	@ exec("sh.elf")
-
-	adr	r0, .LC_exec
+	adr r0, .LC_exec
 	@ No args
 	mov r1, #0
 	mov r2, #0

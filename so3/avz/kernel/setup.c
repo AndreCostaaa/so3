@@ -17,6 +17,7 @@
  */
 
 #include <common.h>
+#include <log.h>
 #include <softirq.h>
 #include <console.h>
 #include <smp.h>
@@ -50,7 +51,7 @@ void *app_thread_main(void *args)
 
 void dump_backtrace_entry(unsigned long where, unsigned long from)
 {
-	printk("Function entered at [<%08lx>] from [<%08lx>]\n", where, from);
+	LOG_DEBUG("Function entered at [<%08lx>] from [<%08lx>]", where, from);
 }
 
 void init_idle_domain(void)
@@ -81,7 +82,7 @@ void avz_start(void)
 	lprintk("Copyright (c) 2014-2023 REDS Institute, HEIG-VD, Yverdon-les-Bains\n");
 	lprintk("Version %s\n", SO3_KERNEL_VERSION);
 
-	lprintk("\n\nNow bootstraping the hypervisor kernel ...\n");
+	LOG_INFO("\n\nNow bootstraping the hypervisor kernel ...");
 
 	/* Memory manager subsystem initialization */
 	memory_init();
@@ -105,16 +106,17 @@ void avz_start(void)
 	/* Prepare to adapt the serial virtual address at a better location in the I/O space. */
 	console_init_post();
 
-	printk("Init domain scheduler...\n");
+	LOG_DEBUG("Init domain scheduler...");
 	domain_scheduler_init();
 
-	printk("Initializing avz timer...\n");
+	LOG_DEBUG("Initializing avz timer...");
 
 	/* create idle domain */
 	init_idle_domain();
 
-	printk("This configuration will spin up at most %d total processors ...\n",
-	       CONFIG_NR_CPUS);
+	LOG_DEBUG(
+		"This configuration will spin up at most %d total processors ...",
+		CONFIG_NR_CPUS);
 
 #ifdef CONFIG_SOO
 	/*
@@ -126,7 +128,7 @@ void avz_start(void)
 		domain_create(DOMID_AGENCY_RT, AGENCY_RT_CPU);
 
 	if (domains[DOMID_AGENCY_RT] == NULL)
-		panic("Error creating realtime agency subdomain.\n");
+		panic("Error creating realtime agency subdomain.");
 #endif /* CONFIG_SOO */
 
 	/* Create initial domain 0. */
@@ -134,14 +136,14 @@ void avz_start(void)
 	agency = domains[DOMID_AGENCY];
 
 	if (agency == NULL)
-		panic("Error creating primary Agency domain\n");
+		panic("Error creating primary Agency domain");
 
 	if (construct_agency(domains[DOMID_AGENCY]) != 0)
-		panic("Could not set up agency guest OS\n");
+		panic("Could not set up agency guest OS");
 
 	/* Check that we do have a agency at this point, as we need it. */
 	if (agency == NULL) {
-		printk("No agency found, stopping here...\n");
+		LOG_CRITICAL("No agency found, stopping here...");
 		while (1)
 			;
 	}
@@ -151,7 +153,8 @@ void avz_start(void)
 
 	smp_init();
 
-	printk("Now, unpausing the agency domain and doing its bootstrap...\n");
+	LOG_DEBUG(
+		"Now, unpausing the agency domain and doing its bootstrap...");
 
 	domain_unpause_by_systemcontroller(agency);
 

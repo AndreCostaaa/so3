@@ -17,6 +17,7 @@
  */
 
 #include <common.h>
+#include <log.h>
 #include <memory.h>
 #include <part.h>
 
@@ -178,8 +179,9 @@ void ramdev_init(void)
 	get_ramdev((void *)__fdt_addr);
 
 	if (ramdev_size > 0) {
-		printk("so3: rootfs in RAM detected (ramdev enabled) with size of %d bytes...\n",
-		       ramdev_size);
+		LOG_DEBUG(
+			"so3: rootfs in RAM detected (ramdev enabled) with size of %d bytes...\n",
+			ramdev_size);
 
 		/* Mark all pfns dedicated to the (possible) ramdev as busy. */
 

@@ -31,8 +31,8 @@
 #define CONFIG_LOG_LEVEL LOG_LEVEL_INFO
 #endif
 
-#define LOG(level, fmt, ...)                                            \
-	lprintk("[" #level "] <%s:%d> " fmt "\r\n", __func__, __LINE__, \
+#define LOG(level, fmt, ...)                                                \
+	lprintk("[SO3 " #level "] <%s:%d> " fmt "\r\n", __func__, __LINE__, \
 		##__VA_ARGS__)
 
 #if CONFIG_LOG_LEVEL >= LOG_LEVEL_CRITICAL
