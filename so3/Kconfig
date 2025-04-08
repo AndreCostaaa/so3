@@ -71,7 +71,7 @@ config LOG_LEVEL_TRACE
 
 endchoice
 
-config CONFIG_LOG_LEVEL
+config LOG_LEVEL
     int
     default 1 if LOG_LEVEL_CRITICAL
     default 2 if LOG_LEVEL_ERROR
