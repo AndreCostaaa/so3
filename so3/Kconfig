@@ -37,9 +37,6 @@ endif
 
 config MMU
 	bool "MMU enable"
-	
-config DEBUG_PRINTK
-	bool "Debug printk"
  
 # SOO subsystem and drivers
 source "soo/Kconfig"
