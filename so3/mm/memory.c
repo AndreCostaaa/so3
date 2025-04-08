@@ -485,7 +485,6 @@ void memory_init(void)
 		       CONFIG_UART_LL_PADDR, PAGE_SIZE, true);
 
 #ifdef CONFIG_AVZ
-#warning For ARM64VT we still need fo address the ME in the hypervisor...
 
 #ifndef CONFIG_SOO
 
@@ -508,15 +507,14 @@ void memory_init(void)
 
 	flush_dcache_all();
 
-#if (defined(CONFIG_AVZ) || !defined(CONFIG_SOO)) && defined(CONFIG_ARCH_ARM32)
+#if defined(CONFIG_ARCH_ARM32)
 
 	/* Finally, prepare the vector page at its correct location */
 	vectors_paddr = get_free_page();
 
 	create_mapping(NULL, VECTOR_VADDR, vectors_paddr, PAGE_SIZE, true);
 
-	memcpy((void *)VECTOR_VADDR, (void *)&__vectors_start,
-	       (void *)&__vectors_end - (void *)&__vectors_start);
+	memcpy((void *) VECTOR_VADDR, (void *)&__vectors_start, (void *) &__vectors_end - (void *) &__vectors_start);
 #endif
 
 	set_pgtable(__sys_root_pgtable);
@@ -524,32 +522,3 @@ void memory_init(void)
 #endif /* CONFIG_MMU */
 }
 
-#ifdef CONFIG_SOO
-
-/**
- * Re-adjust PFNs used for various purposes.
- */
-void readjust_io_map(long pfn_offset)
-{
-	io_map_t *io_map;
-	struct list_head *pos;
-	addr_t offset;
-
-	/*
-	 * Re-adjust I/O area since it does not intend to be HW I/O in SO3VIRT, but
-	 * can be used for gnttab entries or other mappings for example.
-	 */
-	list_for_each(pos, &io_maplist) {
-		io_map = list_entry(pos, io_map_t, list);
-
-		offset = io_map->paddr & (PAGE_SIZE - 1);
-		io_map->paddr =
-			pfn_to_phys(phys_to_pfn(io_map->paddr) + pfn_offset);
-		io_map->paddr += offset;
-	}
-
-	/* Re-adjust other PFNs used for frametable management. */
-	pfn_start += pfn_offset;
-}
-
-#endif /* CONFIG_SOO */

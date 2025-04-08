@@ -63,4 +63,7 @@ void loadME(unsigned int slotID, void *itb);
 
 void memslot_init(void);
 
+int get_ME_free_slot(unsigned int size, int slotID);
+void put_ME_slot(unsigned int ME_slotID);
+ 
 #endif /* MEMSLOT_H */

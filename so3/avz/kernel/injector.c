@@ -54,16 +54,13 @@ static struct dom_context domain_context = { 0 };
  *  At the entry of this function, the ME ITB could have been allocated in the user space (via the injector application)
  *  or in the vmalloc'd area of the Linux kernel in case of a BT transfer from the tablet (using vuihandler).
  *
- *  To get rid of the way how the page tables are managed by Linux, we perform a copy of the ME ITB in the
- *  AVZ heap, assuming that the 8-MB heap is sufficient to host the ITB ME (< 2 MB in most cases).
- *
  *  If the ITB should become larger, it is still possible to compress (and enhance AVZ with a uncompressor invoked
  *  at loading time). Wouldn't be still not enough, a temporary fixmap mapping combined with get_free_pages should be envisaged
  *  to have the ME ITB accessible from the AVZ user space area.
  * 
  * @param args args received from the guest
  */
-void inject_me(avz_hyp_t *args)
+void inject_capsule(avz_hyp_t *args)
 {
 	int slotID;
 	size_t fdt_size;
@@ -72,20 +69,17 @@ void inject_me(avz_hyp_t *args)
 	void *itb_vaddr;
 	mem_info_t guest_mem_info;
 
-	DBG("%s: Preparing ME injection, source image vaddr = %lx\n", __func__,
-	    ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_me_args.itb_paddr));
+	DBG("%s: Preparing ME injection, source image vaddr = %lx\n", __func__, 
+		ipa_to_va(MEMSLOT_AGENCY, args->uavz_inject_capsule_args.itb_paddr));
 
 	BUG_ON(local_irq_is_enabled());
 
-	itb_vaddr = (void *)ipa_to_va(MEMSLOT_AGENCY,
-				      args->u.avz_inject_me_args.itb_paddr);
+	itb_vaddr = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr);
 
 	DBG("%s: ITB vaddr: %lx\n", __func__, itb_vaddr);
 
 	/* Retrieve the domain size of this ME through its device tree. */
-	fit_image_get_data_and_size(itb_vaddr,
-				    fit_image_get_node(itb_vaddr, "fdt"),
-				    (const void **)&fdt_vaddr, &fdt_size);
+	fit_image_get_data_and_size(itb_vaddr, fit_image_get_node(itb_vaddr, "fdt"), (const void **)&fdt_vaddr, &fdt_size);
 	if (!fdt_vaddr) {
 		printk("### %s: wrong device tree.\n", __func__);
 		BUG();
@@ -93,8 +87,8 @@ void inject_me(avz_hyp_t *args)
 
 	get_mem_info(fdt_vaddr, &guest_mem_info);
 
-	/* Find a slotID to store this ME. */
-	slotID = get_ME_free_slot(guest_mem_info.size);
+	/* Find a slotID to store this capsule */
+	slotID = get_ME_free_slot(guest_mem_info.size, args->u.avz_inject_capsule_args.slotID);
 	if (slotID == -1)
 		goto out;
 
@@ -108,9 +102,8 @@ void inject_me(avz_hyp_t *args)
 
 	__current = current_domain;
 
-	/* Clear the RAM allocated to this ME */
-	memset((void *)__xva(slotID, memslot[slotID].base_paddr), 0,
-	       memslot[slotID].size);
+	/* Clear the RAM allocated to this capsule */
+	memset((void *)__xva(slotID, memslot[slotID].base_paddr), 0, memslot[slotID].size);
 
 	loadME(slotID, itb_vaddr);
 
@@ -119,16 +112,22 @@ void inject_me(avz_hyp_t *args)
 
 out:
 	/* Prepare to return the slotID to the caller. */
-	args->u.avz_inject_me_args.slotID = slotID;
+	args->u.avz_inject_capsule_args.slotID = slotID;
 
 	raise_softirq(SCHEDULE_SOFTIRQ);
 
-	domME->avz_shared->dom_desc.u.ME.vbstore_pfn =
-		map_vbstore_pfn(slotID, 0);
-	domME->avz_shared->dom_desc.u.ME.vbstore_revtchn =
-		agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID];
+	domME->avz_shared->dom_desc.u.ME.vbstore_pfn = map_vbstore_pfn(slotID, 0);
+	domME->avz_shared->dom_desc.u.ME.vbstore_revtchn = agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID];
+}
 
-	domain_unpause_by_systemcontroller(domME);
+/**
+ * @brief Start the execution of a pre-loaded capsule
+ * 
+ * @param args 
+ */
+void start_capsule(avz_hyp_t *args)
+{
+	domain_unpause_by_systemcontroller(domains[args->u.avz_inject_capsule_args.slotID]);
 }
 
 /*------------------------------------------------------------------------------
@@ -136,8 +135,7 @@ build_domain_migration_info
 build_vcpu_migration_info
     Build the structures holding the key info to be migrated over
 ------------------------------------------------------------------------------*/
-static void build_domain_context(unsigned int ME_slotID, struct domain *me,
-				 struct dom_context *domctxt)
+static void build_domain_context(unsigned int ME_slotID, struct domain *me, struct dom_context *domctxt)
 {
 	/* Event channel info */
 	memcpy(domctxt->evtchn, me->evtchn, sizeof(me->evtchn));
@@ -161,12 +159,10 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me,
 
 	memcpy(&domctxt->grant_pfn, &me->grant_pfn, sizeof(me->grant_pfn));
 
-	memcpy(&(domctxt->pause_count), &(me->pause_count),
-	       sizeof(me->pause_count));
+	memcpy(&(domctxt->pause_count), &(me->pause_count), sizeof(me->pause_count));
 
 	/* VIRQ mapping */
-	memcpy(domctxt->virq_to_evtchn, me->virq_to_evtchn,
-	       sizeof((me->virq_to_evtchn)));
+	memcpy(domctxt->virq_to_evtchn, me->virq_to_evtchn, sizeof(me->virq_to_evtchn));
 
 	/* Store the IPA physical address base */
 	domctxt->ipa_addr = memslot[ME_slotID].ipa_addr;
@@ -179,9 +175,7 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me,
 	domctxt->vcpu = me->vcpu;
 
 	/* Store the stack frame of this domain */
-	memcpy(&domctxt->stack_frame,
-	       (void *)(me->domain_stack + DOMAIN_STACK_SIZE -
-			sizeof(struct cpu_regs)),
+	memcpy(&domctxt->stack_frame, (void *)(me->domain_stack + DOMAIN_STACK_SIZE - sizeof(struct cpu_regs)),
 	       sizeof(struct cpu_regs));
 }
 
@@ -192,46 +186,41 @@ void read_ME_snapshot(avz_hyp_t *args)
 {
 	unsigned int slotID = args->u.avz_snapshot_args.slotID;
 	struct domain *domME = domains[slotID];
-	void *snapshot_buffer = (void *)ipa_to_va(
-		MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
+	void *snapshot_buffer = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	/* If the size is 0, we return the snapshot size. */
 	if (args->u.avz_snapshot_args.size == 0) {
-		args->u.avz_snapshot_args.size = sizeof(uint32_t) +
-						 memslot[slotID].size +
-						 sizeof(domain_context);
+		args->u.avz_snapshot_args.size = sizeof(uint32_t) + memslot[slotID].size + sizeof(domain_context);
 		return;
 	}
 
-	BUG_ON(domME->avz_shared->dom_desc.u.ME.state != ME_state_suspended);
-
-	/* Pause the ME */
-	domain_pause_by_systemcontroller(domME);
+	if (domME->avz_shared->dom_desc.u.ME.state == ME_state_suspended) {
+		/* Pause the capsule */
+		domain_pause_by_systemcontroller(domME);
+	}
 
 	/* Gather all the info we need into structures */
 	build_domain_context(slotID, domME, &domain_context);
 
-	/* Copy the size of the payload which is made of the dom_info structure and the ME */
-	args->u.avz_snapshot_args.size =
-		memslot[slotID].size + sizeof(domain_context);
+	/* Copy the size of the payload which is made of the dom_info structure and the capsule */
+	args->u.avz_snapshot_args.size = memslot[slotID].size + sizeof(domain_context);
 
-	memcpy(snapshot_buffer, &args->u.avz_snapshot_args.size,
-	       sizeof(uint32_t));
+	memcpy(snapshot_buffer, &args->u.avz_snapshot_args.size, sizeof(uint32_t));
 	args->u.avz_snapshot_args.size += sizeof(uint32_t);
 
 	/* Copy the dom_info structure */
-	memcpy(snapshot_buffer + sizeof(uint32_t), &domain_context,
-	       sizeof(domain_context));
+	memcpy(snapshot_buffer + sizeof(uint32_t), &domain_context, sizeof(domain_context));
 
 	/* Finally copy the ME */
-	memcpy(snapshot_buffer + sizeof(uint32_t) + sizeof(domain_context),
-	       (void *)__xva(slotID, memslot[slotID].base_paddr),
+	memcpy(snapshot_buffer + sizeof(uint32_t) + sizeof(domain_context), (void *)__xva(slotID, memslot[slotID].base_paddr),
 	       memslot[slotID].size);
 
-	/* Now, this ME is suspended and must be resumed by the agency */
-	domME->avz_shared->dom_desc.u.ME.state = ME_state_resuming;
+	if (domME->avz_shared->dom_desc.u.ME.state == ME_state_suspended) {
+		/* Now, this ME is suspended and must be resumed by the agency */
+		domME->avz_shared->dom_desc.u.ME.state = ME_state_resuming;
 
-	domain_unpause_by_systemcontroller(domME);
+		domain_unpause_by_systemcontroller(domME);
+	}
 }
 
 /*------------------------------------------------------------------------------
@@ -243,8 +232,7 @@ restore_vcpu_migration_info
     build_domain_migration_info() and build_vcpu_migration_info()
 ------------------------------------------------------------------------------*/
 
-void restore_domain_context(unsigned int ME_slotID, struct domain *me,
-			    struct dom_context *domctxt)
+void restore_domain_context(unsigned int ME_slotID, struct domain *me, struct dom_context *domctxt)
 {
 	int i;
 
@@ -254,9 +242,7 @@ void restore_domain_context(unsigned int ME_slotID, struct domain *me,
 
 	/* Check that our signature is valid so that the image transfer should be good. */
 	if (strcmp(me->avz_shared->signature, SOO_ME_SIGNATURE))
-		panic("%s: Cannot find the correct signature in the shared page (" SOO_ME_SIGNATURE
-		      ")...\n",
-		      __func__);
+		panic("%s: Cannot find the correct signature in the shared page (" SOO_ME_SIGNATURE ")...\n", __func__);
 
 	/* Update the domID of course */
 	me->avz_shared->domID = ME_slotID;
@@ -284,12 +270,10 @@ void restore_domain_context(unsigned int ME_slotID, struct domain *me,
 
 	memcpy(&me->grant_pfn, &domctxt->grant_pfn, sizeof(me->grant_pfn));
 
-	memcpy(&(me->pause_count), &(domctxt->pause_count),
-	       sizeof(me->pause_count));
+	memcpy(&(me->pause_count), &(domctxt->pause_count), sizeof(me->pause_count));
 
 	/* VIRQ mapping */
-	memcpy(me->virq_to_evtchn, domctxt->virq_to_evtchn,
-	       sizeof((me->virq_to_evtchn)));
+	memcpy(me->virq_to_evtchn, domctxt->virq_to_evtchn, sizeof((me->virq_to_evtchn)));
 
 	/* IPA physical address base */
 	memslot[ME_slotID].ipa_addr = domctxt->ipa_addr;
@@ -313,28 +297,24 @@ void write_ME_snapshot(avz_hyp_t *args)
 
 	/* Ask for available slot and perform the reservation */
 	if (slotID == 0) {
-		slotID = get_ME_free_slot(snapshot_size - sizeof(uint32_t) -
-					  sizeof(struct dom_context));
+		slotID = get_ME_free_slot(snapshot_size - sizeof(uint32_t) - sizeof(struct dom_context), slotID);
 		if (slotID > 0)
 			args->u.avz_snapshot_args.slotID = slotID;
 		return;
 	}
 
-	snapshot_buffer = (void *)ipa_to_va(
-		MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
+	snapshot_buffer = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	domME = domains[slotID];
 	domctxt = (struct dom_context *)(snapshot_buffer + sizeof(uint32_t));
 
 	restore_domain_context(slotID, domME, domctxt);
 
-	__setup_dom_pgtable(domME, memslot[slotID].base_paddr,
-			    memslot[slotID].size);
+	__setup_dom_pgtable(domME, memslot[slotID].base_paddr, memslot[slotID].size);
 
 	/* Copy the ME content */
 	memcpy((void *)__xva(slotID, memslot[slotID].base_paddr),
-	       snapshot_buffer + sizeof(uint32_t) + sizeof(struct dom_context),
-	       memslot[slotID].size);
+	       snapshot_buffer + sizeof(uint32_t) + sizeof(struct dom_context), memslot[slotID].size);
 
 	/* Create a stack devoted to this restored domain */
 
@@ -351,30 +331,25 @@ void write_ME_snapshot(avz_hyp_t *args)
 	memcpy(frame, &domctxt->stack_frame, sizeof(struct cpu_regs));
 
 	/* We need to re-map the vbstore page corresponding to this slotID */
-	map_vbstore_pfn(domME->avz_shared->domID,
-			domME->avz_shared->dom_desc.u.ME.vbstore_pfn);
+	map_vbstore_pfn(domME->avz_shared->domID, domME->avz_shared->dom_desc.u.ME.vbstore_pfn);
 
 	/* As we will be resumed from the schedule function, we need to update the
 	* CPU registers from the VCPU regs.
 	*/
 	domME->vcpu.regs.sp = (unsigned long)frame;
-	domME->vcpu.regs.x21 =
-		(unsigned long)domME->avz_shared->dom_desc.u.ME.resume_fn;
+	domME->vcpu.regs.x21 = (unsigned long)domME->avz_shared->dom_desc.u.ME.resume_fn;
 
 	domME->vcpu.regs.lr = (unsigned long)resume_to_guest;
 
 	/* Now restoring event channel configuration */
-	evtchn_bind_existing_interdomain(
-		domME, agency, domME->avz_shared->dom_desc.u.ME.vbstore_levtchn,
-		agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID]);
+	evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.vbstore_levtchn,
+					 agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID]);
 
-	DBG("[soo:avz] %s: Rebinding directcomm event channels: %d (agency) <-> %d (ME)\n",
-	    __func__, agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID],
-	    domME->avz_shared->dom_desc.u.ME.dc_evtchn);
+	DBG("[soo:avz] %s: Rebinding directcomm event channels: %d (agency) <-> %d (ME)\n", __func__,
+	    agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID], domME->avz_shared->dom_desc.u.ME.dc_evtchn);
 
-	evtchn_bind_existing_interdomain(
-		domME, agency, domME->avz_shared->dom_desc.u.ME.dc_evtchn,
-		agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID]);
+	evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.dc_evtchn,
+					 agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID]);
 
 	DBG("%s: Now, resuming ME slotID %d...\n", __func__, slotID);
 

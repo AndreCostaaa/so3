@@ -38,7 +38,7 @@
 #include <avz/sched.h>
 #include <avz/debug.h>
 #include <avz/console.h>
-#include <avz/capsule.h>
+#include <avz/injector.h>
 
 /**
  * Return the state of the ME corresponding to the ME_slotID.
@@ -154,8 +154,12 @@ void do_avz_hypercall(avz_hyp_t *args)
 		write_ME_snapshot(args);
 		break;
 
-	case AVZ_INJECT_ME:
-		inject_me(args);
+	case AVZ_INJECT_CAPSULE:
+		inject_capsule(args);
+		break;
+
+	case AVZ_START_CAPSULE:
+		inject_capsule(args);
 		break;
 
 	case AVZ_DC_EVENT_SET:
@@ -169,10 +173,11 @@ void do_avz_hypercall(avz_hyp_t *args)
 		dom = domains[args->u.avz_dc_event_args.domID];
 		BUG_ON(dom == NULL);
 
-		/* The shared info page is set as non cacheable, i.e. if a CPU tries to update it, it becomes visible to other CPUs */
+		/* The shared info page is set as non cacheable, i.e. if a CPU tries to update it, it becomes visible to 
+		 * other CPUs 
+		 */
 		if (atomic_cmpxchg(&dom->avz_shared->dc_event, DC_NO_EVENT,
-				   args->u.avz_dc_event_args.dc_event) !=
-		    DC_NO_EVENT)
+				   args->u.avz_dc_event_args.dc_event) != DC_NO_EVENT)
 			args->u.avz_dc_event_args.state = -EBUSY;
 		else
 			args->u.avz_dc_event_args.state = ESUCCESS;
@@ -181,17 +186,14 @@ void do_avz_hypercall(avz_hyp_t *args)
 	case AVZ_KILL_ME:
 
 		shutdown_ME(args->u.avz_kill_me_args.slotID);
-
 		break;
 
 	case AVZ_GET_ME_STATE:
-		args->u.avz_me_state_args.state =
-			get_ME_state(args->u.avz_me_state_args.slotID);
+		args->u.avz_me_state_args.state = get_ME_state(args->u.avz_me_state_args.slotID);
 		break;
 
 	case AVZ_SET_ME_STATE: {
-		set_ME_state(args->u.avz_me_state_args.slotID,
-			     args->u.avz_me_state_args.state);
+		set_ME_state(args->u.avz_me_state_args.slotID, args->u.avz_me_state_args.state);
 		break;
 	}
 
