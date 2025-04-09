@@ -32,7 +32,9 @@ FROM baseimage AS runner
 RUN apk update; \
     apk add --no-cache make cmake gcc-arm-none-eabi \
     g++-arm-none-eabi qemu-system-arm \
-    util-linux dtc u-boot-tools dosfstools
+    util-linux dtc u-boot-tools dosfstools python3 py3-pip
+
+RUN pip install --break-system-packages pcpp
 
 WORKDIR /so3
 
