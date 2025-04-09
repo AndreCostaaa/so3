@@ -58,6 +58,9 @@ RUN printf "run lvgl_benchmark.elf\nexit\n" > usr/out/commands.ini
 COPY docker/scripts docker/scripts
 COPY target/virt32_lvperf.its target
 
+# Create an empty script that can be modified by mounting a volume in the same path
+# so we can add additional dependencies easily without rebuilding the whole image 
+RUN echo "#!/bin/sh" > install_dependencies.sh && chmod +x install_dependencies.sh 
 
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
@@ -65,4 +68,4 @@ RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
 ENV QEMU_ARCH=arm
 ENV PLATFORM=virt32
 
-CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run.sh
+CMD ./install_dependencies.sh && ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run.sh
