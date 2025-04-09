@@ -78,4 +78,3 @@ CONFIG_HEAP_SIZE=8
 # CONFIG_AVZ is not set
 # CONFIG_SOO is not set
 CONFIG_MMU=y
-# CONFIG_DEBUG_PRINTK is not set

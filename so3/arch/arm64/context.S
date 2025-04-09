@@ -272,14 +272,14 @@ __save_context:
 	b	__root_proc
 
 .LC_welcome:
-	.string "SO3: starting the initial process ...\n\n\n"
+	.string "[SO3 USR] Starting the initial process\n"
 	.equ welcome_len, . - .LC_welcome
 
 .LC_exec:
 	.string CONFIG_USER_INIT_PROGRAM
 
 .LCnoshell:
-	.string "so3: No init proc found ...\n"
+	.string "[SO3 USR] No init process found\n"
 	.equ noshell_len, . - .LCnoshell
 
 

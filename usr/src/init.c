@@ -222,7 +222,6 @@ int process_file(int fd)
 int main(int argc, char *argv[])
 {
 	struct sigaction sa;
-	printf("Now running So3 usr init\n");
 	fd = open(INPUT_COMMAND_FILE, O_RDONLY);
 	/* By default, we start the shell process */
 	if (fd < 0) {

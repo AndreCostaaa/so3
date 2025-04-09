@@ -19,6 +19,9 @@ RUN cd so3;\
     sed -i 's/CONFIG_USER_INIT_PROGRAM="lvgl_benchmark.elf"/CONFIG_USER_INIT_PROGRAM="init.elf"/g' .config; \
     make -j`nproc`
 
+# Return early from the puts function essentially disabling all u-boot output
+RUN sed -i '/void puts(const char \*s)/,/{/s/{/{\n\treturn;/' u-boot/common/console.c
+
 RUN cd u-boot;\
     make CROSS_COMPILE=aarch64-none-elf- virt64_defconfig;\
     sed -i 's/CONFIG_BOOTDELAY=2/CONFIG_BOOTDELAY=0/g' .config; \

@@ -81,7 +81,6 @@ CONFIG_HEAP_SIZE=2
 CONFIG_AVZ=y
 CONFIG_SOO=y
 CONFIG_MMU=y
-CONFIG_DEBUG_PRINTK=y
 
 #
 # SOO Mobile Entity - Smart Object Oriented subsystem

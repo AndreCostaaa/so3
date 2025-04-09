@@ -26,6 +26,7 @@
 #include <string.h>
 #include <sizes.h>
 #include <spinlock.h>
+#include <log.h>
 
 #include <asm/processor.h>
 
@@ -61,11 +62,12 @@ void heap_init(void)
 
 	boot_stage = BOOT_STAGE_HEAP_READY;
 
-	printk("SO3: allocating a kernel heap of %d bytes at address %p.\n",
-	       quick_list->size, quick_list);
+	LOG_DEBUG("SO3: allocating a kernel heap of %d bytes at address %p.",
+		  quick_list->size, quick_list);
 
-	DBG("[list_init] List initialized. sizeof(mem_chunk_t) = %d bytes, sizeof(int) = %d bytes\n",
-	    sizeof(mem_chunk_t), sizeof(int));
+	LOG_TRACE(
+		"[list_init] List initialized. sizeof(mem_chunk_t) = %d bytes, sizeof(int) = %d bytes",
+		sizeof(mem_chunk_t), sizeof(int));
 }
 
 uint32_t heap_size(void)
@@ -105,12 +107,13 @@ void dump_heap(const char *info)
 	i = j = 0;
 
 	while (list) {
-		printk("[%s - print_list] [0x%p] List #%d\n", info, list, j++);
+		LOG_DEBUG("[%s - print_list] [0x%p] List #%d", info, list, j++);
 
 		while (chunk) {
-			printk("[%s - print_list] [%p] %d size = %d bytes, head = %p, next_list = %p, next_chunk = %p ---> \n",
-			       info, chunk, i++, chunk->size, chunk->head,
-			       chunk->next_list, chunk->next_chunk);
+			LOG_DEBUG(
+				"[%s - print_list] [%p] %d size = %d bytes, head = %p, next_list = %p, next_chunk = %p ---> ",
+				info, chunk, i++, chunk->size, chunk->head,
+				chunk->next_list, chunk->next_chunk);
 			total_size += chunk->size;
 
 			chunk = chunk->next_chunk;
@@ -120,14 +123,15 @@ void dump_heap(const char *info)
 		list = list->next_list;
 		chunk = list;
 	}
-	printk("  [%s] Heap total remaining size: %d\n", info, total_size);
+	LOG_DEBUG("  [%s] Heap total remaining size: %d", info, total_size);
 }
 
 void print_chunk(mem_chunk_t *chunk, const char *caller, const char *name)
 {
-	DBG("[%s - print_chunk] [%p] [%s] %d bytes, next_list = %p, next_chunk = %p\n",
-	    caller, chunk, name, chunk->size, chunk->next_list,
-	    chunk->next_chunk);
+	LOG_TRACE(
+		"[%s - print_chunk] [%p] [%s] %d bytes, next_list = %p, next_chunk = %p",
+		caller, chunk, name, chunk->size, chunk->next_list,
+		chunk->next_chunk);
 }
 
 /*
@@ -135,7 +139,7 @@ void print_chunk(mem_chunk_t *chunk, const char *caller, const char *name)
  */
 static void reset_chunk(mem_chunk_t *chunk)
 {
-	DBG("[reset_chunk] %p\n", chunk);
+	LOG_TRACE("[reset_chunk] %p", chunk);
 
 	chunk->next_list = NULL;
 	chunk->next_chunk = NULL;
@@ -151,7 +155,7 @@ static void remove_chunk(mem_chunk_t *chunk)
 {
 	mem_chunk_t *__chunk, *head;
 
-	DBG("[remove_chunk] %p\n", chunk);
+	LOG_TRACE("[remove_chunk] %p", chunk);
 
 	__chunk = chunk;
 	head = chunk->head;
@@ -218,13 +222,13 @@ static void append_chunk(mem_chunk_t *chunk)
 	mem_chunk_t *tmp_list, *last;
 	mem_chunk_t *tmp_chunk;
 
-	DBG("[append_chunk] %p with size %d padding: %d\n", chunk, chunk->size,
-	    chunk->padding_bytes);
+	LOG_TRACE("[append_chunk] %p with size %d padding: %d", chunk,
+		  chunk->size, chunk->padding_bytes);
 
 	reset_chunk(chunk);
 
 	if (!quick_list) {
-		DBG("[append_chunk] Adding first entry in quick_list\n");
+		LOG_TRACE("[append_chunk] Adding first entry in quick_list");
 		quick_list = chunk;
 		chunk->head = quick_list;
 	} else {
@@ -241,8 +245,9 @@ static void append_chunk(mem_chunk_t *chunk)
 
 			if (tmp_list->size ==
 			    chunk->size) { /* Good, we have found the right size */
-				DBG("[append_chunk] found a list with the right size %d\n",
-				    chunk->size);
+				LOG_TRACE(
+					"[append_chunk] found a list with the right size %d",
+					chunk->size);
 				tmp_chunk = tmp_list;
 
 				/* Go to end of list */
@@ -255,8 +260,9 @@ static void append_chunk(mem_chunk_t *chunk)
 
 			} else { /* Not the right size, but tmp_list->size is greater than chunk->size, so create a list entry and insert right before */
 
-				DBG("[append_chunk] creating list of new size %d\n",
-				    chunk->size);
+				LOG_TRACE(
+					"[append_chunk] creating list of new size %d",
+					chunk->size);
 
 				if (tmp_list ==
 				    quick_list) { /* This entry is the quick_list origin, update it */
@@ -282,8 +288,9 @@ static void append_chunk(mem_chunk_t *chunk)
 
 		} else { /* Definitively at the end of the list */
 
-			DBG("[append_chunk] adding at the end of quick_list with new size %d\n",
-			    chunk->size);
+			LOG_TRACE(
+				"[append_chunk] adding at the end of quick_list with new size %d",
+				chunk->size);
 
 			last->next_list = chunk;
 			chunk->head = chunk;
@@ -325,8 +332,9 @@ recheck:
 				    (char *)new_chunk) { /* adjacent chunk before */
 
 				/* tmp_chunk is adjacent to new_chunk. Merge them */
-				DBG("[merge_chunks] merging new_chunk [%p] with tmp_chunk [%p]\n",
-				    new_chunk, tmp_chunk);
+				LOG_TRACE(
+					"[merge_chunks] merging new_chunk [%p] with tmp_chunk [%p]",
+					new_chunk, tmp_chunk);
 #ifdef DEBUG
 				dump_heap(__func__);
 #endif
@@ -351,9 +359,10 @@ recheck:
 				remove_chunk(new_chunk);
 
 				/* ...and append the merged chunk. */
-				DBG("[merge_chunks] tmp_chunk: %p new_chunk: %p merged_chunk: %p merged_chunk->size = %d\n",
-				    tmp_chunk, new_chunk, merged_chunk,
-				    merged_chunk->size);
+				LOG_TRACE(
+					"[merge_chunks] tmp_chunk: %p new_chunk: %p merged_chunk: %p merged_chunk->size = %d",
+					tmp_chunk, new_chunk, merged_chunk,
+					merged_chunk->size);
 				append_chunk(merged_chunk);
 
 				/* we will recheck for any adjacent chunk with our merged chunk */
@@ -367,7 +376,7 @@ recheck:
 		tmp_list = tmp_list->next_list;
 	}
 
-	DBG("[merge_chunks] merge completed\n");
+	LOG_TRACE("[merge_chunks] merge completed");
 
 #ifdef DEBUG
 	dump_heap(__func__);
@@ -398,8 +407,8 @@ static void *__malloc(size_t requested, unsigned int alignment)
 	*/
 	flags = spin_lock_irqsave(&heap_lock);
 
-	DBG("[malloc] requested size = %d, mem_chunk_size = %d bytes\n",
-	    requested, sizeof(mem_chunk_t));
+	LOG_TRACE("[malloc] requested size = %d, mem_chunk_size = %d bytes",
+		  requested, sizeof(mem_chunk_t));
 
 	/* find the best fit in our list */
 	victim = quick_list;
@@ -412,8 +421,8 @@ next_list:
 	if (!victim) {
 		/* not enough free space left */
 		/* FIXME: do sbrk() here to request more space. Request less space in init() */
-		printk("[malloc] Not enough free space, requested = %x\n",
-		       requested);
+		LOG_CRITICAL("[malloc] Not enough free space, requested = %x",
+			     requested);
 
 		spin_unlock_irqrestore(&heap_lock, flags);
 
@@ -548,7 +557,8 @@ void free(void *ptr)
 	flags = spin_lock_irqsave(&heap_lock);
 
 	if (chunk->sig != CHUNK_SIG) {
-		lprintk("Heap failure: already free'd chunk for address %x...\n",
+		LOG_CRITICAL(
+			"Heap failure: already free'd chunk for address %x...",
 			ptr);
 		kernel_panic();
 	}
@@ -570,7 +580,7 @@ void free(void *ptr)
 		chunk->padding_bytes = 0;
 	}
 
-	DBG("[free_chunk] %p with size %d\n", chunk, chunk->size);
+	LOG_TRACE("[free_chunk] %p with size %d", chunk, chunk->size);
 
 #ifdef DEBUG
 	dump_heap("free {before}");
@@ -622,10 +632,10 @@ void *realloc(void *__ptr, size_t __size)
 	if (!alloc)
 		return NULL;
 
-	DBG("Requesting a size of %d\n", __size);
-	DBG("Copying a size of %d\n",
-	    ((__size < chunk->req_size) ? __size : chunk->req_size));
-	DBG("allocation pointer %p\n", alloc);
+	LOG_TRACE("Requesting a size of %d", __size);
+	LOG_TRACE("Copying a size of %d",
+		  ((__size < chunk->req_size) ? __size : chunk->req_size));
+	LOG_TRACE("allocation pointer %p", alloc);
 
 	memcpy(alloc, __ptr,
 	       ((__size < chunk->req_size) ? __size : chunk->req_size));
