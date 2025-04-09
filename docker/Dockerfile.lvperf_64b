@@ -68,4 +68,4 @@ ENV USR_BUILD_TOOLCHAIN_FILE=aarch64_none_toolchain.cmake
 ENV QEMU_ARCH=aarch64
 ENV PLATFORM=virt64
 
-CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh
+CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run.sh
