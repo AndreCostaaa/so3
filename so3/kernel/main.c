@@ -22,6 +22,7 @@
 #endif
 
 #include <common.h>
+#include <log.h>
 #include <calibrate.h>
 #include <schedule.h>
 #include <memory.h>
@@ -101,7 +102,7 @@ void kernel_start(void)
 {
 	lprintk("%s", SO3_BANNER);
 
-	lprintk("\n\nNow bootstraping the kernel ...\n");
+	LOG_INFO("Now bootstraping the kernel ...");
 
 	/* Memory manager subsystem initialization */
 	memory_init();

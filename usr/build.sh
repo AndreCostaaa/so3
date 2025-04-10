@@ -13,7 +13,6 @@ function usage {
 
 function install_file_elf {
   if [ -f $1 ] ; then 
-    echo "Installing $1" 
     for subfolder_app in $(find build/src -type f -iname "*.elf"); do
       mv "$subfolder_app" build/deploy
     done
@@ -25,7 +24,7 @@ function install_file_root {
 }
 
 function install_directory_root {
-  [ -d $1 ] && echo "Installing $1" && cp -R $1 build/deploy
+  [ -d $1 ] && cp -R $1 build/deploy
 }
 
 function install_file_directory {
@@ -58,6 +57,7 @@ while getopts crhvs option
     esac
   done
 
+ORIGINAL_WD=$(pwd)
 SCRIPT=$(readlink -f $0)
 SCRIPTPATH=`dirname $SCRIPT`
 
@@ -112,7 +112,7 @@ else
 	make -j$NRPROC
 fi
 
-cd -
+cd $ORIGINAL_WD
 
 mkdir -p build/deploy/
 

@@ -60,7 +60,7 @@ deploy_rootfs() {
 }
 
 deploy_uboot() {
-    mkimage -f target/"$PLATFORM"_lvperf.its target/"$PLATFORM"_lvperf.itb
+    mkimage -q -f target/"$PLATFORM"_lvperf.its target/"$PLATFORM"_lvperf.itb
     mount_filesystem
     cp target/"$PLATFORM"_lvperf.itb filesystem/fs/"$PLATFORM".itb
     cp u-boot/uEnv.d/uEnv_$PLATFORM.txt filesystem/fs/uEnv.txt
