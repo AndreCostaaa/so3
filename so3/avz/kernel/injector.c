@@ -50,13 +50,6 @@ static struct dom_context domain_context = { 0 };
 
 /**
  * @brief  Inject a SO3 container (capsule) as guest domain.
- *
- *  At the entry of this function, the ME ITB could have been allocated in the user space (via the injector application)
- *  or in the vmalloc'd area of the Linux kernel in case of a BT transfer from the tablet (using vuihandler).
- *
- *  If the ITB should become larger, it is still possible to compress (and enhance AVZ with a uncompressor invoked
- *  at loading time). Wouldn't be still not enough, a temporary fixmap mapping combined with get_free_pages should be envisaged
- *  to have the ME ITB accessible from the AVZ user space area.
  * 
  * @param args args received from the guest
  */
@@ -94,8 +87,8 @@ void inject_capsule(avz_hyp_t *args)
 
 	domME = domains[slotID];
 
-	/* At the beginning, the capsule is booting */
-	domME->avz_shared->dom_desc.u.ME.state = ME_state_booting;
+	/* At the beginning, the capsule is stopped */
+	domME->avz_shared->dom_desc.u.ME.state = ME_state_stopped;
 
 	/* Set the size of this ME in its own descriptor with the dom_context size */
 	domME->avz_shared->dom_desc.u.ME.size = memslot[slotID].size;
@@ -114,8 +107,6 @@ out:
 	/* Prepare to return the slotID to the caller. */
 	args->u.avz_inject_capsule_args.slotID = slotID;
 
-	raise_softirq(SCHEDULE_SOFTIRQ);
-
 	domME->avz_shared->dom_desc.u.ME.vbstore_pfn = map_vbstore_pfn(slotID, 0);
 	domME->avz_shared->dom_desc.u.ME.vbstore_revtchn = agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID];
 }
@@ -127,7 +118,15 @@ out:
  */
 void start_capsule(avz_hyp_t *args)
 {
-	domain_unpause_by_systemcontroller(domains[args->u.avz_inject_capsule_args.slotID]);
+	BUG_ON(local_irq_is_enabled());
+
+	raise_softirq(SCHEDULE_SOFTIRQ);
+
+	domain_unpause_by_systemcontroller(domains[args->u.avz_start_capsule_args.slotID]);
+
+	/* Setting the capsule in living will be made by Linux since there are still
+	 * FE/BE to be resumed.
+	 */
 }
 
 /*------------------------------------------------------------------------------
@@ -179,14 +178,17 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me, stru
 	       sizeof(struct cpu_regs));
 }
 
-/**
- * Read the ME snapshot.
- */
+ /**
+  * @brief Take a memory snapshot of a capsule. This will lead to a capsule with HIBERNATE state
+  * 	   while the resident capsule will end up in resuming state.
+  * 
+  * @param args provided from the Linux kernel
+  */
 void read_ME_snapshot(avz_hyp_t *args)
 {
 	unsigned int slotID = args->u.avz_snapshot_args.slotID;
 	struct domain *domME = domains[slotID];
-	void *snapshot_buffer = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
+	void *snapshot_buffer = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	/* If the size is 0, we return the snapshot size. */
 	if (args->u.avz_snapshot_args.size == 0) {
@@ -200,6 +202,7 @@ void read_ME_snapshot(avz_hyp_t *args)
 	}
 
 	/* Gather all the info we need into structures */
+	/* This will put the capsule in state HIBERNATE */
 	build_domain_context(slotID, domME, &domain_context);
 
 	/* Copy the size of the payload which is made of the dom_info structure and the capsule */

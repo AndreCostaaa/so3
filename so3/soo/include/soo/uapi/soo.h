@@ -194,7 +194,7 @@ typedef struct domctl domctl_t;
 
 /*
  * ME states:
- * - ME_state_booting:		ME is currently booting...
+ * - ME_state_stopped:		Capsule is stopped (right after start or later)
  * - ME_state_living:		ME is full-functional and activated (all frontend devices are consistent)
  * - ME_state_suspended:	ME is suspended before migrating. This state is maintained for the resident ME instance
  * - ME_state_hibernate:	ME is in a state of hibernate snapshot
@@ -204,7 +204,7 @@ typedef struct domctl domctl_t;
  * - ME_state_dead:		ME does not exist
  */
 typedef enum {
-	ME_state_booting,
+	ME_state_stopped,
 	ME_state_living,
 	ME_state_suspended,
 	ME_state_hibernate,

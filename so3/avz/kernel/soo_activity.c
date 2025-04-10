@@ -159,7 +159,7 @@ void do_avz_hypercall(avz_hyp_t *args)
 		break;
 
 	case AVZ_START_CAPSULE:
-		inject_capsule(args);
+		start_capsule(args);
 		break;
 
 	case AVZ_DC_EVENT_SET:

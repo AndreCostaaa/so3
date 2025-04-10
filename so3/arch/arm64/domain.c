@@ -72,8 +72,8 @@ void initialize_hyp_dom_stack(struct domain *d, addr_t fdt_paddr,
 	/* As we will be resumed from the schedule function, we need to update the
 	 * vital registers from the VCPU regs.
 	 */
-	d->vcpu.regs.sp = (unsigned long)frame;
-	d->vcpu.regs.lr = (unsigned long)pre_ret_to_user;
+	d->vcpu.regs.sp = (unsigned long) frame;
+	d->vcpu.regs.lr = (unsigned long) pre_ret_to_user;
 }
 
 /**
