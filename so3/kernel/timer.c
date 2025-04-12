@@ -392,11 +392,12 @@ void timer_init(void)
 		per_cpu(timers, i).heap = NULL;
 		per_cpu(timers, i).list = NULL;
 		per_cpu(timers, i).running = NULL;
+
+		spin_lock_init(&per_cpu(timers, i).lock);
 	}
 
 	register_softirq(TIMER_SOFTIRQ, timer_softirq_action);
 
-	spin_lock_init(&per_cpu(timers, smp_processor_id()).lock);
 
 	/* The timer devices have been previously initialized during devices_init() */
 #ifdef CONFIG_RTOS

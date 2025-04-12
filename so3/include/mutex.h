@@ -32,6 +32,7 @@
 struct mutex {
 	tcb_t *owner;
 	spinlock_t wait_lock;
+	
 	/* 1: unlocked, 0: locked, negative: locked, possible waiters */
 	atomic_t count;
 

@@ -26,7 +26,17 @@ extern unsigned long __per_cpu_offset[CONFIG_NR_CPUS];
 #endif
 
 /* var is in discarded region: offset to particular copy we want */
-#define per_cpu(var, cpu) (*RELOC_HIDE(&per_cpu__##var, __per_cpu_offset[cpu]))
+#define __per_cpu_ptr(var, cpu)                                     \
+    ({                                                              \
+        if (cpu >= CONFIG_NR_CPUS)                           	    \
+		panic("CONFIG_NR_CPUS invalid to manage CPU-specific variables!\n"); \
+        RELOC_HIDE(&per_cpu__##var, __per_cpu_offset[(cpu)]);       \
+    })
+
+#define per_cpu(var, cpu)                                           \
+    (*__per_cpu_ptr(var, cpu))
+ 
+
 #define __get_cpu_var(var) per_cpu(var, smp_processor_id())
 #define __raw_get_cpu_var(var) per_cpu(var, raw_smp_processor_id())
 
