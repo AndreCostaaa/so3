@@ -32,7 +32,9 @@ FROM baseimage AS runner
 RUN apk update; \
     apk add --no-cache make cmake gcc-aarch64-none-elf \
     g++-aarch64-none-elf qemu-system-aarch64 \
-    util-linux dtc u-boot-tools dosfstools
+    util-linux dtc u-boot-tools dosfstools python3 py3-pip
+
+RUN pip install --break-system-packages pcpp
 
 WORKDIR /so3
 
@@ -57,6 +59,9 @@ RUN printf "run lvgl_benchmark.elf\nexit\n" > usr/out/commands.ini
 COPY target/virt64_lvperf.its target
 COPY docker/scripts docker/scripts
 
+# Create an empty script that can be modified by mounting a volume in the same path
+# so we can add additional dependencies easily without rebuilding the whole image 
+RUN echo "#!/bin/sh" > install_dependencies.sh && chmod +x install_dependencies.sh 
 
 RUN rm -rf /var/cache/apk/*
 RUN rm -rf /usr/share/man /usr/share/doc /usr/share/info /var/cache/apk/*
@@ -68,4 +73,4 @@ ENV USR_BUILD_TOOLCHAIN_FILE=aarch64_none_toolchain.cmake
 ENV QEMU_ARCH=aarch64
 ENV PLATFORM=virt64
 
-CMD ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run_lv_benchmark.sh
+CMD ./install_dependencies.sh && ./docker/scripts/setup_ramfs.sh && ./docker/scripts/setup_filesystem.sh && ./docker/scripts/run.sh

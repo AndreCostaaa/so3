@@ -42,6 +42,11 @@ When running the Docker image, the following operations are performed:
 
 With the `virtXX_lvperf_defconfig` configuration, the kernel will run `lvgl_benchmark.elf` instead of `sh.elf` after startup.
 
+## Adding Additional Dependencies
+
+To install extra dependencies without rebuilding the entire image, you can mount a shell script at `/so3/install_dependencies.sh`.
+Please note that the image is based on Alpine Linux.
+
 ## Persistence
 
 Running the image repeatedly will execute all steps each time. To improve efficiency, you can mount Docker volumes to preserve data between runs:
