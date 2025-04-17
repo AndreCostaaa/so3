@@ -200,7 +200,7 @@ typedef struct domctl domctl_t;
  * - ME_state_hibernate:	ME is in a state of hibernate snapshot
  * - ME_state_resuming:         ME ready to perform resuming (after recovering)
  * - ME_state_awakened:         ME is just being awakened
- * - ME_state_terminated:	ME has been terminated (by a force_terminate)
+ * - ME_state_terminated:	ME has been terminated (by a shutdown)
  * - ME_state_dead:		ME does not exist
  */
 typedef enum {
@@ -253,7 +253,7 @@ typedef enum {
 	DC_PRE_SUSPEND,
 	DC_SUSPEND,
 	DC_RESUME,
-	DC_FORCE_TERMINATE,
+	DC_SHUTDOWN,
 	DC_POST_ACTIVATE,
 	DC_TRIGGER_DEV_PROBE,
 	DC_TRIGGER_LOCAL_COOPERATION,
@@ -280,7 +280,7 @@ extern atomic_t dc_incoming_domID[DC_EVENT_MAX];
 
 #define AGENCY_IOCTL_READ_SNAPSHOT		_IOWR('S', 1, agency_ioctl_args_t)
 #define AGENCY_IOCTL_WRITE_SNAPSHOT		_IOW('S', 2, agency_ioctl_args_t)
-#define AGENCY_IOCTL_FORCE_TERMINATE		_IOW('S', 3, agency_ioctl_args_t)
+#define AGENCY_IOCTL_SHUTDOWN   		_IOW('S', 3, agency_ioctl_args_t)
 #define AGENCY_IOCTL_INJECT_CAPSULE     	_IOWR('S', 4, agency_ioctl_args_t)
 #define AGENCY_IOCTL_START_CAPSULE              _IOWR('S', 5, agency_ioctl_args_t)
 #define AGENCY_IOCTL_GET_ME_ID			_IOWR('S', 6, agency_ioctl_args_t)
@@ -566,7 +566,7 @@ void cb_pre_suspend(soo_domcall_arg_t *args);
 
 void cb_post_activate(soo_domcall_arg_t *args);
 
-void cb_force_terminate(void);
+void cb_shutdown(void);
 
 void callbacks_init(void);
 

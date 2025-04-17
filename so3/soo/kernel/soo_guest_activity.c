@@ -173,11 +173,11 @@ void perform_task(dc_event_t dc_event)
 	soo_domcall_arg_t args;
 
 	switch (dc_event) {
-	case DC_FORCE_TERMINATE:
-		/* The ME will initiate the force_terminate processing on its own. */
+	case DC_SHUTDOWN:
+		/* The ME will initiate the shutdown processing on its own. */
 
-		DBG("perform a CB_FORCE_TERMINATE on this ME %d\n", ME_domID());
-		cb_force_terminate();
+		DBG("perform a CB_SHUTDOWN on capsule %d\n", ME_domID());
+		cb_shutdown();
 
 		if (get_ME_state() == ME_state_terminated) {
 			/* Prepare vbus to stop everything with the frontend */
