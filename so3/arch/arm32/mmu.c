@@ -16,10 +16,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <memory.h>
 #include <heap.h>
@@ -64,20 +60,15 @@ unsigned int get_domain(void)
 
 void set_domain(uint32_t val)
 {
-	asm volatile("mcr	p15, 0, %0, c3, c0	@ set domain"
-		     :
-		     : "r"(val)
-		     : "memory");
+	asm volatile("mcr	p15, 0, %0, c3, c0	@ set domain" : : "r"(val) : "memory");
 	isb();
 }
 
 #ifdef CONFIG_RAMDEV
-void ramdev_create_mapping(void *root_pgtable, addr_t ramdev_start,
-			   addr_t ramdev_end)
+void ramdev_create_mapping(void *root_pgtable, addr_t ramdev_start, addr_t ramdev_end)
 {
 	if (valid_ramdev())
-		create_mapping(root_pgtable, RAMDEV_VADDR, ramdev_start,
-			       ramdev_end - ramdev_start, false);
+		create_mapping(root_pgtable, RAMDEV_VADDR, ramdev_start, ramdev_end - ramdev_start, false);
 }
 #endif /* CONFIG_RAMDEV */
 
@@ -96,8 +87,7 @@ void mmu_get_current_pgtable(addr_t *pgtable_paddr)
 }
 
 /* Reference to the system 1st-level page table */
-static void alloc_init_pte(uint32_t *l1pte, addr_t addr, addr_t end, addr_t pfn,
-			   bool nocache)
+static void alloc_init_pte(uint32_t *l1pte, addr_t addr, addr_t end, addr_t pfn, bool nocache)
 {
 	uint32_t *l2pte, *l2pgtable;
 	uint32_t size;
@@ -113,12 +103,9 @@ static void alloc_init_pte(uint32_t *l1pte, addr_t addr, addr_t end, addr_t pfn,
 
 		*l1pte = __pa((uint32_t)l2pte);
 
-		set_l1_pte_page_dcache(l1pte,
-				       (nocache ? L1_PAGE_DCACHE_OFF :
-						  L1_PAGE_DCACHE_WRITEALLOC));
+		set_l1_pte_page_dcache(l1pte, (nocache ? L1_PAGE_DCACHE_OFF : L1_PAGE_DCACHE_WRITEALLOC));
 
-		DBG("Allocating a L2 page table at %p in l1pte: %p with contents: %x\n",
-		    l2pte, l1pte, *l1pte);
+		LOG_DEBUG("Allocating a L2 page table at %p in l1pte: %p with contents: %x\n", l2pte, l1pte, *l1pte);
 	}
 
 	l2pgtable = (uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
@@ -128,25 +115,22 @@ static void alloc_init_pte(uint32_t *l1pte, addr_t addr, addr_t end, addr_t pfn,
 	do {
 		*l2pte = pfn << PAGE_SHIFT;
 
-		set_l2_pte_dcache(l2pte, (nocache ? L2_DCACHE_OFF :
-						    L2_DCACHE_WRITEALLOC));
+		set_l2_pte_dcache(l2pte, (nocache ? L2_DCACHE_OFF : L2_DCACHE_WRITEALLOC));
 
-		DBG("Setting l2pte %p with contents: %x\n", l2pte, *l2pte);
+		LOG_DEBUG("Setting l2pte %p with contents: %x\n", l2pte, *l2pte);
 
 		pfn++;
 
 	} while (l2pte++, addr += PAGE_SIZE, addr != end);
 
-	mmu_page_table_flush((uint32_t)l2pgtable,
-			     (uint32_t)(l2pgtable + TTB_L2_ENTRIES));
+	mmu_page_table_flush((uint32_t)l2pgtable, (uint32_t)(l2pgtable + TTB_L2_ENTRIES));
 }
 
 /*
  * Allocate a section (only L1 PTE) or page table (L1 & L2 page tables)
  * @nocache indicates if the page can be cache or not (true means no support for cached page)
  */
-static void alloc_init_section(uint32_t *l1pte, addr_t addr, addr_t end,
-			       addr_t phys, bool nocache)
+static void alloc_init_section(uint32_t *l1pte, addr_t addr, addr_t end, addr_t phys, bool nocache)
 {
 	/*
 	 * Try a section mapping - end, addr and phys must all be aligned
@@ -157,11 +141,9 @@ static void alloc_init_section(uint32_t *l1pte, addr_t addr, addr_t end,
 		do {
 			*l1pte = phys;
 
-			set_l1_pte_sect_dcache(
-				l1pte, (nocache ? L1_SECT_DCACHE_OFF :
-						  L1_SECT_DCACHE_WRITEALLOC));
-			DBG("Allocating a section at l1pte: %p content: %x\n",
-			    l1pte, *l1pte);
+			set_l1_pte_sect_dcache(l1pte, (nocache ? L1_SECT_DCACHE_OFF : L1_SECT_DCACHE_WRITEALLOC));
+			
+			LOG_DEBUG("Allocating a section at l1pte: %p content: %x\n", l1pte, *l1pte);
 
 			phys += TTB_SECT_SIZE;
 
@@ -186,8 +168,7 @@ static void alloc_init_section(uint32_t *l1pte, addr_t addr, addr_t end,
  * @size is the number of bytes to be mapped
  * @nocache is true if no cache (TLB) must be used (typically for I/O)
  */
-void create_mapping(void *l1pgtable, addr_t virt_base, addr_t phys_base,
-		    uint32_t size, bool nocache)
+void create_mapping(void *l1pgtable, addr_t virt_base, addr_t phys_base, uint32_t size, bool nocache)
 {
 	addr_t addr, end, length, next;
 	uint32_t *l1pte;
@@ -232,17 +213,15 @@ static void free_l2_mapping(uint32_t *l1pte, addr_t addr, addr_t end)
 	l2pte = l2pte_offset(l1pte, addr);
 
 	do {
-		DBG("Re-setting l2pte to 0: %p\n", l2pte);
+		LOG_DEBUG("Re-setting l2pte to 0: %p\n", l2pte);
 
 		*l2pte = 0; /* Free this entry */
 
 	} while (l2pte++, addr += PAGE_SIZE, addr != end);
 
-	mmu_page_table_flush((uint32_t)pgtable,
-			     (uint32_t)(pgtable + TTB_L2_ENTRIES));
+	mmu_page_table_flush((uint32_t)pgtable, (uint32_t)(pgtable + TTB_L2_ENTRIES));
 
-	for (i = 0, found = false, l2pte = l2pte_first(l1pte);
-	     !found && (i < TTB_L2_ENTRIES); i++)
+	for (i = 0, found = false, l2pte = l2pte_first(l1pte); !found && (i < TTB_L2_ENTRIES); i++)
 		found = (*(l2pte + i) != 0);
 
 	if (!found) {
@@ -265,7 +244,7 @@ static void free_l1_mapping(uint32_t *l1pte, addr_t addr, addr_t end)
 	 */
 	if (((addr | end) & ~TTB_SECT_MASK) == 0) {
 		do {
-			DBG("Re-setting l1pte: %p to 0\n", l1pte);
+			LOG_DEBUG("Re-setting l1pte: %p to 0\n", l1pte);
 
 			*l1pte = 0; /* Free this entry */
 
@@ -344,8 +323,7 @@ void mmu_configure(addr_t phys_base, addr_t fdt_addr)
 	 * Do not forget that the stack must be reachable within this 1 MB range.
 	 */
 		__pgtable[l1pte_index(phys_base)] = phys_base;
-		set_l1_pte_sect_dcache(&__pgtable[l1pte_index(phys_base)],
-				       L1_SECT_DCACHE_WRITEALLOC);
+		set_l1_pte_sect_dcache(&__pgtable[l1pte_index(phys_base)], L1_SECT_DCACHE_WRITEALLOC);
 
 		/* Now, create a linear mapping in the kernel space */
 #ifdef CONFIG_AVZ
@@ -354,25 +332,18 @@ void mmu_configure(addr_t phys_base, addr_t fdt_addr)
 #else
 	for (i = 0; i < 64; i++) {
 #endif /* CONFIG_AVZ */
-			__pgtable[l1pte_index(CONFIG_KERNEL_VADDR) + i] =
-				phys_base + i * TTB_SECT_SIZE;
+			__pgtable[l1pte_index(CONFIG_KERNEL_VADDR) + i] = phys_base + i * TTB_SECT_SIZE;
 
-			set_l1_pte_sect_dcache(
-				&__pgtable[l1pte_index(CONFIG_KERNEL_VADDR) + i],
-				L1_SECT_DCACHE_WRITEALLOC);
+			set_l1_pte_sect_dcache(&__pgtable[l1pte_index(CONFIG_KERNEL_VADDR) + i], L1_SECT_DCACHE_WRITEALLOC);
 		}
 
 		/* At the moment, we keep a virtual mapping on the device tree - fdt_addr contains the physical address. */
 		__pgtable[l1pte_index(fdt_addr)] = fdt_addr;
-		set_l1_pte_sect_dcache(&__pgtable[l1pte_index(fdt_addr)],
-				       L1_SECT_DCACHE_WRITEALLOC);
+		set_l1_pte_sect_dcache(&__pgtable[l1pte_index(fdt_addr)], L1_SECT_DCACHE_WRITEALLOC);
 
 		/* Early mapping I/O for UART */
-		__pgtable[l1pte_index(CONFIG_UART_LL_PADDR)] =
-			CONFIG_UART_LL_PADDR;
-		set_l1_pte_sect_dcache(
-			&__pgtable[l1pte_index(CONFIG_UART_LL_PADDR)],
-			L1_SECT_DCACHE_OFF);
+		__pgtable[l1pte_index(CONFIG_UART_LL_PADDR)] = CONFIG_UART_LL_PADDR;
+		set_l1_pte_sect_dcache(&__pgtable[l1pte_index(CONFIG_UART_LL_PADDR)], L1_SECT_DCACHE_OFF);
 
 #ifdef CONFIG_AVZ
 	}
@@ -383,8 +354,7 @@ void mmu_configure(addr_t phys_base, addr_t fdt_addr)
 	dcache_enable();
 	icache_enable();
 
-	mmu_page_table_flush((uint32_t)__pgtable,
-			     (uint32_t)(__pgtable + TTB_L1_ENTRIES));
+	mmu_page_table_flush((uint32_t)__pgtable, (uint32_t)(__pgtable + TTB_L1_ENTRIES));
 
 #endif /* !CONFIG_SO3VIRT */
 
@@ -419,8 +389,7 @@ void pgtable_copy_kernel_area(void *l1pgtable)
 	for (i1 = l1pte_index(CONFIG_KERNEL_VADDR); i1 < TTB_L1_ENTRIES; i1++)
 		__l1pgtable[i1] = ((uint32_t *)__sys_root_pgtable)[i1];
 
-	mmu_page_table_flush((addr_t)__l1pgtable,
-			     (addr_t)(__l1pgtable + TTB_L1_ENTRIES));
+	mmu_page_table_flush((addr_t)__l1pgtable, (addr_t)(__l1pgtable + TTB_L1_ENTRIES));
 }
 
 /*
@@ -448,10 +417,8 @@ void *new_root_pgtable(void)
 	/* Let's copy 12 MB of hypervisor */
 
 	for (i = 0; i < 12; i++)
-		*l1pte_offset((u32 *)pgtable + i,
-			      avz_shared->hypervisor_vaddr) =
-			*l1pte_offset((u32 *)__sys_root_pgtable + i,
-				      avz_shared->hypervisor_vaddr);
+		*l1pte_offset((u32 *)pgtable + i, avz_shared->hypervisor_vaddr) =
+			*l1pte_offset((u32 *)__sys_root_pgtable + i, avz_shared->hypervisor_vaddr);
 #endif
 
 	return pgtable;
@@ -480,8 +447,7 @@ void reset_root_pgtable(void *pgtable, bool remove)
 		/* Check if a L2 page table is used */
 		if (*l1pte) {
 			if (!l1pte_is_sect(*l1pte)) {
-				l2pte = (uint32_t *)__va(*l1pte &
-							 TTB_L1_PAGE_ADDR_MASK);
+				l2pte = (uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
 
 				free(l2pte);
 
@@ -495,8 +461,7 @@ void reset_root_pgtable(void *pgtable, bool remove)
 	if (remove)
 		free(pgtable);
 
-	mmu_page_table_flush((addr_t)pgtable,
-			     (addr_t)(pgtable + TTB_L1_ENTRIES));
+	mmu_page_table_flush((addr_t)pgtable, (addr_t)(pgtable + TTB_L1_ENTRIES));
 }
 
 void mmu_switch_kernel(void *pgtable_paddr)
@@ -512,8 +477,7 @@ void mmu_switch_kernel(void *pgtable_paddr)
 	 * be preserved if any.
 	 */
 
-	if (((uint32_t)pgtable_paddr & TTBR0_BASE_ADDR_MASK) !=
-	    (uint32_t)pgtable_paddr)
+	if (((uint32_t)pgtable_paddr & TTBR0_BASE_ADDR_MASK) != (uint32_t)pgtable_paddr)
 		WRITE_CP32((uint32_t)pgtable_paddr, TTBR0_32);
 	else
 		__mmu_switch_ttbr0(pgtable_paddr);
@@ -569,11 +533,9 @@ void duplicate_user_space(struct pcb *from, struct pcb *to)
 
 			*l1pte_dst = __pa((addr_t)l2pgtable_dst);
 
-			set_l1_pte_page_dcache(l1pte_dst,
-					       L1_PAGE_DCACHE_WRITEALLOC);
+			set_l1_pte_page_dcache(l1pte_dst, L1_PAGE_DCACHE_WRITEALLOC);
 
-			l2pgtable = (uint32_t *)__va(*l1pte &
-						     TTB_L1_PAGE_ADDR_MASK);
+			l2pgtable = (uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
 
 			for (j = 0; j < 256; j++) {
 				l2pte = l2pgtable + j;
@@ -585,24 +547,17 @@ void duplicate_user_space(struct pcb *from, struct pcb *to)
 					BUG_ON(!paddr);
 
 					/* Add the new page to the process list */
-					add_page_to_proc(
-						to,
-						(page_t *)phys_to_page(paddr));
+					add_page_to_proc(to, (page_t *)phys_to_page(paddr));
 
-					create_mapping(current_pgtable(),
-						       FIXMAP_MAPPING, paddr,
-						       PAGE_SIZE, false);
+					create_mapping(current_pgtable(), FIXMAP_MAPPING, paddr, PAGE_SIZE, false);
 
 					*l2pte_dst = paddr;
 
-					set_l2_pte_dcache(l2pte_dst,
-							  L2_DCACHE_WRITEALLOC);
+					set_l2_pte_dcache(l2pte_dst, L2_DCACHE_WRITEALLOC);
 
-					vaddr = (void *)pte_index_to_vaddr(i,
-									   j);
+					vaddr = (void *)pte_index_to_vaddr(i, j);
 
-					memcpy((void *)FIXMAP_MAPPING, vaddr,
-					       PAGE_SIZE);
+					memcpy((void *)FIXMAP_MAPPING, vaddr, PAGE_SIZE);
 				}
 			}
 		}
@@ -629,25 +584,16 @@ void dump_pgtable(void *l1pgtable)
 			if (*l1pte) {
 				if (l1pte_is_sect(*l1pte))
 					lprintk(" - L1 pte@%p (idx %x) mapping %x is section type  content: %x\n",
-						__l1pgtable + i, i,
-						i << (32 - TTB_L1_ORDER),
-						*l1pte);
+						__l1pgtable + i, i, i << (32 - TTB_L1_ORDER), *l1pte);
 				else
-					lprintk(" - L1 pte@%p (idx %x) is PT type   content: %x\n",
-						__l1pgtable + i, i, *l1pte);
+					lprintk(" - L1 pte@%p (idx %x) is PT type   content: %x\n", __l1pgtable + i, i, *l1pte);
 
 				if (!l1pte_is_sect(*l1pte)) {
 					for (j = 0; j < 256; j++) {
-						l2pte = ((uint32_t *)__va(
-								*l1pte &
-								TTB_L1_PAGE_ADDR_MASK)) +
-							j;
+						l2pte = ((uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK)) + j;
 						if (*l2pte)
-							lprintk("      - L2 pte@%p (i2=%x) mapping %x  content: %x\n",
-								l2pte, j,
-								pte_index_to_vaddr(
-									i, j),
-								*l2pte);
+							lprintk("      - L2 pte@%p (i2=%x) mapping %x  content: %x\n", l2pte, j,
+								pte_index_to_vaddr(i, j), *l2pte);
 					}
 				}
 			}
