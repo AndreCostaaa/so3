@@ -16,10 +16,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <heap.h>
 #include <memory.h>
@@ -127,11 +123,9 @@ void parse_dtb(void *fdt_addr)
 	drivers_count[POSTCORE] = ll_entry_count(driver_initcall_t, postcore);
 	driver_entries[POSTCORE] = ll_entry_start(driver_initcall_t, postcore);
 
-	DBG("%s: # entries for core drivers : %d\n", __func__,
-	    drivers_count[CORE]);
-	DBG("%s: # entries for postcore drivers : %d\n", __func__,
-	    drivers_count[POSTCORE]);
-	DBG("Now scanning the device tree to retrieve all devices...\n");
+	LOG_DEBUG("%s: # entries for core drivers : %d\n", __func__, drivers_count[CORE]);
+	LOG_DEBUG("%s: # entries for postcore drivers : %d\n", __func__, drivers_count[POSTCORE]);
+	LOG_DEBUG("Now scanning the device tree to retrieve all devices...\n");
 
 	for (level = 0; level < INITCALLS_LEVELS; level++) {
 		dev = (dev_t *)malloc(sizeof(dev_t));
@@ -141,37 +135,23 @@ void parse_dtb(void *fdt_addr)
 		found = false;
 		offset = 0;
 
-		while ((new_off = get_dev_info(fdt_addr, offset, "*", dev)) !=
-		       -1) {
+		while ((new_off = get_dev_info(fdt_addr, offset, "*", dev)) != -1) {
 			if (fdt_device_is_available(fdt_addr, new_off)) {
 				for (i = 0; i < drivers_count[level]; i++) {
-					if (!strcmp(dev->compatible,
-						    driver_entries[level][i]
-							    .compatible)) {
+					if (!strcmp(dev->compatible, driver_entries[level][i].compatible)) {
 						found = true;
 
-						DBG("Found compatible:    %s\n",
-						    driver_entries[level][i]
-							    .compatible);
-						DBG("    Compatible:      %s\n",
-						    dev->compatible);
-						DBG("    Status:          %s\n",
-						    dev_state_str(dev->status));
-						DBG("    Initcall level:  %d\n",
-						    level);
+						LOG_DEBUG("Found compatible:    %s\n", driver_entries[level][i].compatible);
+						LOG_DEBUG("    Compatible:      %s\n", dev->compatible);
+						LOG_DEBUG("    Status:          %s\n", dev_state_str(dev->status));
+						LOG_DEBUG("    Initcall level:  %d\n", level);
 
-						if (dev->status ==
-						    STATUS_INIT_PENDING) {
-							ret = driver_entries[level][i]
-								      .init(dev,
-									    new_off);
+						if (dev->status == STATUS_INIT_PENDING) {
+							ret = driver_entries[level][i].init(dev, new_off);
 							BUG_ON(ret);
 
-							dev->status =
-								STATUS_INITIALIZED;
-							list_add_tail(
-								&dev->list,
-								&devices);
+							dev->status = STATUS_INITIALIZED;
+							list_add_tail(&dev->list, &devices);
 						}
 						break;
 					}
@@ -267,10 +247,8 @@ struct devclass *devclass_by_filename(const char *filename)
 		 * We compare the lengths and use strncmp to compare only the
 		 * device class part of `filename'.
 		 */
-		if ((strlen(cur_dev->class) == dev_class_len) &&
-		    !strncmp(filename, cur_dev->class, dev_class_len)) {
-			if ((dev_id >= cur_dev->id_start) &&
-			    (dev_id <= cur_dev->id_end))
+		if ((strlen(cur_dev->class) == dev_class_len) && !strncmp(filename, cur_dev->class, dev_class_len)) {
+			if ((dev_id >= cur_dev->id_start) && (dev_id <= cur_dev->id_end))
 				return cur_dev;
 		}
 	}
@@ -314,8 +292,7 @@ struct devclass *devclass_by_fd(int fd)
  * is also set to the proper value.
  *
  */
-struct file_operations *devclass_get_fops(const char *filename,
-					  uint32_t *vfs_type)
+struct file_operations *devclass_get_fops(const char *filename, uint32_t *vfs_type)
 {
 	struct devclass *cdev;
 

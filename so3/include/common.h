@@ -26,6 +26,7 @@
 #include <types.h>
 #include <printk.h>
 #include <string.h>
+#include <log.h>
 
 #endif /* __ASSEMBLY__ */
 
@@ -60,26 +61,6 @@ extern addr_t pseudo_usr_mode[];
 
 #endif /* CONFIG_AVZ */
 
-#ifdef DEBUG
-#undef DBG
-
-#ifdef CONFIG_AVZ
-#define DBG(fmt, ...)                                                 \
-	do {                                                          \
-		lprintk("[soo:avz] %s:%i > " fmt, __func__, __LINE__, \
-			##__VA_ARGS__);                               \
-	} while (0)
-
-#else
-#define DBG(fmt, ...)                                                       \
-	do {                                                                \
-		lprintk("%s:%i > " fmt, __func__, __LINE__, ##__VA_ARGS__); \
-	} while (0)
-#endif
-
-#else
-#define DBG(fmt, ...)
-#endif
 
 #define DIV_ROUND_CLOSEST(x, divisor)                                \
 	({                                                           \

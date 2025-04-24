@@ -25,8 +25,6 @@
 
 #include <device/irq.h>
 
-#define DEBUG
-
 static irqdesc_t irqdesc[NR_IRQS];
 volatile bool __in_interrupt = false;
 
@@ -135,7 +133,7 @@ void irq_set_irq_ops(int irq, irq_ops_t *irq_ops)
 void irq_bind(int irq, irq_handler_t handler, irq_handler_t irq_deferred_fn,
 	      void *data)
 {
-	DBG("Binding irq %d with action at %x\n", irq, handler);
+	LOG_DEBUG("Binding irq %d with action at %x\n", irq, handler);
 
 	BUG_ON(irqdesc[irq].action != NULL);
 
@@ -148,7 +146,7 @@ void irq_bind(int irq, irq_handler_t handler, irq_handler_t irq_deferred_fn,
 
 void irq_unbind(int irq)
 {
-	DBG("Binding irq %d with action at %x\n", irq, handler);
+	LOG_DEBUG("Binding irq %d with action at %x\n", irq, handler);
 	irqdesc[irq].action = NULL;
 	irqdesc[irq].irq_deferred_fn = NULL;
 }

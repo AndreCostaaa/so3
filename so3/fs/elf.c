@@ -17,10 +17,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <heap.h>
 #include <vfs.h>
@@ -108,18 +104,18 @@ void elf_load_sections(elf_img_info_t *elf_img_info)
 	       sizeof(struct elf64_hdr));
 #endif
 
-	DBG("Magic: 0x%02x%c%c%c\n", elf_img_info->header->e_ident[EI_MAG0],
+	LOG_DEBUG("Magic: 0x%02x%c%c%c\n", elf_img_info->header->e_ident[EI_MAG0],
 	    elf_img_info->header->e_ident[EI_MAG1],
 	    elf_img_info->header->e_ident[EI_MAG2],
 	    elf_img_info->header->e_ident[EI_MAG3]);
-	DBG("%d sections\n", elf_img_info->header->e_shnum);
-	DBG("section table is at offset 0x%08x (%d bytes/section)\n",
+	LOG_DEBUG("%d sections\n", elf_img_info->header->e_shnum);
+	LOG_DEBUG("section table is at offset 0x%08x (%d bytes/section)\n",
 	    elf_img_info->header->e_shoff, elf_img_info->header->e_shentsize);
 
 #ifdef CONFIG_ARCH_ARM32
-	DBG("sizeof(struct elf32_shdr): %d bytes\n", sizeof(struct elf32_shdr));
+	LOG_DEBUG("sizeof(struct elf32_shdr): %d bytes\n", sizeof(struct elf32_shdr));
 #else
-	DBG("sizeof(struct elf64_shdr): %d bytes\n", sizeof(struct elf64_shdr));
+	LOG_DEBUG("sizeof(struct elf64_shdr): %d bytes\n", sizeof(struct elf64_shdr));
 #endif
 
 	/* sections */
@@ -132,14 +128,14 @@ void elf_load_sections(elf_img_info_t *elf_img_info)
 #endif
 
 	if (!elf_img_info->sections) {
-		printk("%s: failed to allocate memory\n", __func__);
+		LOG_CRITICAL("%s: failed to allocate memory\n", __func__);
 		kernel_panic();
 	}
 
 	elf_img_info->section_names =
 		(char **)malloc(elf_img_info->header->e_shnum * sizeof(char *));
 	if (!elf_img_info->section_names) {
-		printk("%s: failed to allocate memory\n", __func__);
+		LOG_CRITICAL("%s: failed to allocate memory\n", __func__);
 		kernel_panic();
 	}
 
@@ -163,7 +159,7 @@ void elf_load_sections(elf_img_info_t *elf_img_info)
 		elf_img_info->section_names[i] =
 			(char *)malloc(section_name_len + 1);
 		if (!elf_img_info->section_names[i]) {
-			printk("%s: failed to allocate memory\n", __func__);
+			LOG_CRITICAL("%s: failed to allocate memory\n", __func__);
 			kernel_panic();
 		}
 
@@ -171,13 +167,13 @@ void elf_load_sections(elf_img_info_t *elf_img_info)
 		       (char *)(elf_img_info->file_buffer +
 				section_name_offset));
 
-		DBG("[0x%08x] section name: %s\t(%d bytes)\n",
+		LOG_DEBUG("[0x%08x] section name: %s\t(%d bytes)\n",
 		    section_name_offset, elf_img_info->section_names[i],
 		    section_name_len);
 	}
 
 	for (i = 0; i < elf_img_info->header->e_shnum; i++) {
-		DBG("\t[0x%08x] %s loads at 0x%08x (%d bytes) - flags: 0x%08x\n",
+		LOG_DEBUG("\t[0x%08x] %s loads at 0x%08x (%d bytes) - flags: 0x%08x\n",
 		    elf_img_info->sections[i].sh_offset,
 		    elf_img_info->section_names[i],
 		    elf_img_info->sections[i].sh_addr,
@@ -200,17 +196,18 @@ void elf_load_segments(elf_img_info_t *elf_img_info)
 #endif
 
 	if (!elf_img_info->segments) {
-		printk("%s: failed to allocate memory\n", __func__);
+		LOG_CRITICAL("%s: failed to allocate memory\n", __func__);
 		kernel_panic();
 	}
 
-	DBG("%d segments\n", elf_img_info->header->e_phnum);
-	DBG("segment table is at offset 0x%08x (%d bytes/section)\n",
+	LOG_DEBUG("%d segments\n", elf_img_info->header->e_phnum);
+	LOG_DEBUG("segment table is at offset 0x%08x (%d bytes/section)\n",
 	    elf_img_info->header->e_phoff, elf_img_info->header->e_phentsize);
+
 #ifdef CONFIG_ARCH_ARM32
-	DBG("sizeof(struct elf32_phdr): %d bytes\n", sizeof(struct elf32_phdr));
+	LOG_DEBUG("sizeof(struct elf32_phdr): %d bytes\n", sizeof(struct elf32_phdr));
 #else
-	DBG("sizeof(struct elf64_phdr): %d bytes\n", sizeof(struct elf64_phdr));
+	LOG_DEBUG("sizeof(struct elf64_phdr): %d bytes\n", sizeof(struct elf64_phdr));
 #endif
 
 	elf_img_info->segment_page_count = 0;
@@ -235,11 +232,11 @@ void elf_load_segments(elf_img_info_t *elf_img_info)
 				 PAGE_SHIFT) +
 				1;
 	}
-	DBG("segments use %d virtual pages\n",
+	LOG_DEBUG("segments use %d virtual pages\n",
 	    elf_img_info->segment_page_count);
 
 	for (i = 0; i < elf_img_info->header->e_phnum; i++) {
-		DBG("[0x%08x] vaddr: 0x%08x; paddr: 0x%08x; filesize: 0x%08x; memsize: 0x%08x flags: 0x%08x\n",
+		LOG_DEBUG("[0x%08x] vaddr: 0x%08x; paddr: 0x%08x; filesize: 0x%08x; memsize: 0x%08x flags: 0x%08x\n",
 		    elf_img_info->segments[i].p_offset,
 		    elf_img_info->segments[i].p_vaddr,
 		    elf_img_info->segments[i].p_paddr,

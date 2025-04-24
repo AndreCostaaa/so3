@@ -18,10 +18,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <vfs.h>
 #include <process.h>
@@ -390,7 +386,7 @@ int do_read(int fd, void *buffer, int count)
 
 	/* FIXME Max size of buffer */
 	if (!buffer || count < 0) {
-		DBG("Invalid inputs\n");
+		LOG_ERROR("Invalid inputs\n");
 		set_errno(EINVAL);
 		return -1;
 	}
@@ -415,7 +411,7 @@ int do_read(int fd, void *buffer, int count)
 	}
 
 	if (!open_fds[gfd]->fops->read) {
-		DBG("No fops read\n");
+		LOG_ERROR("No fops read\n");
 		set_errno(EBADF);
 		mutex_unlock(&vfs_lock);
 		return -1;
@@ -438,7 +434,7 @@ int do_write(int fd, const void *buffer, int count)
 
 	/* FIXME Max size of buffer */
 	if (!buffer || count < 0) {
-		DBG("Invalid inputs\n");
+		LOG_ERROR("Invalid inputs\n");
 		set_errno(EINVAL);
 		return -1;
 	}
@@ -606,7 +602,7 @@ void do_close(int fd)
 	gfd = pcb->fd_array[fd];
 
 	if (gfd < 0) {
-		DBG("Was already freed\n");
+		LOG_WARNING("Was already freed\n");
 		mutex_unlock(&vfs_lock);
 		return;
 	}

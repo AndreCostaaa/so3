@@ -443,11 +443,11 @@ void schedule(void)
 		next = tcb_idle;
 
 	if (next && (next != prev)) {
-		DBG("Now scheduling thread ID: %d name: %s PID: %d prio: %d\n",
+		LOG_DEBUG("Now scheduling thread ID: %d name: %s PID: %d prio: %d\n",
 		    next->tid, next->name,
 		    ((next->pcb != NULL) ? next->pcb->pid : -1), next->prio);
 		if (prev)
-			DBG("Previous was threadID: %d name: %s PID: %d\n",
+			LOG_DEBUG("Previous was threadID: %d name: %s PID: %d\n",
 			    prev->tid, prev->name);
 
 		/*

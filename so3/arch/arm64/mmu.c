@@ -105,7 +105,7 @@ static void alloc_init_l3(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys,
 							DCACHE_WRITEALLOC));
 #endif
 
-			DBG("Allocating a L3 page table at %p in l2pte: %p with contents: %lx\n",
+			LOG_DEBUG("Allocating a L3 page table at %p in l2pte: %p with contents: %lx\n",
 			    l3pgtable, l2pte, *l2pte);
 		}
 
@@ -128,8 +128,8 @@ static void alloc_init_l3(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys,
 			*l3pte |= PTE_BLOCK_AP1;
 #endif
 
-		DBG("Allocating a 4 KB page at l2pte: %p content: %lx\n", l3pte,
-		    *l3pte);
+		LOG_DEBUG("Allocating a 4 KB page at l2pte: %p content: %lx\n", l3pte,
+		   	*l3pte);
 
 		flush_pte_entry(addr, l3pte);
 
@@ -187,7 +187,7 @@ static void alloc_init_l2(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys,
 			set_pte_table(l1pte, (nocache ? DCACHE_OFF :
 							DCACHE_WRITEALLOC));
 #endif
-			DBG("Allocating a L2 page table at %p in l1pte: %p with contents: %lx\n",
+			LOG_DEBUG("Allocating a L2 page table at %p in l1pte: %p with contents: %lx\n",
 			    l2pgtable, l1pte, *l1pte);
 		}
 
@@ -225,7 +225,7 @@ static void alloc_init_l2(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys,
 			if ((addr != phys) && user_space_vaddr(addr))
 				*l2pte |= PTE_BLOCK_AP1;
 #endif
-			DBG("Allocating a 2 MB block at l2pte: %p content: %lx\n",
+			LOG_DEBUG("Allocating a 2 MB block at l2pte: %p content: %lx\n",
 			    l2pte, *l2pte);
 
 			flush_pte_entry(addr, l2pte);
@@ -279,7 +279,7 @@ static void alloc_init_l1(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys,
 			set_pte_table(l0pte, (nocache ? DCACHE_OFF :
 							DCACHE_WRITEALLOC));
 #endif
-			DBG("Allocating a L1 page table at %p in l0pte: %p with contents: %lx\n",
+			LOG_DEBUG("Allocating a L1 page table at %p in l0pte: %p with contents: %lx\n",
 			    l1pgtable, l0pte, *l0pte);
 		}
 
@@ -310,7 +310,7 @@ static void alloc_init_l1(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys,
 				*l1pte |= PTE_BLOCK_AP1;
 #endif
 
-			DBG("Allocating a 1 GB block at l1pte: %p content: %lx\n",
+			LOG_DEBUG("Allocating a 1 GB block at l1pte: %p content: %lx\n",
 			    l1pte, *l1pte);
 
 			flush_pte_entry(addr, l1pte);
@@ -352,7 +352,7 @@ void __create_mapping(void *pgtable, addr_t virt_base, addr_t phys_base,
 
 	BUG_ON(!size);
 
-	DBG("Create mapping for virt %llx - phys: %llx - size: %x\n", virt_base,
+	LOG_DEBUG("Create mapping for virt %llx - phys: %llx - size: %x\n", virt_base,
 	    phys_base, size);
 	addr = virt_base & PAGE_MASK;
 	length = ALIGN_UP(size + (virt_base & ~PAGE_MASK), PAGE_SIZE);
@@ -417,7 +417,7 @@ static void __create_mapping(void *l1pgtable, addr_t virt_base,
 			if ((addr != phys) && user_space_vaddr(addr))
 				*l1pte |= PTE_BLOCK_AP1;
 
-			DBG("Allocating a 1 GB block at l1pte: %p content: %lx\n",
+			LOG_DEBUG("Allocating a 1 GB block at l1pte: %p content: %lx\n",
 			    l1pte, *l1pte);
 
 			flush_pte_entry(addr, l1pte);

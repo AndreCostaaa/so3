@@ -341,7 +341,7 @@ int get_dev_info(const void *fdt_addr, int offset, const char *compat,
 	}
 
 	if (prop_len > MAX_COMPAT_SIZE) {
-		DBG("Length of Compatible string > %d chars\n",
+		LOG_WARNING("Length of Compatible string > %d chars\n",
 		    MAX_COMPAT_SIZE);
 		return new_offset;
 	}
@@ -350,7 +350,7 @@ int get_dev_info(const void *fdt_addr, int offset, const char *compat,
 
 	node_str = fdt_get_name(fdt_addr, new_offset, &prop_len);
 	if (prop_len > MAX_COMPAT_SIZE) {
-		DBG("Length of Compatible string > %d chars\n", MAX_NODE_SIZE);
+		LOG_WARNING("Length of Compatible string > %d chars\n", MAX_NODE_SIZE);
 		return new_offset;
 	}
 

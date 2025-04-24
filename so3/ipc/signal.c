@@ -17,10 +17,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <signal.h>
 #include <schedule.h>
 #include <process.h>
@@ -112,7 +108,7 @@ void __mem(int a, char *adr, int log) {
 int do_sigaction(int signum, const sigaction_t *action, sigaction_t *old_action)
 {
 	if (signum < 0 || signum >= _NSIG) {
-		DBG("signum not valid!\n");
+		LOG_ERROR("signum not valid!\n");
 		return -1;
 	}
 
@@ -138,13 +134,13 @@ int do_kill(int pid, int sig)
 	flags = local_irq_save();
 
 	if (sig < 0 || sig >= _NSIG) {
-		printk("<kernel> %s: signal number not valid!\n", __func__);
+		LOG_ERROR("<kernel> %s: signal number not valid!\n", __func__);
 		return -1;
 	}
 
 	proc = find_proc_by_pid(pid);
 	if (proc == NULL) {
-		printk("<kernel> %s: No process having the PID %d found!\n",
+		LOG_ERROR("<kernel> %s: No process having the PID %d found!\n",
 		       __func__, pid);
 		return -1;
 	}
