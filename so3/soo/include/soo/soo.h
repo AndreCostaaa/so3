@@ -27,8 +27,6 @@
 int get_ME_state(void);
 void set_ME_state(ME_state_t state);
 
-int32_t get_ME_free_slot(uint32_t size);
-
 bool get_ME_id(uint32_t slotID, ME_id_t *ME_id);
 
 void get_ME_id_array(ME_id_t *ME_id_array);

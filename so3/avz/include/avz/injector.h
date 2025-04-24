@@ -62,19 +62,13 @@ struct dom_context {
 	vcpu_t vcpu;
 };
 
-void mig_restore_domain_migration_info(unsigned int ME_slotID,
-				       struct domain *me);
-void after_migrate_to_user(void);
+/* Load a capsule into a moemory slot */
+void inject_capsule(avz_hyp_t *args);
 
-void migration_init(avz_hyp_t *args);
-void migration_final(avz_hyp_t *args);
+/* Start the execution of a capsule */
+void start_capsule(avz_hyp_t *args);
 
-void read_migration_structures(avz_hyp_t *args);
-void write_migration_structures(avz_hyp_t *args);
-
-void restore_migrated_domain(unsigned int ME_slotID);
-void restore_injected_domain(unsigned int ME_slotID);
-
-void inject_me(avz_hyp_t *args);
+void read_ME_snapshot(avz_hyp_t *args);
+void write_ME_snapshot(avz_hyp_t *args);
 
 #endif /* INJECTOR_H */

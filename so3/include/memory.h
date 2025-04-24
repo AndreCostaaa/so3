@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Daniel Rossier <daniel.rossier@heig-vd.ch>
+ * Copyright (C) 2020-2025 Daniel Rossier <daniel.rossier@heig-vd.ch>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -107,9 +107,6 @@ extern volatile addr_t pfn_start;
 
 #define ipa_to_pa(x, ipa) (((addr_t)ipa) - ipa_offset(x))
 #define ipa_to_va(x, ipa) (__xva(x, ipa_to_pa(x, ipa)))
-
-void put_ME_slot(unsigned int ME_slotID);
-int get_ME_free_slot(unsigned int size);
 
 #else /* CONFIG_AVZ */
 

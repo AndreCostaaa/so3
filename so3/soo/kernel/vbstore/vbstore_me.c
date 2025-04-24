@@ -324,7 +324,7 @@ void vbstore_init_dev_populate(void)
 	/* Now, we are ready to register vbstore entries */
 	vbstore_devices_populate();
 
-	if (get_ME_state() == ME_state_booting) {
+	if (get_ME_state() == ME_state_stopped) {
 		/*
 		 * If the ME is in ME_state_booting state, this means that the ME has been locally injected.
 		 * There is no need to adjust the grant tables. The TRIGGER_DEV_PROBE event can be sent.

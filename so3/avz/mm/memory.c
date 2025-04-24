@@ -120,20 +120,25 @@ void switch_mm_domain(struct domain *d)
  *
  * @param size		Requested size
  * @param ME_state	Initial state of the ME
- * @return		-1 if no slot is available or <slotID> if a slot is available.
+ * @return int		-1 if no slot is available or <slotID> if a slot is available
+ * @param slotID	if different than -1, try to allocate to this specific slot 
  */
-int get_ME_free_slot(unsigned int size)
+int get_ME_free_slot(unsigned int size, int slotID)
 {
 	unsigned int order, addr;
-	int slotID;
 	unsigned int bits_NR;
 
-	/* Check for available slot */
-	for (slotID = MEMSLOT_BASE; slotID < MEMSLOT_NR; slotID++)
-		if (!memslot[slotID].busy)
-			break;
+	/* Do we expect to load into a specific slot? */
+	if (slotID == -1) {
+		/* Check for available slot */
+		for (slotID = MEMSLOT_BASE; slotID < MEMSLOT_NR; slotID++)
+			if (!memslot[slotID].busy)
+				break;
 
-	if (slotID == MEMSLOT_NR)
+		if (slotID == MEMSLOT_NR)
+			return -1;
+			
+	} else if (memslot[slotID].busy)
 		return -1;
 
 	/* memslot[slotID] is available */

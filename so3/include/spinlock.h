@@ -33,7 +33,7 @@ typedef struct {
  */
 typedef struct {
 	volatile uint64_t lock;
-} spinlock_t;
+} __attribute__((aligned(8))) spinlock_t;
 
 #else
 #error "Invalid ARCH config"

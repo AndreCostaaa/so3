@@ -848,7 +848,7 @@ int do_fcntl(int fd, unsigned long cmd, unsigned long args)
 
 static void vfs_gfd_init(void)
 {
-	memset(open_fds, 0, sizeof(struct fd));
+	memset(open_fds, 0, MAX_FDS * sizeof(struct fd *));
 
 	/* Basic file descriptors */
 	open_fds[STDIN] = (struct fd *)malloc(sizeof(struct fd));

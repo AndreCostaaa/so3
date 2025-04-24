@@ -78,15 +78,15 @@ void cb_post_activate(soo_domcall_arg_t *args)
 }
 
 /**
- * FORCE_TERMINATE callback (async)
+ * SHUTDOWN callback (async)
  *
  * Returns 0 if no propagation to the user space is required, 1 otherwise
  *
  */
 
-void cb_force_terminate(void)
+void cb_shutdown(void)
 {
-	DBG(">> ME %d: cb_force_terminate...\n", ME_domID());
+	DBG(">> ME %d: cb_shutdown...\n", ME_domID());
 	DBG("ME state: %d\n", get_ME_state());
 
 	/* We do nothing particular here for this ME,

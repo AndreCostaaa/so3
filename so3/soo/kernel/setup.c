@@ -83,6 +83,10 @@ void avz_setup(void)
 	lprintk("- Dom phys offset: %lx\n\n", (addr_t)mem_info.phys_base);
 
 	virq_init();
+
+	/* Check that CONFIG_NR_CPUS is correctly set even if we are not SMP in SO3. */
+	if (CONFIG_NR_CPUS < 4)
+		panic("!! CONFIG_NR_CPUS must be at least equal to 4 !!");
 }
 
 void post_init_setup(void)
