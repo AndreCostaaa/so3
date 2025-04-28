@@ -17,8 +17,7 @@ static struct node *read_fstree(const char *dirname)
 
 	d = opendir(dirname);
 	if (!d)
-		die("Couldn't opendir() \"%s\": %s\n", dirname,
-		    strerror(errno));
+		die("Couldn't opendir() \"%s\": %s\n", dirname, strerror(errno));
 
 	tree = build_node(NULL, NULL, NULL);
 
@@ -39,13 +38,9 @@ static struct node *read_fstree(const char *dirname)
 
 			pfile = fopen(tmpname, "rb");
 			if (!pfile) {
-				fprintf(stderr, "WARNING: Cannot open %s: %s\n",
-					tmpname, strerror(errno));
+				fprintf(stderr, "WARNING: Cannot open %s: %s\n", tmpname, strerror(errno));
 			} else {
-				prop = build_property(
-					xstrdup(de->d_name),
-					data_copy_file(pfile, st.st_size),
-					NULL);
+				prop = build_property(xstrdup(de->d_name), data_copy_file(pfile, st.st_size), NULL);
 				add_property(tree, prop);
 				fclose(pfile);
 			}

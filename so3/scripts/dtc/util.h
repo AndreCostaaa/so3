@@ -190,9 +190,7 @@ void NORETURN util_version(void);
  * @param long_opts	The structure of long options
  * @param opts_help	An array of help strings (should align with long_opts)
  */
-void NORETURN util_usage(const char *errmsg, const char *synopsis,
-			 const char *short_opts,
-			 struct option const long_opts[],
+void NORETURN util_usage(const char *errmsg, const char *synopsis, const char *short_opts, struct option const long_opts[],
 			 const char *const opts_help[]);
 
 /**
@@ -203,17 +201,14 @@ void NORETURN util_usage(const char *errmsg, const char *synopsis,
  *
  * @param errmsg	If non-NULL, an error message to display
  */
-#define usage(errmsg)                                                         \
-	util_usage(errmsg, usage_synopsis, usage_short_opts, usage_long_opts, \
-		   usage_opts_help)
+#define usage(errmsg) util_usage(errmsg, usage_synopsis, usage_short_opts, usage_long_opts, usage_opts_help)
 
 /**
  * Call getopt_long() with standard options
  *
  * Since all util code runs getopt in the same way, provide a helper.
  */
-#define util_getopt_long() \
-	getopt_long(argc, argv, usage_short_opts, usage_long_opts, NULL)
+#define util_getopt_long() getopt_long(argc, argv, usage_short_opts, usage_long_opts, NULL)
 
 /* Helper for aligning long_opts array */
 #define a_argument required_argument
@@ -222,14 +217,11 @@ void NORETURN util_usage(const char *errmsg, const char *synopsis,
 #define USAGE_COMMON_SHORT_OPTS "hV"
 
 /* Helper for usage_long_opts option array */
-#define USAGE_COMMON_LONG_OPTS                         \
-	{ "help", no_argument, NULL, 'h' },            \
-		{ "version", no_argument, NULL, 'V' }, \
-		{ NULL, no_argument, NULL, 0x0 }
+#define USAGE_COMMON_LONG_OPTS \
+	{ "help", no_argument, NULL, 'h' }, { "version", no_argument, NULL, 'V' }, { NULL, no_argument, NULL, 0x0 }
 
 /* Helper for usage_opts_help array */
-#define USAGE_COMMON_OPTS_HELP \
-	"Print this help and exit", "Print version and exit", NULL
+#define USAGE_COMMON_OPTS_HELP "Print this help and exit", "Print version and exit", NULL
 
 /* Helper for getopt case statements */
 #define case_USAGE_COMMON_FLAGS \

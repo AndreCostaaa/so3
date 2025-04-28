@@ -51,8 +51,7 @@ int check_cache_range(unsigned long start, unsigned long end)
 		ok = 0;
 
 	if (!ok) {
-		lprintk("CACHE: Misaligned operation at range [%08lx, %08lx]\n",
-			start, end);
+		lprintk("CACHE: Misaligned operation at range [%08lx, %08lx]\n", start, end);
 		kernel_panic();
 	}
 
@@ -77,9 +76,7 @@ static void v7_dcache_maint_range(u32 start, u32 end, u32 range_op)
 	u32 line_len, ccsidr;
 
 	ccsidr = get_ccsidr();
-	line_len =
-		((ccsidr & CCSIDR_LINE_SIZE_MASK) >> CCSIDR_LINE_SIZE_OFFSET) +
-		2;
+	line_len = ((ccsidr & CCSIDR_LINE_SIZE_MASK) >> CCSIDR_LINE_SIZE_OFFSET) + 2;
 
 	/* Converting from words to bytes */
 	line_len += 2;

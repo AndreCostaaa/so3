@@ -25,12 +25,11 @@
  */
 void arch_prepare_cpu_regs(tcb_t *tcb)
 {
-	tcb->cpu_regs.x19 = (unsigned long)tcb->th_fn;
-	tcb->cpu_regs.x20 = (unsigned long)tcb->th_arg; /* First argument */
+	tcb->cpu_regs.x19 = (unsigned long) tcb->th_fn;
+	tcb->cpu_regs.x20 = (unsigned long) tcb->th_arg; /* First argument */
 
 	if (tcb->pcb)
-		tcb->cpu_regs.x21 =
-			get_user_stack_top(tcb->pcb, tcb->pcb_stack_slotID);
+		tcb->cpu_regs.x21 = get_user_stack_top(tcb->pcb, tcb->pcb_stack_slotID);
 }
 
 /**
@@ -43,5 +42,5 @@ void arch_prepare_cpu_regs(tcb_t *tcb)
  */
 addr_t arch_get_args_base(void)
 {
-	return (addr_t)(USER_STACK_TOP_VADDR - PAGE_SIZE);
+	return (addr_t) (USER_STACK_TOP_VADDR - PAGE_SIZE);
 }

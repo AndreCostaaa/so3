@@ -82,21 +82,19 @@
 #define TTB_L2_ADDR_MASK (~(PAGE_SIZE - 1))
 
 /* Given a virtual address, get an entry offset into a page table. */
-#define l1pte_index(a) (((uint32_t)a) >> (32 - TTB_L1_ORDER))
-#define l2pte_index(a) ((((uint32_t)a) >> PAGE_SHIFT) & (TTB_L2_ENTRIES - 1))
+#define l1pte_index(a) (((uint32_t) a) >> (32 - TTB_L1_ORDER))
+#define l2pte_index(a) ((((uint32_t) a) >> PAGE_SHIFT) & (TTB_L2_ENTRIES - 1))
 
 #define pte_index_to_vaddr(i1, i2) ((i1 << TTB_I1_SHIFT) | (i2 << TTB_I2_SHIFT))
 
-#define l1pte_offset(pgtable, addr) ((uint32_t *)pgtable + l1pte_index(addr))
-#define l2pte_offset(l1pte, addr) \
-	((uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK) + l2pte_index(addr))
-#define l2pte_first(l1pte) ((uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK))
+#define l1pte_offset(pgtable, addr) ((uint32_t *) pgtable + l1pte_index(addr))
+#define l2pte_offset(l1pte, addr) ((uint32_t *) __va(*l1pte & TTB_L1_PAGE_ADDR_MASK) + l2pte_index(addr))
+#define l2pte_first(l1pte) ((uint32_t *) __va(*l1pte & TTB_L1_PAGE_ADDR_MASK))
 
-#define l1sect_addr_end(addr, end)                                    \
-	({                                                            \
-		unsigned long __boundary = ((addr) + TTB_SECT_SIZE) & \
-					   TTB_SECT_MASK;             \
-		(__boundary - 1 < (end) - 1) ? __boundary : (end);    \
+#define l1sect_addr_end(addr, end)                                                   \
+	({                                                                           \
+		unsigned long __boundary = ((addr) + TTB_SECT_SIZE) & TTB_SECT_MASK; \
+		(__boundary - 1 < (end) - 1) ? __boundary : (end);                   \
 	})
 
 /* Short-Descriptor Translation Table Level 1 Bits */
@@ -219,8 +217,7 @@ addr_t virt_to_phys_pt(addr_t vaddr);
 
 void pgtable_copy_kernel_area(void *l1pgtable);
 
-void create_mapping(void *l1pgtable, addr_t virt_base, addr_t phys_base,
-		    uint32_t size, bool nocache);
+void create_mapping(void *l1pgtable, addr_t virt_base, addr_t phys_base, uint32_t size, bool nocache);
 void release_mapping(void *pgtable, addr_t virt_base, uint32_t size);
 
 void reset_root_pgtable(void *pgtable, bool remove);
@@ -232,17 +229,14 @@ void clear_l1pte(void *l1pgtable, addr_t vaddr);
 
 void mmu_switch(void *l1pgtable);
 
-void ramdev_create_mapping(void *root_pgtable, addr_t ramdev_start,
-			   addr_t ramdev_end);
+void ramdev_create_mapping(void *root_pgtable, addr_t ramdev_start, addr_t ramdev_end);
 
 void flush_tlb_all(void);
 
 void dump_current_pgtable(void);
 
-void set_l1_pte_sect_dcache(uint32_t *l1pte,
-			    enum ttb_l1_sect_dcache_option option);
-void set_l1_pte_page_dcache(uint32_t *l1pte,
-			    enum ttb_l1_page_dcache_option option);
+void set_l1_pte_sect_dcache(uint32_t *l1pte, enum ttb_l1_sect_dcache_option option);
+void set_l1_pte_page_dcache(uint32_t *l1pte, enum ttb_l1_page_dcache_option option);
 void set_l2_pte_dcache(uint32_t *l2pte, enum ttb_l2_dcache_option option);
 
 void mmu_setup(void *pgtable);

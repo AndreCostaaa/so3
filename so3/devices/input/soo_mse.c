@@ -98,8 +98,7 @@ void so3virt_mse_event(unsigned int type, unsigned int code, int value)
 		}
 	}
 
-	DBG("xy[%04d, %04d]; %03s %03s %03s\n", state.x, state.y,
-	    state.left ? "LFT" : "", state.middle ? "MID" : "",
+	DBG("xy[%04d, %04d]; %03s %03s %03s\n", state.x, state.y, state.left ? "LFT" : "", state.middle ? "MID" : "",
 	    state.right ? "RGT" : "");
 }
 
@@ -108,7 +107,7 @@ int ioctl_mouse(int fd, unsigned long cmd, unsigned long args)
 	switch (cmd) {
 	case GET_STATE:
 		/* Return the mouse coordinates and button states. */
-		*((struct ps2_mouse *)args) = state;
+		*((struct ps2_mouse *) args) = state;
 
 		/* Reset the button states. */
 		state.left = 0;
@@ -118,7 +117,7 @@ int ioctl_mouse(int fd, unsigned long cmd, unsigned long args)
 
 	case SET_SIZE:
 		/* Set the display maximum size. */
-		res = *((struct display_res *)args);
+		res = *((struct display_res *) args);
 		break;
 
 	default:

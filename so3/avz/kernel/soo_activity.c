@@ -70,14 +70,12 @@ void shutdown_ME(unsigned int ME_slotID)
 
 	vcpu_pause(dom);
 
-	DBG("Destroy evtchn if necessary - state: %d\n",
-	    get_ME_state(ME_slotID));
+	DBG("Destroy evtchn if necessary - state: %d\n", get_ME_state(ME_slotID));
 	evtchn_destroy(dom);
 
 	DBG("Wiping domain area...\n");
 
-	memset((void *)memslot[ME_slotID].base_vaddr, 0,
-	       memslot[ME_slotID].size);
+	memset((void *) memslot[ME_slotID].base_vaddr, 0, memslot[ME_slotID].size);
 
 	DBG("Destroying domain structure ...\n");
 
@@ -109,8 +107,7 @@ void get_dom_desc(uint32_t slotID, dom_desc_t *dom_desc)
 		dom_desc->u.ME.size = 0;
 	else
 		/* Copy the content to the target desc */
-		memcpy(dom_desc, &domains[slotID]->avz_shared->dom_desc,
-		       sizeof(dom_desc_t));
+		memcpy(dom_desc, &domains[slotID]->avz_shared->dom_desc, sizeof(dom_desc_t));
 }
 
 /**
@@ -142,8 +139,7 @@ void do_avz_hypercall(avz_hyp_t *args)
 		break;
 
 	case AVZ_GET_DOM_DESC:
-		get_dom_desc(args->u.avz_dom_desc_args.slotID,
-			     &args->u.avz_dom_desc_args.dom_desc);
+		get_dom_desc(args->u.avz_dom_desc_args.slotID, &args->u.avz_dom_desc_args.dom_desc);
 		break;
 
 	case AVZ_ME_READ_SNAPSHOT:
@@ -176,8 +172,7 @@ void do_avz_hypercall(avz_hyp_t *args)
 		/* The shared info page is set as non cacheable, i.e. if a CPU tries to update it, it becomes visible to 
 		 * other CPUs 
 		 */
-		if (atomic_cmpxchg(&dom->avz_shared->dc_event, DC_NO_EVENT,
-				   args->u.avz_dc_event_args.dc_event) != DC_NO_EVENT)
+		if (atomic_cmpxchg(&dom->avz_shared->dc_event, DC_NO_EVENT, args->u.avz_dc_event_args.dc_event) != DC_NO_EVENT)
 			args->u.avz_dc_event_args.state = -EBUSY;
 		else
 			args->u.avz_dc_event_args.state = ESUCCESS;

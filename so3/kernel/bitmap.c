@@ -71,8 +71,7 @@ int __bitmap_full(const unsigned long *bitmap, int bits)
 	return 1;
 }
 
-int __bitmap_equal(const unsigned long *bitmap1, const unsigned long *bitmap2,
-		   int bits)
+int __bitmap_equal(const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k, lim = bits / BITS_PER_LONG;
 	for (k = 0; k < lim; ++k)
@@ -107,8 +106,7 @@ void __bitmap_complement(unsigned long *dst, const unsigned long *src, int bits)
  * direction.  Zeros are fed into the vacated MS positions and the
  * LS bits shifted off the bottom are lost.
  */
-void __bitmap_shift_right(unsigned long *dst, const unsigned long *src,
-			  int shift, int bits)
+void __bitmap_shift_right(unsigned long *dst, const unsigned long *src, int shift, int bits)
 {
 	int k, lim = BITS_TO_LONGS(bits), left = bits % BITS_PER_LONG;
 	int off = shift / BITS_PER_LONG, rem = shift % BITS_PER_LONG;
@@ -150,8 +148,7 @@ void __bitmap_shift_right(unsigned long *dst, const unsigned long *src,
  * and those MS bits shifted off the top are lost.
  */
 
-void __bitmap_shift_left(unsigned long *dst, const unsigned long *src,
-			 int shift, int bits)
+void __bitmap_shift_left(unsigned long *dst, const unsigned long *src, int shift, int bits)
 {
 	int k, lim = BITS_TO_LONGS(bits), left = bits % BITS_PER_LONG;
 	int off = shift / BITS_PER_LONG, rem = shift % BITS_PER_LONG;
@@ -177,8 +174,7 @@ void __bitmap_shift_left(unsigned long *dst, const unsigned long *src,
 		memset(dst, 0, off * sizeof(unsigned long));
 }
 
-void __bitmap_and(unsigned long *dst, const unsigned long *bitmap1,
-		  const unsigned long *bitmap2, int bits)
+void __bitmap_and(unsigned long *dst, const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k;
 	int nr = BITS_TO_LONGS(bits);
@@ -187,8 +183,7 @@ void __bitmap_and(unsigned long *dst, const unsigned long *bitmap1,
 		dst[k] = bitmap1[k] & bitmap2[k];
 }
 
-void __bitmap_or(unsigned long *dst, const unsigned long *bitmap1,
-		 const unsigned long *bitmap2, int bits)
+void __bitmap_or(unsigned long *dst, const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k;
 	int nr = BITS_TO_LONGS(bits);
@@ -197,8 +192,7 @@ void __bitmap_or(unsigned long *dst, const unsigned long *bitmap1,
 		dst[k] = bitmap1[k] | bitmap2[k];
 }
 
-void __bitmap_xor(unsigned long *dst, const unsigned long *bitmap1,
-		  const unsigned long *bitmap2, int bits)
+void __bitmap_xor(unsigned long *dst, const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k;
 	int nr = BITS_TO_LONGS(bits);
@@ -207,8 +201,7 @@ void __bitmap_xor(unsigned long *dst, const unsigned long *bitmap1,
 		dst[k] = bitmap1[k] ^ bitmap2[k];
 }
 
-void __bitmap_andnot(unsigned long *dst, const unsigned long *bitmap1,
-		     const unsigned long *bitmap2, int bits)
+void __bitmap_andnot(unsigned long *dst, const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k;
 	int nr = BITS_TO_LONGS(bits);
@@ -217,8 +210,7 @@ void __bitmap_andnot(unsigned long *dst, const unsigned long *bitmap1,
 		dst[k] = bitmap1[k] & ~bitmap2[k];
 }
 
-int __bitmap_intersects(const unsigned long *bitmap1,
-			const unsigned long *bitmap2, int bits)
+int __bitmap_intersects(const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k, lim = bits / BITS_PER_LONG;
 	for (k = 0; k < lim; ++k)
@@ -231,8 +223,7 @@ int __bitmap_intersects(const unsigned long *bitmap1,
 	return 0;
 }
 
-int __bitmap_subset(const unsigned long *bitmap1, const unsigned long *bitmap2,
-		    int bits)
+int __bitmap_subset(const unsigned long *bitmap1, const unsigned long *bitmap2, int bits)
 {
 	int k, lim = bits / BITS_PER_LONG;
 	for (k = 0; k < lim; ++k)
@@ -252,8 +243,7 @@ int __bitmap_subset(const unsigned long *bitmap1, const unsigned long *bitmap2,
 
 #define CHUNKSZ 32
 #define nbits_to_hold_value(val) fls(val)
-#define roundup_power2(val, modulus) \
-	(((val) + (modulus) - 1) & ~((modulus) - 1))
+#define roundup_power2(val, modulus) (((val) + (modulus) - 1) & ~((modulus) - 1))
 #define unhex(c) (isdigit(c) ? (c - '0') : (toupper(c) - 'A' + 10))
 #define BASEDEC 10 /* fancier cpuset lists input in decimal */
 
@@ -267,8 +257,7 @@ int __bitmap_subset(const unsigned long *bitmap1, const unsigned long *bitmap2,
  * Exactly @nmaskbits bits are displayed.  Hex digits are grouped into
  * comma-separated sets of eight digits per set.
  */
-int bitmap_scnprintf(char *buf, unsigned int buflen, const unsigned long *maskp,
-		     int nmaskbits)
+int bitmap_scnprintf(char *buf, unsigned int buflen, const unsigned long *maskp, int nmaskbits)
 {
 	int i, word, bit, len = 0;
 	unsigned long val;
@@ -286,8 +275,7 @@ int bitmap_scnprintf(char *buf, unsigned int buflen, const unsigned long *maskp,
 		word = i / BITS_PER_LONG;
 		bit = i % BITS_PER_LONG;
 		val = (maskp[word] >> bit) & chunkmask;
-		len += scnprintf(buf + len, buflen - len, "%s%0*lx", sep,
-				 (chunksz + 3) / 4, val);
+		len += scnprintf(buf + len, buflen - len, "%s%0*lx", sep, (chunksz + 3) / 4, val);
 		chunksz = CHUNKSZ;
 		sep = ",";
 	}
@@ -330,8 +318,7 @@ static inline int bscnl_emit(char *buf, int buflen, int rbot, int rtop, int len)
  * generated for the given input, excluding the trailing '\0', as
  * per ISO C99.
  */
-int bitmap_scnlistprintf(char *buf, unsigned int buflen,
-			 const unsigned long *maskp, int nmaskbits)
+int bitmap_scnlistprintf(char *buf, unsigned int buflen, const unsigned long *maskp, int nmaskbits)
 {
 	int len = 0;
 	/* current bit is 'cur', most recently seen range is [rbot, rtop] */

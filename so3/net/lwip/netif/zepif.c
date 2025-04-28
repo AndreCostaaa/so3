@@ -103,11 +103,10 @@ static void zep_lowpan_timer(void *arg)
 }
 
 /* Pass received pbufs into 6LowPAN netif */
-static void zepif_udp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p,
-			   const ip_addr_t *addr, u16_t port)
+static void zepif_udp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
 	err_t err;
-	struct netif *netif_lowpan6 = (struct netif *)arg;
+	struct netif *netif_lowpan6 = (struct netif *) arg;
 	struct zep_hdr *zep;
 
 	LWIP_ASSERT("arg != NULL", arg != NULL);
@@ -124,7 +123,7 @@ static void zepif_udp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 		/* need the zep_hdr in one piece */
 		goto err_return;
 	}
-	zep = (struct zep_hdr *)p->payload;
+	zep = (struct zep_hdr *) p->payload;
 	if (zep->prot_id[0] != 'E') {
 		goto err_return;
 	}
@@ -177,15 +176,14 @@ static err_t zepif_linkoutput(struct netif *netif, struct pbuf *p)
 	}
 	LWIP_ASSERT("TODO: support chained pbufs", p->next == NULL);
 
-	state = (struct zepif_state *)netif->state;
+	state = (struct zepif_state *) netif->state;
 	LWIP_ASSERT("state->pcb != NULL", state->pcb != NULL);
 
-	q = pbuf_alloc(PBUF_TRANSPORT, sizeof(struct zep_hdr) + p->tot_len,
-		       PBUF_RAM);
+	q = pbuf_alloc(PBUF_TRANSPORT, sizeof(struct zep_hdr) + p->tot_len, PBUF_RAM);
 	if (q == NULL) {
 		return ERR_MEM;
 	}
-	zep = (struct zep_hdr *)q->payload;
+	zep = (struct zep_hdr *) q->payload;
 	memset(zep, 0, sizeof(struct zep_hdr));
 	zep->prot_id[0] = 'E';
 	zep->prot_id[1] = 'X';
@@ -197,16 +195,14 @@ static err_t zepif_linkoutput(struct netif *netif, struct pbuf *p)
 	zep->unknown_1 = 0xff;
 	zep->seq_num = lwip_htonl(state->seqno);
 	state->seqno++;
-	zep->len = (u8_t)p->tot_len;
+	zep->len = (u8_t) p->tot_len;
 
 	err = pbuf_take_at(q, p->payload, p->tot_len, sizeof(struct zep_hdr));
 	if (err == ERR_OK) {
 #if ZEPIF_LOOPBACK
-		zepif_udp_recv(netif, state->pcb,
-			       pbuf_clone(PBUF_RAW, PBUF_RAM, q), NULL, 0);
+		zepif_udp_recv(netif, state->pcb, pbuf_clone(PBUF_RAW, PBUF_RAM, q), NULL, 0);
 #endif
-		err = udp_sendto(state->pcb, q, state->init.zep_dst_ip_addr,
-				 state->init.zep_dst_udp_port);
+		err = udp_sendto(state->pcb, q, state->init.zep_dst_ip_addr, state->init.zep_dst_udp_port);
 	}
 	pbuf_free(q);
 
@@ -221,9 +217,8 @@ static err_t zepif_linkoutput(struct netif *netif, struct pbuf *p)
 err_t zepif_init(struct netif *netif)
 {
 	err_t err;
-	struct zepif_init *init_state = (struct zepif_init *)netif->state;
-	struct zepif_state *state =
-		(struct zepif_state *)mem_malloc(sizeof(struct zepif_state));
+	struct zepif_init *init_state = (struct zepif_init *) netif->state;
+	struct zepif_state *state = (struct zepif_state *) mem_malloc(sizeof(struct zepif_state));
 
 	LWIP_ASSERT("zepif needs an input callback", netif->input != NULL);
 
@@ -254,8 +249,7 @@ err_t zepif_init(struct netif *netif)
 		err = ERR_MEM;
 		goto err_ret;
 	}
-	err = udp_bind(state->pcb, state->init.zep_src_ip_addr,
-		       state->init.zep_src_udp_port);
+	err = udp_bind(state->pcb, state->init.zep_src_ip_addr, state->init.zep_src_udp_port);
 	if (err != ERR_OK) {
 		goto err_ret;
 	}
@@ -283,8 +277,7 @@ err_t zepif_init(struct netif *netif)
 		netif->linkoutput = zepif_linkoutput;
 
 		if (!zep_lowpan_timer_running) {
-			sys_timeout(LOWPAN6_TMR_INTERVAL, zep_lowpan_timer,
-				    NULL);
+			sys_timeout(LOWPAN6_TMR_INTERVAL, zep_lowpan_timer, NULL);
 			zep_lowpan_timer_running = 1;
 		}
 

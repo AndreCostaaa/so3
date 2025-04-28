@@ -31,7 +31,6 @@ extern i2c_ops_t i2c_ops;
 
 void i2c_write(uint32_t slave_addr, uint8_t *buf, size_t size);
 void i2c_read(uint32_t slave_addr, uint8_t *buf, size_t size);
-void i2c_read_smbus_data_byte(uint32_t slave_addr, uint8_t *buf,
-			      uint8_t command);
+void i2c_read_smbus_data_byte(uint32_t slave_addr, uint8_t *buf, uint8_t command);
 
 #endif /* I2C_H */

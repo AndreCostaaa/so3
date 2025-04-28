@@ -92,8 +92,7 @@ static void *fdt_grab_space_(void *fdt, size_t len)
 	int offset = fdt_size_dt_struct(fdt);
 	int spaceleft;
 
-	spaceleft = fdt_totalsize(fdt) - fdt_off_dt_struct(fdt) -
-		    fdt_size_dt_strings(fdt);
+	spaceleft = fdt_totalsize(fdt) - fdt_off_dt_struct(fdt) - fdt_size_dt_strings(fdt);
 
 	if ((offset + len < offset) || (offset + len > spaceleft))
 		return NULL;
@@ -104,8 +103,7 @@ static void *fdt_grab_space_(void *fdt, size_t len)
 
 int fdt_create_with_flags(void *buf, int bufsize, uint32_t flags)
 {
-	const size_t hdrsize = FDT_ALIGN(sizeof(struct fdt_header),
-					 sizeof(struct fdt_reserve_entry));
+	const size_t hdrsize = FDT_ALIGN(sizeof(struct fdt_header), sizeof(struct fdt_reserve_entry));
 	void *fdt = buf;
 
 	if (bufsize < hdrsize)
@@ -157,8 +155,8 @@ int fdt_resize(void *fdt, void *buf, int bufsize)
 	if ((headsize + tailsize) > bufsize)
 		return -FDT_ERR_NOSPACE;
 
-	oldtail = (char *)fdt + fdt_totalsize(fdt) - tailsize;
-	newtail = (char *)buf + bufsize - tailsize;
+	oldtail = (char *) fdt + fdt_totalsize(fdt) - tailsize;
+	newtail = (char *) buf + bufsize - tailsize;
 
 	/* Two cases to avoid clobbering data if the old and new
 	 * buffers partially overlap */
@@ -188,7 +186,7 @@ int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size)
 	if ((offset + sizeof(*re)) > fdt_totalsize(fdt))
 		return -FDT_ERR_NOSPACE;
 
-	re = (struct fdt_reserve_entry *)((char *)fdt + offset);
+	re = (struct fdt_reserve_entry *) ((char *) fdt + offset);
 	re->address = cpu_to_fdt64(addr);
 	re->size = cpu_to_fdt64(size);
 
@@ -241,7 +239,7 @@ int fdt_end_node(void *fdt)
 
 static int fdt_add_string_(void *fdt, const char *s)
 {
-	char *strtab = (char *)fdt + fdt_totalsize(fdt);
+	char *strtab = (char *) fdt + fdt_totalsize(fdt);
 	int strtabsize = fdt_size_dt_strings(fdt);
 	int len = strlen(s) + 1;
 	int struct_top, offset;
@@ -267,7 +265,7 @@ static void fdt_del_last_string_(void *fdt, const char *s)
 
 static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
 {
-	char *strtab = (char *)fdt + fdt_totalsize(fdt);
+	char *strtab = (char *) fdt + fdt_totalsize(fdt);
 	int strtabsize = fdt_size_dt_strings(fdt);
 	const char *p;
 
@@ -328,7 +326,7 @@ int fdt_property(void *fdt, const char *name, const void *val, int len)
 
 int fdt_finish(void *fdt)
 {
-	char *p = (char *)fdt;
+	char *p = (char *) fdt;
 	fdt32_t *end;
 	int oldstroffset, newstroffset;
 	uint32_t tag;
@@ -352,8 +350,7 @@ int fdt_finish(void *fdt)
 	offset = 0;
 	while ((tag = fdt_next_tag(fdt, offset, &nextoffset)) != FDT_END) {
 		if (tag == FDT_PROP) {
-			struct fdt_property *prop =
-				fdt_offset_ptr_w_(fdt, offset);
+			struct fdt_property *prop = fdt_offset_ptr_w_(fdt, offset);
 			int nameoff;
 
 			nameoff = fdt32_to_cpu(prop->nameoff);

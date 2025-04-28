@@ -28,12 +28,11 @@
 #endif
 
 #ifndef LWIP_PLATFORM_ASSERT
-#define LWIP_PLATFORM_ASSERT(x)                                         \
-	do {                                                            \
-		printk("Assertion \"%s\" failed at line %d in %s\n", x, \
-		       __LINE__, __FILE__);                             \
-		fflush(NULL);                                           \
-		abort();                                                \
+#define LWIP_PLATFORM_ASSERT(x)                                                              \
+	do {                                                                                 \
+		printk("Assertion \"%s\" failed at line %d in %s\n", x, __LINE__, __FILE__); \
+		fflush(NULL);                                                                \
+		abort();                                                                     \
 	} while (0)
 
 #include <printk.h>

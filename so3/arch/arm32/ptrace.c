@@ -26,7 +26,7 @@
  */
 void __dump_regs(void *regs)
 {
-	unsigned long *cpuregs = (unsigned long *)regs;
+	unsigned long *cpuregs = (unsigned long *) regs;
 
 	printk("r4: %x ", *cpuregs);
 	printk("r5: %x ", *(cpuregs + 1));

@@ -65,11 +65,7 @@ PACK_STRUCT_END
 #endif
 
 /* DHCP6 client states */
-typedef enum {
-	DHCP6_STATE_OFF = 0,
-	DHCP6_STATE_STATELESS_IDLE = 1,
-	DHCP6_STATE_REQUESTING_CONFIG = 2
-} dhcp6_state_enum_t;
+typedef enum { DHCP6_STATE_OFF = 0, DHCP6_STATE_STATELESS_IDLE = 1, DHCP6_STATE_REQUESTING_CONFIG = 2 } dhcp6_state_enum_t;
 
 /* DHCPv6 message types */
 #define DHCP6_SOLICIT 1
@@ -91,8 +87,7 @@ typedef enum {
 #define DHCP6_STATUS_SUCCESS 0 /* Success. */
 #define DHCP6_STATUS_UNSPECFAIL \
 	1 /* Failure, reason unspecified; this status code is sent by either a client or a server to indicate a failure not explicitly specified in this document. */
-#define DHCP6_STATUS_NOADDRSAVAIL \
-	2 /* Server has no addresses available to assign to the IA(s). */
+#define DHCP6_STATUS_NOADDRSAVAIL 2 /* Server has no addresses available to assign to the IA(s). */
 #define DHCP6_STATUS_NOBINDING 3 /* Client record (binding) unavailable. */
 #define DHCP6_STATUS_NOTONLINK \
 	4 /* The prefix for the address is not appropriate for the link to which the client is attached. */

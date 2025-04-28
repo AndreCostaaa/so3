@@ -56,8 +56,8 @@ void do_softirq(void)
 		}
 
 		if (loopmax > 100) /* Probably something wrong ;-) */
-			printk("%s: Warning trying to process softirq on cpu %d for quite a long time (i = %d)...\n",
-			       __func__, cpu, i);
+			printk("%s: Warning trying to process softirq on cpu %d for quite a long time (i = %d)...\n", __func__,
+			       cpu, i);
 
 		softirq_stat[cpu][i] = false;
 
@@ -104,5 +104,5 @@ void raise_softirq(unsigned int nr)
 
 void softirq_init(void)
 {
-	memset((void *)softirq_stat, 0, sizeof(softirq_stat));
+	memset((void *) softirq_stat, 0, sizeof(softirq_stat));
 }

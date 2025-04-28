@@ -36,27 +36,25 @@
 #if defined(CONFIG_SMC911X_32_BIT)
 static inline u32 __smc911x_reg_read(eth_dev_t *dev, u32 offset)
 {
-	return *(volatile u32 *)(dev->iobase + offset);
+	return *(volatile u32 *) (dev->iobase + offset);
 }
-u32 smc911x_reg_read(eth_dev_t *dev, u32 offset)
-	__attribute__((weak, alias("__smc911x_reg_read")));
+u32 smc911x_reg_read(eth_dev_t *dev, u32 offset) __attribute__((weak, alias("__smc911x_reg_read")));
 
 static inline void __smc911x_reg_write(eth_dev_t *dev, u32 offset, u32 val)
 {
-	*(volatile u32 *)(dev->iobase + offset) = val;
+	*(volatile u32 *) (dev->iobase + offset) = val;
 }
-void smc911x_reg_write(eth_dev_t *dev, u32 offset, u32 val)
-	__attribute__((weak, alias("__smc911x_reg_write")));
+void smc911x_reg_write(eth_dev_t *dev, u32 offset, u32 val) __attribute__((weak, alias("__smc911x_reg_write")));
 #elif defined(CONFIG_SMC911X_16_BIT)
 static inline u32 smc911x_reg_read(eth_dev_t *dev, u32 offset)
 {
-	volatile u16 *addr_16 = (u16 *)(dev->iobase + offset);
+	volatile u16 *addr_16 = (u16 *) (dev->iobase + offset);
 	return ((*addr_16 & 0x0000ffff) | (*(addr_16 + 1) << 16));
 }
 static inline void smc911x_reg_write(eth_dev_t *dev, u32 offset, u32 val)
 {
-	*(volatile u16 *)(dev->iobase + offset) = (u16)val;
-	*(volatile u16 *)(dev->iobase + offset + 2) = (u16)(val >> 16);
+	*(volatile u16 *) (dev->iobase + offset) = (u16) val;
+	*(volatile u16 *) (dev->iobase + offset + 2) = (u16) (val >> 16);
 }
 #else
 #error "SMC911X: undefined bus width"
@@ -542,9 +540,7 @@ static inline void smc911x_reg_write(eth_dev_t *dev, u32 offset, u32 val)
 #define ADVERTISE_NPAGE 0x8000 /* Next page bit               */
 
 #define ADVERTISE_FULL (ADVERTISE_100FULL | ADVERTISE_10FULL | ADVERTISE_CSMA)
-#define ADVERTISE_ALL                                              \
-	(ADVERTISE_10HALF | ADVERTISE_10FULL | ADVERTISE_100HALF | \
-	 ADVERTISE_100FULL)
+#define ADVERTISE_ALL (ADVERTISE_10HALF | ADVERTISE_10FULL | ADVERTISE_100HALF | ADVERTISE_100FULL)
 
 /* Link partner ability register. */
 #define LPA_SLCT 0x001f /* Same as advertise selector  */
@@ -633,8 +629,7 @@ static u32 smc911x_get_mac_csr(eth_dev_t *dev, u8 reg)
 {
 	while (smc911x_reg_read(dev, MAC_CSR_CMD) & MAC_CSR_CMD_CSR_BUSY)
 		;
-	smc911x_reg_write(dev, MAC_CSR_CMD,
-			  MAC_CSR_CMD_CSR_BUSY | MAC_CSR_CMD_R_NOT_W | reg);
+	smc911x_reg_write(dev, MAC_CSR_CMD, MAC_CSR_CMD_CSR_BUSY | MAC_CSR_CMD_R_NOT_W | reg);
 	while (smc911x_reg_read(dev, MAC_CSR_CMD) & MAC_CSR_CMD_CSR_BUSY)
 		;
 
@@ -676,7 +671,7 @@ static int smc911x_detect_chip(eth_dev_t *dev)
 
 	printk("Network Interface Controller (NIC) found %s", chip_ids[i].name);
 
-	dev->priv = (void *)&chip_ids[i];
+	dev->priv = (void *) &chip_ids[i];
 
 	return 0;
 }
@@ -696,8 +691,7 @@ static void smc911x_reset(eth_dev_t *dev)
 
 		timeout = 10;
 
-		while (timeout-- &&
-		       !(smc911x_reg_read(dev, PMT_CTRL) & PMT_CTRL_READY))
+		while (timeout-- && !(smc911x_reg_read(dev, PMT_CTRL) & PMT_CTRL_READY))
 			udelay(10);
 		if (timeout < 0) {
 			printk(DRIVERNAME ": timeout waiting for PM restore\n");
@@ -748,9 +742,7 @@ static void smc911x_reset(eth_dev_t *dev)
 	/* Set to LED outputs */
 	smc911x_reg_write(dev, GPIO_CFG, 0x70070000);
 
-	smc911x_reg_write(dev, INT_CFG,
-			  (0x1 << 24) | INT_CFG_IRQ_EN | INT_CFG_IRQ_POL |
-				  INT_CFG_IRQ_TYPE);
+	smc911x_reg_write(dev, INT_CFG, (0x1 << 24) | INT_CFG_IRQ_EN | INT_CFG_IRQ_POL | INT_CFG_IRQ_TYPE);
 }
 
 #endif

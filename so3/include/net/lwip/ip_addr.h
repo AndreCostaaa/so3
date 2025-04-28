@@ -78,26 +78,20 @@ typedef struct ip_addr {
 extern const ip_addr_t ip_addr_any_type;
 
 /** @ingroup ip4addr */
-#define IPADDR4_INIT(u32val) \
-	{ { { { u32val, 0ul, 0ul, 0ul } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_V4 }
+#define IPADDR4_INIT(u32val) { { { { u32val, 0ul, 0ul, 0ul } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_V4 }
 /** @ingroup ip4addr */
-#define IPADDR4_INIT_BYTES(a, b, c, d) \
-	IPADDR4_INIT(PP_HTONL(LWIP_MAKEU32(a, b, c, d)))
+#define IPADDR4_INIT_BYTES(a, b, c, d) IPADDR4_INIT(PP_HTONL(LWIP_MAKEU32(a, b, c, d)))
 
 /** @ingroup ip6addr */
-#define IPADDR6_INIT(a, b, c, d) \
-	{ { { { a, b, c, d } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_V6 }
+#define IPADDR6_INIT(a, b, c, d) { { { { a, b, c, d } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_V6 }
 /** @ingroup ip6addr */
-#define IPADDR6_INIT_HOST(a, b, c, d)                  \
-	{ { { { PP_HTONL(a), PP_HTONL(b), PP_HTONL(c), \
-		PP_HTONL(d) } IPADDR6_ZONE_INIT } },   \
-	  IPADDR_TYPE_V6 }
+#define IPADDR6_INIT_HOST(a, b, c, d) \
+	{ { { { PP_HTONL(a), PP_HTONL(b), PP_HTONL(c), PP_HTONL(d) } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_V6 }
 
 /** @ingroup ipaddr */
 #define IP_IS_ANY_TYPE_VAL(ipaddr) (IP_GET_TYPE(&ipaddr) == IPADDR_TYPE_ANY)
 /** @ingroup ipaddr */
-#define IPADDR_ANY_TYPE_INIT \
-	{ { { { 0ul, 0ul, 0ul, 0ul } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_ANY }
+#define IPADDR_ANY_TYPE_INIT { { { { 0ul, 0ul, 0ul, 0ul } IPADDR6_ZONE_INIT } }, IPADDR_TYPE_ANY }
 
 /** @ingroup ip4addr */
 #define IP_IS_V4_VAL(ipaddr) (IP_GET_TYPE(&ipaddr) == IPADDR_TYPE_V4)
@@ -120,15 +114,11 @@ extern const ip_addr_t ip_addr_any_type;
 	} while (0)
 #define IP_GET_TYPE(ipaddr) ((ipaddr)->type)
 
-#define IP_ADDR_RAW_SIZE(ipaddr)                                       \
-	(IP_GET_TYPE(&ipaddr) == IPADDR_TYPE_V4 ? sizeof(ip4_addr_t) : \
-						  sizeof(ip6_addr_t))
+#define IP_ADDR_RAW_SIZE(ipaddr) (IP_GET_TYPE(&ipaddr) == IPADDR_TYPE_V4 ? sizeof(ip4_addr_t) : sizeof(ip6_addr_t))
 
-#define IP_ADDR_PCB_VERSION_MATCH_EXACT(pcb, ipaddr) \
-	(IP_GET_TYPE(&pcb->local_ip) == IP_GET_TYPE(ipaddr))
+#define IP_ADDR_PCB_VERSION_MATCH_EXACT(pcb, ipaddr) (IP_GET_TYPE(&pcb->local_ip) == IP_GET_TYPE(ipaddr))
 #define IP_ADDR_PCB_VERSION_MATCH(pcb, ipaddr) \
-	(IP_IS_ANY_TYPE_VAL(pcb->local_ip) ||  \
-	 IP_ADDR_PCB_VERSION_MATCH_EXACT(pcb, ipaddr))
+	(IP_IS_ANY_TYPE_VAL(pcb->local_ip) || IP_ADDR_PCB_VERSION_MATCH_EXACT(pcb, ipaddr))
 
 /** @ingroup ip6addr
  * Convert generic ip address to specific protocol version
@@ -152,14 +142,12 @@ extern const ip_addr_t ip_addr_any_type;
 		IP_SET_TYPE_VAL(*(ipaddr), IPADDR_TYPE_V6); \
 	} while (0)
 /** @ingroup ip6addr */
-#define IP_ADDR6_HOST(ipaddr, i0, i1, i2, i3) \
-	IP_ADDR6(ipaddr, PP_HTONL(i0), PP_HTONL(i1), PP_HTONL(i2), PP_HTONL(i3))
+#define IP_ADDR6_HOST(ipaddr, i0, i1, i2, i3) IP_ADDR6(ipaddr, PP_HTONL(i0), PP_HTONL(i1), PP_HTONL(i2), PP_HTONL(i3))
 
-#define ip_clear_no4(ipaddr)                                            \
-	do {                                                            \
-		ip_2_ip6(ipaddr)->addr[1] = ip_2_ip6(ipaddr)->addr[2] = \
-			ip_2_ip6(ipaddr)->addr[3] = 0;                  \
-		ip6_addr_clear_zone(ip_2_ip6(ipaddr));                  \
+#define ip_clear_no4(ipaddr)                                                                           \
+	do {                                                                                           \
+		ip_2_ip6(ipaddr)->addr[1] = ip_2_ip6(ipaddr)->addr[2] = ip_2_ip6(ipaddr)->addr[3] = 0; \
+		ip6_addr_clear_zone(ip_2_ip6(ipaddr));                                                 \
 	} while (0)
 
 /** @ingroup ipaddr */
@@ -209,9 +197,7 @@ extern const ip_addr_t ip_addr_any_type;
 		ip_clear_no4(&ipaddr);                      \
 	} while (0)
 /** @ingroup ip4addr */
-#define ip_addr_get_ip4_u32(ipaddr)                                            \
-	(((ipaddr) && IP_IS_V4(ipaddr)) ? ip4_addr_get_u32(ip_2_ip4(ipaddr)) : \
-					  0)
+#define ip_addr_get_ip4_u32(ipaddr) (((ipaddr) && IP_IS_V4(ipaddr)) ? ip4_addr_get_u32(ip_2_ip4(ipaddr)) : 0)
 /** @ingroup ipaddr */
 #define ip_addr_set(dest, src)                                       \
 	do {                                                         \
@@ -304,62 +290,48 @@ extern const ip_addr_t ip_addr_any_type;
 		}                                                         \
 	} while (0)
 /** @ingroup ipaddr */
-#define ip_addr_get_network(target, host, netmask)                             \
-	do {                                                                   \
-		if (IP_IS_V6(host)) {                                          \
-			ip4_addr_set_zero(ip_2_ip4(target));                   \
-			IP_SET_TYPE(target, IPADDR_TYPE_V6);                   \
-		} else {                                                       \
-			ip4_addr_get_network(ip_2_ip4(target), ip_2_ip4(host), \
-					     ip_2_ip4(netmask));               \
-			IP_SET_TYPE(target, IPADDR_TYPE_V4);                   \
-		}                                                              \
+#define ip_addr_get_network(target, host, netmask)                                                 \
+	do {                                                                                       \
+		if (IP_IS_V6(host)) {                                                              \
+			ip4_addr_set_zero(ip_2_ip4(target));                                       \
+			IP_SET_TYPE(target, IPADDR_TYPE_V6);                                       \
+		} else {                                                                           \
+			ip4_addr_get_network(ip_2_ip4(target), ip_2_ip4(host), ip_2_ip4(netmask)); \
+			IP_SET_TYPE(target, IPADDR_TYPE_V4);                                       \
+		}                                                                                  \
 	} while (0)
 /** @ingroup ipaddr */
-#define ip_addr_netcmp(addr1, addr2, mask)      \
-	((IP_IS_V6(addr1) && IP_IS_V6(addr2)) ? \
-		 0 :                            \
-		 ip4_addr_netcmp(ip_2_ip4(addr1), ip_2_ip4(addr2), mask))
+#define ip_addr_netcmp(addr1, addr2, mask) \
+	((IP_IS_V6(addr1) && IP_IS_V6(addr2)) ? 0 : ip4_addr_netcmp(ip_2_ip4(addr1), ip_2_ip4(addr2), mask))
 /** @ingroup ipaddr */
-#define ip_addr_cmp(addr1, addr2)                                          \
-	((IP_GET_TYPE(addr1) != IP_GET_TYPE(addr2)) ?                      \
-		 0 :                                                       \
-		 (IP_IS_V6_VAL(*(addr1)) ?                                 \
-			  ip6_addr_cmp(ip_2_ip6(addr1), ip_2_ip6(addr2)) : \
-			  ip4_addr_cmp(ip_2_ip4(addr1), ip_2_ip4(addr2))))
+#define ip_addr_cmp(addr1, addr2)                                                           \
+	((IP_GET_TYPE(addr1) != IP_GET_TYPE(addr2)) ?                                       \
+		 0 :                                                                        \
+		 (IP_IS_V6_VAL(*(addr1)) ? ip6_addr_cmp(ip_2_ip6(addr1), ip_2_ip6(addr2)) : \
+					   ip4_addr_cmp(ip_2_ip4(addr1), ip_2_ip4(addr2))))
 /** @ingroup ipaddr */
-#define ip_addr_cmp_zoneless(addr1, addr2)                         \
-	((IP_GET_TYPE(addr1) != IP_GET_TYPE(addr2)) ?              \
-		 0 :                                               \
-		 (IP_IS_V6_VAL(*(addr1)) ?                         \
-			  ip6_addr_cmp_zoneless(ip_2_ip6(addr1),   \
-						ip_2_ip6(addr2)) : \
-			  ip4_addr_cmp(ip_2_ip4(addr1), ip_2_ip4(addr2))))
+#define ip_addr_cmp_zoneless(addr1, addr2)                                                           \
+	((IP_GET_TYPE(addr1) != IP_GET_TYPE(addr2)) ?                                                \
+		 0 :                                                                                 \
+		 (IP_IS_V6_VAL(*(addr1)) ? ip6_addr_cmp_zoneless(ip_2_ip6(addr1), ip_2_ip6(addr2)) : \
+					   ip4_addr_cmp(ip_2_ip4(addr1), ip_2_ip4(addr2))))
 /** @ingroup ipaddr */
-#define ip_addr_isany(ipaddr)                                             \
-	(((ipaddr) == NULL) ?                                             \
-		 1 :                                                      \
-		 ((IP_IS_V6(ipaddr)) ? ip6_addr_isany(ip_2_ip6(ipaddr)) : \
-				       ip4_addr_isany(ip_2_ip4(ipaddr))))
+#define ip_addr_isany(ipaddr) \
+	(((ipaddr) == NULL) ? 1 : ((IP_IS_V6(ipaddr)) ? ip6_addr_isany(ip_2_ip6(ipaddr)) : ip4_addr_isany(ip_2_ip4(ipaddr))))
 /** @ingroup ipaddr */
-#define ip_addr_isany_val(ipaddr)                                            \
-	((IP_IS_V6_VAL(ipaddr)) ? ip6_addr_isany_val(*ip_2_ip6(&(ipaddr))) : \
-				  ip4_addr_isany_val(*ip_2_ip4(&(ipaddr))))
+#define ip_addr_isany_val(ipaddr) \
+	((IP_IS_V6_VAL(ipaddr)) ? ip6_addr_isany_val(*ip_2_ip6(&(ipaddr))) : ip4_addr_isany_val(*ip_2_ip4(&(ipaddr))))
 /** @ingroup ipaddr */
-#define ip_addr_isbroadcast(ipaddr, netif) \
-	((IP_IS_V6(ipaddr)) ? 0 : ip4_addr_isbroadcast(ip_2_ip4(ipaddr), netif))
+#define ip_addr_isbroadcast(ipaddr, netif) ((IP_IS_V6(ipaddr)) ? 0 : ip4_addr_isbroadcast(ip_2_ip4(ipaddr), netif))
 /** @ingroup ipaddr */
-#define ip_addr_ismulticast(ipaddr)                                    \
-	((IP_IS_V6(ipaddr)) ? ip6_addr_ismulticast(ip_2_ip6(ipaddr)) : \
-			      ip4_addr_ismulticast(ip_2_ip4(ipaddr)))
+#define ip_addr_ismulticast(ipaddr) \
+	((IP_IS_V6(ipaddr)) ? ip6_addr_ismulticast(ip_2_ip6(ipaddr)) : ip4_addr_ismulticast(ip_2_ip4(ipaddr)))
 /** @ingroup ipaddr */
-#define ip_addr_isloopback(ipaddr)                                    \
-	((IP_IS_V6(ipaddr)) ? ip6_addr_isloopback(ip_2_ip6(ipaddr)) : \
-			      ip4_addr_isloopback(ip_2_ip4(ipaddr)))
+#define ip_addr_isloopback(ipaddr) \
+	((IP_IS_V6(ipaddr)) ? ip6_addr_isloopback(ip_2_ip6(ipaddr)) : ip4_addr_isloopback(ip_2_ip4(ipaddr)))
 /** @ingroup ipaddr */
-#define ip_addr_islinklocal(ipaddr)                                    \
-	((IP_IS_V6(ipaddr)) ? ip6_addr_islinklocal(ip_2_ip6(ipaddr)) : \
-			      ip4_addr_islinklocal(ip_2_ip4(ipaddr)))
+#define ip_addr_islinklocal(ipaddr) \
+	((IP_IS_V6(ipaddr)) ? ip6_addr_islinklocal(ip_2_ip6(ipaddr)) : ip4_addr_islinklocal(ip_2_ip4(ipaddr)))
 #define ip_addr_debug_print(debug, ipaddr)                             \
 	do {                                                           \
 		if (IP_IS_V6(ipaddr)) {                                \
@@ -394,11 +366,9 @@ int ipaddr_aton(const char *cp, ip_addr_t *addr);
 	} while (0);
 
 /** @ingroup ipaddr */
-#define unmap_ipv4_mapped_ipv6(ip4addr, ip6addr) \
-	(ip4addr)->addr = (ip6addr)->addr[3];
+#define unmap_ipv4_mapped_ipv6(ip4addr, ip6addr) (ip4addr)->addr = (ip6addr)->addr[3];
 
-#define IP46_ADDR_ANY(type) \
-	(((type) == IPADDR_TYPE_V6) ? IP6_ADDR_ANY : IP4_ADDR_ANY)
+#define IP46_ADDR_ANY(type) (((type) == IPADDR_TYPE_V6) ? IP6_ADDR_ANY : IP4_ADDR_ANY)
 
 #else /* LWIP_IPV4 && LWIP_IPV6 */
 
@@ -406,15 +376,13 @@ int ipaddr_aton(const char *cp, ip_addr_t *addr);
 #define IP_ADDR_PCB_VERSION_MATCH_EXACT(pcb, ipaddr) 1
 
 #define ip_addr_set_any_val(is_ipv6, ipaddr) ip_addr_set_any(is_ipv6, &(ipaddr))
-#define ip_addr_set_loopback_val(is_ipv6, ipaddr) \
-	ip_addr_set_loopback(is_ipv6, &(ipaddr))
+#define ip_addr_set_loopback_val(is_ipv6, ipaddr) ip_addr_set_loopback(is_ipv6, &(ipaddr))
 
 #if LWIP_IPV4
 
 typedef ip4_addr_t ip_addr_t;
 #define IPADDR4_INIT(u32val) { u32val }
-#define IPADDR4_INIT_BYTES(a, b, c, d) \
-	IPADDR4_INIT(PP_HTONL(LWIP_MAKEU32(a, b, c, d)))
+#define IPADDR4_INIT_BYTES(a, b, c, d) IPADDR4_INIT(PP_HTONL(LWIP_MAKEU32(a, b, c, d)))
 #define IP_IS_V4_VAL(ipaddr) 1
 #define IP_IS_V6_VAL(ipaddr) 0
 #define IP_IS_V4(ipaddr) 1
@@ -439,8 +407,7 @@ typedef ip4_addr_t ip_addr_t;
 #define ip_addr_set_any(is_ipv6, ipaddr) ip4_addr_set_any(ipaddr)
 #define ip_addr_set_loopback(is_ipv6, ipaddr) ip4_addr_set_loopback(ipaddr)
 #define ip_addr_set_hton(dest, src) ip4_addr_set_hton(dest, src)
-#define ip_addr_get_network(target, host, mask) \
-	ip4_addr_get_network(target, host, mask)
+#define ip_addr_get_network(target, host, mask) ip4_addr_get_network(target, host, mask)
 #define ip_addr_netcmp(addr1, addr2, mask) ip4_addr_netcmp(addr1, addr2, mask)
 #define ip_addr_cmp(addr1, addr2) ip4_addr_cmp(addr1, addr2)
 #define ip_addr_isany(ipaddr) ip4_addr_isany(ipaddr)
@@ -450,8 +417,7 @@ typedef ip4_addr_t ip_addr_t;
 #define ip_addr_isbroadcast(addr, netif) ip4_addr_isbroadcast(addr, netif)
 #define ip_addr_ismulticast(ipaddr) ip4_addr_ismulticast(ipaddr)
 #define ip_addr_debug_print(debug, ipaddr) ip4_addr_debug_print(debug, ipaddr)
-#define ip_addr_debug_print_val(debug, ipaddr) \
-	ip4_addr_debug_print_val(debug, ipaddr)
+#define ip_addr_debug_print_val(debug, ipaddr) ip4_addr_debug_print_val(debug, ipaddr)
 #define ipaddr_ntoa(ipaddr) ip4addr_ntoa(ipaddr)
 #define ipaddr_ntoa_r(ipaddr, buf, buflen) ip4addr_ntoa_r(ipaddr, buf, buflen)
 #define ipaddr_aton(cp, addr) ip4addr_aton(cp, addr)
@@ -464,9 +430,7 @@ typedef ip4_addr_t ip_addr_t;
 
 typedef ip6_addr_t ip_addr_t;
 #define IPADDR6_INIT(a, b, c, d) { { a, b, c, d } IPADDR6_ZONE_INIT }
-#define IPADDR6_INIT_HOST(a, b, c, d)              \
-	{ { PP_HTONL(a), PP_HTONL(b), PP_HTONL(c), \
-	    PP_HTONL(d) } IPADDR6_ZONE_INIT }
+#define IPADDR6_INIT_HOST(a, b, c, d) { { PP_HTONL(a), PP_HTONL(b), PP_HTONL(c), PP_HTONL(d) } IPADDR6_ZONE_INIT }
 #define IP_IS_V4_VAL(ipaddr) 0
 #define IP_IS_V6_VAL(ipaddr) 1
 #define IP_IS_V4(ipaddr) 0
@@ -478,13 +442,11 @@ typedef ip6_addr_t ip_addr_t;
 #define IP_ADDR_RAW_SIZE(ipaddr) sizeof(ip6_addr_t)
 #define ip_2_ip6(ipaddr) (ipaddr)
 #define IP_ADDR6(ipaddr, i0, i1, i2, i3) IP6_ADDR(ipaddr, i0, i1, i2, i3)
-#define IP_ADDR6_HOST(ipaddr, i0, i1, i2, i3) \
-	IP_ADDR6(ipaddr, PP_HTONL(i0), PP_HTONL(i1), PP_HTONL(i2), PP_HTONL(i3))
+#define IP_ADDR6_HOST(ipaddr, i0, i1, i2, i3) IP_ADDR6(ipaddr, PP_HTONL(i0), PP_HTONL(i1), PP_HTONL(i2), PP_HTONL(i3))
 
 #define ip_addr_copy(dest, src) ip6_addr_copy(dest, src)
 #define ip_addr_copy_from_ip6(dest, src) ip6_addr_copy(dest, src)
-#define ip_addr_copy_from_ip6_packed(dest, src) \
-	ip6_addr_copy_from_packed(dest, src)
+#define ip_addr_copy_from_ip6_packed(dest, src) ip6_addr_copy_from_packed(dest, src)
 #define ip_addr_set(dest, src) ip6_addr_set(dest, src)
 #define ip_addr_set_ipaddr(dest, src) ip6_addr_set(dest, src)
 #define ip_addr_set_zero(ipaddr) ip6_addr_set_zero(ipaddr)
@@ -503,8 +465,7 @@ typedef ip6_addr_t ip_addr_t;
 #define ip_addr_isbroadcast(addr, netif) 0
 #define ip_addr_ismulticast(ipaddr) ip6_addr_ismulticast(ipaddr)
 #define ip_addr_debug_print(debug, ipaddr) ip6_addr_debug_print(debug, ipaddr)
-#define ip_addr_debug_print_val(debug, ipaddr) \
-	ip6_addr_debug_print_val(debug, ipaddr)
+#define ip_addr_debug_print_val(debug, ipaddr) ip6_addr_debug_print_val(debug, ipaddr)
 #define ipaddr_ntoa(ipaddr) ip6addr_ntoa(ipaddr)
 #define ipaddr_ntoa_r(ipaddr, buf, buflen) ip6addr_ntoa_r(ipaddr, buf, buflen)
 #define ipaddr_aton(cp, addr) ip6addr_aton(cp, addr)

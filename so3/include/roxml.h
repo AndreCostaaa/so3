@@ -139,9 +139,7 @@ typedef struct node node_t;
  * constant for all types of nodes
  * \see roxml_add_node
  */
-#define ROXML_ALL_NODES                                                      \
-	(ROXML_PI_NODE | ROXML_CMT_NODE | ROXML_TXT_NODE | ROXML_ATTR_NODE | \
-	 ROXML_ELM_NODE)
+#define ROXML_ALL_NODES (ROXML_PI_NODE | ROXML_CMT_NODE | ROXML_TXT_NODE | ROXML_ATTR_NODE | ROXML_ELM_NODE)
 
 /**
  * \def ROXML_ALL_NODE
@@ -173,9 +171,7 @@ typedef struct node node_t;
  * constant for nodes that should not be escaped.
  * \see roxml_add_node
  */
-#define ROXML_NON_ESCAPABLE_NODES                                           \
-	(ROXML_CMT_NODE | ROXML_PI_NODE | ROXML_NS_NODE | ROXML_CDATA_MOD | \
-	 ROXML_DOCTYPE_NODE)
+#define ROXML_NON_ESCAPABLE_NODES (ROXML_CMT_NODE | ROXML_PI_NODE | ROXML_NS_NODE | ROXML_CDATA_MOD | ROXML_DOCTYPE_NODE)
 
 /**
  * \def ENCODE
@@ -199,7 +195,7 @@ typedef struct node node_t;
  * when used with roxml_release, release all memory allocated by current thread
  * \see roxml_release
  */
-#define RELEASE_ALL (void *)-1
+#define RELEASE_ALL (void *) -1
 
 /**
  * \def RELEASE_LAST
@@ -229,14 +225,14 @@ typedef struct node node_t;
  * }
  * \endcode
  */
-#define RELEASE_LAST (void *)-2
+#define RELEASE_LAST (void *) -2
 
 /**
  * \def ROXML_INVALID_DOC
  *
  * constant for invalid documents
  */
-#define ROXML_INVALID_DOC (node_t *)0
+#define ROXML_INVALID_DOC (node_t *) 0
 
 /** \brief load function for buffers
  *
@@ -657,8 +653,7 @@ ROXML_API char *roxml_get_name(node_t *n, char *buffer, int size);
  * \return the text content
  * \see roxml_release
  */
-ROXML_API char *roxml_get_content(node_t *n, char *buffer, int bufsize,
-				  int *size);
+ROXML_API char *roxml_get_content(node_t *n, char *buffer, int bufsize, int *size);
 
 /** \brief XML encoding/decoding function
  *
@@ -972,8 +967,7 @@ ROXML_API void roxml_release(void *data);
  * }
  * \endcode
  */
-ROXML_API node_t *roxml_add_node(node_t *parent, int position, int type,
-				 char *name, char *value);
+ROXML_API node_t *roxml_add_node(node_t *parent, int position, int type, char *name, char *value);
 
 /** \brief text node getter function
  *
@@ -1164,8 +1158,7 @@ ROXML_API void roxml_del_node(node_t *n);
  * \see roxml_commit_buffer
  * \see roxml_commit_fd
  */
-ROXML_API int roxml_commit_changes(node_t *n, char *dest, char **buffer,
-				   int human);
+ROXML_API int roxml_commit_changes(node_t *n, char *dest, char **buffer, int human);
 
 /** \brief sync to named file function
  *

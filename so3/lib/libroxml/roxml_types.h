@@ -62,8 +62,7 @@ typedef struct _xpath_cond {
 	char func2; /*!< function to process in arg2 */
 	char *arg1; /*!< condition arg1 as string */
 	char *arg2; /*!< condition arg2 as string */
-	struct _xpath_node
-		*xp; /*!< xpath that have to be resolved for condition */
+	struct _xpath_node *xp; /*!< xpath that have to be resolved for condition */
 	struct _xpath_cond *next; /*!< next xpath condition pointer */
 } xpath_cond_t;
 
@@ -213,8 +212,7 @@ typedef struct _roxml_xpath_ctx {
  * number of handled bytes or 0 if doesn't want to handle this key
  */
 typedef struct _roxml_parser_item roxml_parser_item_t;
-typedef int (*roxml_parse_func)(roxml_parser_item_t *parser, char *chunk,
-				void *data);
+typedef int (*roxml_parse_func)(roxml_parser_item_t *parser, char *chunk, void *data);
 
 /** \struct roxml_parser_item_t
  *

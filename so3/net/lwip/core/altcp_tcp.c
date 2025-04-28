@@ -55,11 +55,10 @@
 
 #include <string.h>
 
-#define ALTCP_TCP_ASSERT_CONN(conn)                            \
-	do {                                                   \
-		LWIP_ASSERT("conn->inner_conn == NULL",        \
-			    (conn)->inner_conn == NULL);       \
-		LWIP_UNUSED_ARG(conn); /* for LWIP_NOASSERT */ \
+#define ALTCP_TCP_ASSERT_CONN(conn)                                                  \
+	do {                                                                         \
+		LWIP_ASSERT("conn->inner_conn == NULL", (conn)->inner_conn == NULL); \
+		LWIP_UNUSED_ARG(conn); /* for LWIP_NOASSERT */                       \
 	} while (0)
 #define ALTCP_TCP_ASSERT_CONN_PCB(conn, tpcb)                       \
 	do {                                                        \
@@ -77,7 +76,7 @@ static void altcp_tcp_setup(struct altcp_pcb *conn, struct tcp_pcb *tpcb);
 /* callback functions for TCP */
 static err_t altcp_tcp_accept(void *arg, struct tcp_pcb *new_tpcb, err_t err)
 {
-	struct altcp_pcb *listen_conn = (struct altcp_pcb *)arg;
+	struct altcp_pcb *listen_conn = (struct altcp_pcb *) arg;
 	if (listen_conn && listen_conn->accept) {
 		/* create a new altcp_conn to pass to the next 'accept' callback */
 		struct altcp_pcb *new_conn = altcp_alloc();
@@ -92,7 +91,7 @@ static err_t altcp_tcp_accept(void *arg, struct tcp_pcb *new_tpcb, err_t err)
 
 static err_t altcp_tcp_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
 {
-	struct altcp_pcb *conn = (struct altcp_pcb *)arg;
+	struct altcp_pcb *conn = (struct altcp_pcb *) arg;
 	if (conn) {
 		ALTCP_TCP_ASSERT_CONN_PCB(conn, tpcb);
 		if (conn->connected) {
@@ -102,10 +101,9 @@ static err_t altcp_tcp_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
 	return ERR_OK;
 }
 
-static err_t altcp_tcp_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
-			    err_t err)
+static err_t altcp_tcp_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 {
-	struct altcp_pcb *conn = (struct altcp_pcb *)arg;
+	struct altcp_pcb *conn = (struct altcp_pcb *) arg;
 	if (conn) {
 		ALTCP_TCP_ASSERT_CONN_PCB(conn, tpcb);
 		if (conn->recv) {
@@ -121,7 +119,7 @@ static err_t altcp_tcp_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
 static err_t altcp_tcp_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
 {
-	struct altcp_pcb *conn = (struct altcp_pcb *)arg;
+	struct altcp_pcb *conn = (struct altcp_pcb *) arg;
 	if (conn) {
 		ALTCP_TCP_ASSERT_CONN_PCB(conn, tpcb);
 		if (conn->sent) {
@@ -133,7 +131,7 @@ static err_t altcp_tcp_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
 
 static err_t altcp_tcp_poll(void *arg, struct tcp_pcb *tpcb)
 {
-	struct altcp_pcb *conn = (struct altcp_pcb *)arg;
+	struct altcp_pcb *conn = (struct altcp_pcb *) arg;
 	if (conn) {
 		ALTCP_TCP_ASSERT_CONN_PCB(conn, tpcb);
 		if (conn->poll) {
@@ -145,7 +143,7 @@ static err_t altcp_tcp_poll(void *arg, struct tcp_pcb *tpcb)
 
 static void altcp_tcp_err(void *arg, err_t err)
 {
-	struct altcp_pcb *conn = (struct altcp_pcb *)arg;
+	struct altcp_pcb *conn = (struct altcp_pcb *) arg;
 	if (conn) {
 		conn->state = NULL; /* already freed */
 		if (conn->err) {
@@ -168,8 +166,7 @@ static void altcp_tcp_remove_callbacks(struct tcp_pcb *tpcb)
 	}
 }
 
-static void altcp_tcp_setup_callbacks(struct altcp_pcb *conn,
-				      struct tcp_pcb *tpcb)
+static void altcp_tcp_setup_callbacks(struct altcp_pcb *conn, struct tcp_pcb *tpcb)
 {
 	tcp_arg(tpcb, conn);
 	/* this might be called for LISTN when close fails... */
@@ -232,7 +229,7 @@ struct altcp_pcb *altcp_tcp_wrap(struct tcp_pcb *tpcb)
 static void altcp_tcp_set_poll(struct altcp_pcb *conn, u8_t interval)
 {
 	if (conn != NULL) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		tcp_poll(pcb, altcp_tcp_poll, interval);
 	}
@@ -241,26 +238,24 @@ static void altcp_tcp_set_poll(struct altcp_pcb *conn, u8_t interval)
 static void altcp_tcp_recved(struct altcp_pcb *conn, u16_t len)
 {
 	if (conn != NULL) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		tcp_recved(pcb, len);
 	}
 }
 
-static err_t altcp_tcp_bind(struct altcp_pcb *conn, const ip_addr_t *ipaddr,
-			    u16_t port)
+static err_t altcp_tcp_bind(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port)
 {
 	struct tcp_pcb *pcb;
 	if (conn == NULL) {
 		return ERR_VAL;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_bind(pcb, ipaddr, port);
 }
 
-static err_t altcp_tcp_connect(struct altcp_pcb *conn, const ip_addr_t *ipaddr,
-			       u16_t port, altcp_connected_fn connected)
+static err_t altcp_tcp_connect(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port, altcp_connected_fn connected)
 {
 	struct tcp_pcb *pcb;
 	if (conn == NULL) {
@@ -268,12 +263,11 @@ static err_t altcp_tcp_connect(struct altcp_pcb *conn, const ip_addr_t *ipaddr,
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
 	conn->connected = connected;
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_connect(pcb, ipaddr, port, altcp_tcp_connected);
 }
 
-static struct altcp_pcb *altcp_tcp_listen(struct altcp_pcb *conn, u8_t backlog,
-					  err_t *err)
+static struct altcp_pcb *altcp_tcp_listen(struct altcp_pcb *conn, u8_t backlog, err_t *err)
 {
 	struct tcp_pcb *pcb;
 	struct tcp_pcb *lpcb;
@@ -281,7 +275,7 @@ static struct altcp_pcb *altcp_tcp_listen(struct altcp_pcb *conn, u8_t backlog,
 		return NULL;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	lpcb = tcp_listen_with_backlog_and_err(pcb, backlog, err);
 	if (lpcb != NULL) {
 		conn->state = lpcb;
@@ -294,7 +288,7 @@ static struct altcp_pcb *altcp_tcp_listen(struct altcp_pcb *conn, u8_t backlog,
 static void altcp_tcp_abort(struct altcp_pcb *conn)
 {
 	if (conn != NULL) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		if (pcb) {
 			tcp_abort(pcb);
@@ -309,7 +303,7 @@ static err_t altcp_tcp_close(struct altcp_pcb *conn)
 		return ERR_VAL;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	if (pcb) {
 		err_t err;
 		tcp_poll_fn oldpoll = pcb->poll;
@@ -322,34 +316,31 @@ static err_t altcp_tcp_close(struct altcp_pcb *conn)
 			tcp_poll(pcb, oldpoll, pcb->pollinterval);
 			return err;
 		}
-		conn->state =
-			NULL; /* unsafe to reference pcb after tcp_close(). */
+		conn->state = NULL; /* unsafe to reference pcb after tcp_close(). */
 	}
 	altcp_free(conn);
 	return ERR_OK;
 }
 
-static err_t altcp_tcp_shutdown(struct altcp_pcb *conn, int shut_rx,
-				int shut_tx)
+static err_t altcp_tcp_shutdown(struct altcp_pcb *conn, int shut_rx, int shut_tx)
 {
 	struct tcp_pcb *pcb;
 	if (conn == NULL) {
 		return ERR_VAL;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_shutdown(pcb, shut_rx, shut_tx);
 }
 
-static err_t altcp_tcp_write(struct altcp_pcb *conn, const void *dataptr,
-			     u16_t len, u8_t apiflags)
+static err_t altcp_tcp_write(struct altcp_pcb *conn, const void *dataptr, u16_t len, u8_t apiflags)
 {
 	struct tcp_pcb *pcb;
 	if (conn == NULL) {
 		return ERR_VAL;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_write(pcb, dataptr, len, apiflags);
 }
 
@@ -360,7 +351,7 @@ static err_t altcp_tcp_output(struct altcp_pcb *conn)
 		return ERR_VAL;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_output(pcb);
 }
 
@@ -371,7 +362,7 @@ static u16_t altcp_tcp_mss(struct altcp_pcb *conn)
 		return 0;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_mss(pcb);
 }
 
@@ -382,7 +373,7 @@ static u16_t altcp_tcp_sndbuf(struct altcp_pcb *conn)
 		return 0;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_sndbuf(pcb);
 }
 
@@ -393,14 +384,14 @@ static u16_t altcp_tcp_sndqueuelen(struct altcp_pcb *conn)
 		return 0;
 	}
 	ALTCP_TCP_ASSERT_CONN(conn);
-	pcb = (struct tcp_pcb *)conn->state;
+	pcb = (struct tcp_pcb *) conn->state;
 	return tcp_sndqueuelen(pcb);
 }
 
 static void altcp_tcp_nagle_disable(struct altcp_pcb *conn)
 {
 	if (conn && conn->state) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		tcp_nagle_disable(pcb);
 	}
@@ -409,7 +400,7 @@ static void altcp_tcp_nagle_disable(struct altcp_pcb *conn)
 static void altcp_tcp_nagle_enable(struct altcp_pcb *conn)
 {
 	if (conn && conn->state) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		tcp_nagle_enable(pcb);
 	}
@@ -418,7 +409,7 @@ static void altcp_tcp_nagle_enable(struct altcp_pcb *conn)
 static int altcp_tcp_nagle_disabled(struct altcp_pcb *conn)
 {
 	if (conn && conn->state) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		return tcp_nagle_disabled(pcb);
 	}
@@ -428,7 +419,7 @@ static int altcp_tcp_nagle_disabled(struct altcp_pcb *conn)
 static void altcp_tcp_setprio(struct altcp_pcb *conn, u8_t prio)
 {
 	if (conn != NULL) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		tcp_setprio(pcb, prio);
 	}
@@ -438,17 +429,16 @@ static void altcp_tcp_setprio(struct altcp_pcb *conn, u8_t prio)
 static void altcp_tcp_keepalive_disable(struct altcp_pcb *conn)
 {
 	if (conn && conn->state) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		ip_reset_option(pcb, SOF_KEEPALIVE);
 	}
 }
 
-static void altcp_tcp_keepalive_enable(struct altcp_pcb *conn, u32_t idle,
-				       u32_t intvl, u32_t cnt)
+static void altcp_tcp_keepalive_enable(struct altcp_pcb *conn, u32_t idle, u32_t intvl, u32_t cnt)
 {
 	if (conn && conn->state) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		ip_set_option(pcb, SOF_KEEPALIVE);
 		pcb->keep_idle = idle ? idle : TCP_KEEPIDLE_DEFAULT;
@@ -465,11 +455,10 @@ static void altcp_tcp_dealloc(struct altcp_pcb *conn)
 	/* no private state to clean up */
 }
 
-static err_t altcp_tcp_get_tcp_addrinfo(struct altcp_pcb *conn, int local,
-					ip_addr_t *addr, u16_t *port)
+static err_t altcp_tcp_get_tcp_addrinfo(struct altcp_pcb *conn, int local, ip_addr_t *addr, u16_t *port)
 {
 	if (conn) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		return tcp_tcp_get_tcp_addrinfo(pcb, local, addr, port);
 	}
@@ -479,7 +468,7 @@ static err_t altcp_tcp_get_tcp_addrinfo(struct altcp_pcb *conn, int local,
 static ip_addr_t *altcp_tcp_get_ip(struct altcp_pcb *conn, int local)
 {
 	if (conn) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		if (pcb) {
 			if (local) {
@@ -495,7 +484,7 @@ static ip_addr_t *altcp_tcp_get_ip(struct altcp_pcb *conn, int local)
 static u16_t altcp_tcp_get_port(struct altcp_pcb *conn, int local)
 {
 	if (conn) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		if (pcb) {
 			if (local) {
@@ -512,7 +501,7 @@ static u16_t altcp_tcp_get_port(struct altcp_pcb *conn, int local)
 static enum tcp_state altcp_tcp_dbg_get_tcp_state(struct altcp_pcb *conn)
 {
 	if (conn) {
-		struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
+		struct tcp_pcb *pcb = (struct tcp_pcb *) conn->state;
 		ALTCP_TCP_ASSERT_CONN(conn);
 		if (pcb) {
 			return pcb->state;
@@ -521,36 +510,35 @@ static enum tcp_state altcp_tcp_dbg_get_tcp_state(struct altcp_pcb *conn)
 	return CLOSED;
 }
 #endif
-const struct altcp_functions altcp_tcp_functions = {
-	altcp_tcp_set_poll,
-	altcp_tcp_recved,
-	altcp_tcp_bind,
-	altcp_tcp_connect,
-	altcp_tcp_listen,
-	altcp_tcp_abort,
-	altcp_tcp_close,
-	altcp_tcp_shutdown,
-	altcp_tcp_write,
-	altcp_tcp_output,
-	altcp_tcp_mss,
-	altcp_tcp_sndbuf,
-	altcp_tcp_sndqueuelen,
-	altcp_tcp_nagle_disable,
-	altcp_tcp_nagle_enable,
-	altcp_tcp_nagle_disabled,
-	altcp_tcp_setprio,
-	altcp_tcp_dealloc,
-	altcp_tcp_get_tcp_addrinfo,
-	altcp_tcp_get_ip,
-	altcp_tcp_get_port
+const struct altcp_functions altcp_tcp_functions = { altcp_tcp_set_poll,
+						     altcp_tcp_recved,
+						     altcp_tcp_bind,
+						     altcp_tcp_connect,
+						     altcp_tcp_listen,
+						     altcp_tcp_abort,
+						     altcp_tcp_close,
+						     altcp_tcp_shutdown,
+						     altcp_tcp_write,
+						     altcp_tcp_output,
+						     altcp_tcp_mss,
+						     altcp_tcp_sndbuf,
+						     altcp_tcp_sndqueuelen,
+						     altcp_tcp_nagle_disable,
+						     altcp_tcp_nagle_enable,
+						     altcp_tcp_nagle_disabled,
+						     altcp_tcp_setprio,
+						     altcp_tcp_dealloc,
+						     altcp_tcp_get_tcp_addrinfo,
+						     altcp_tcp_get_ip,
+						     altcp_tcp_get_port
 #if LWIP_TCP_KEEPALIVE
-	,
-	altcp_tcp_keepalive_disable,
-	altcp_tcp_keepalive_enable
+						     ,
+						     altcp_tcp_keepalive_disable,
+						     altcp_tcp_keepalive_enable
 #endif
 #ifdef LWIP_DEBUG
-	,
-	altcp_tcp_dbg_get_tcp_state
+						     ,
+						     altcp_tcp_dbg_get_tcp_state
 #endif
 };
 

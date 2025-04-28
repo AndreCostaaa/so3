@@ -113,8 +113,7 @@ static inline u32 arch_timer_reg_read_el0(enum arch_timer_reg reg)
 
 #else
 
-static inline void arch_timer_reg_write_cp15(int access,
-					     enum arch_timer_reg reg, u32 val)
+static inline void arch_timer_reg_write_cp15(int access, enum arch_timer_reg reg, u32 val)
 {
 	if (access == ARCH_TIMER_PHYS_ACCESS) {
 		switch (reg) {

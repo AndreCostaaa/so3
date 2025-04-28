@@ -24,13 +24,11 @@
 #include <heap.h>
 
 #define __ALIGN (sizeof(size_t))
-#define ONES ((size_t)-1 / UCHAR_MAX)
+#define ONES ((size_t) -1 / UCHAR_MAX)
 #define HIGHS (ONES * (UCHAR_MAX / 2 + 1))
 #define HASZERO(x) ((x) - (ONES & ~(x) & HIGHS))
 
-#define BITOP(a, b, op)                                    \
-	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 \
-	 << ((size_t)(b) % (8 * sizeof *(a))))
+#define BITOP(a, b, op) ((a)[(size_t) (b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t) (b) % (8 * sizeof *(a))))
 
 void uppercase(char *str, int len)
 {
@@ -56,9 +54,9 @@ void downcase(char *str)
 /* http://clc-wiki.net/wiki/memchr#Implementation */
 void *memchr(const void *s, int c, size_t n)
 {
-	unsigned char *p = (unsigned char *)s;
+	unsigned char *p = (unsigned char *) s;
 	while (n--)
-		if (*p != (unsigned char)c)
+		if (*p != (unsigned char) c)
 			p++;
 		else
 			return p;
@@ -109,7 +107,7 @@ void *memset(void *s, int c, size_t n)
 {
 	unsigned char *p = s;
 	while (n--)
-		*p++ = (unsigned char)c;
+		*p++ = (unsigned char) c;
 	return s;
 }
 
@@ -118,7 +116,7 @@ int strcmp(const char *s1, const char *s2)
 {
 	while (*s1 && (*s1 == *s2))
 		s1++, s2++;
-	return *(const unsigned char *)s1 - *(const unsigned char *)s2;
+	return *(const unsigned char *) s1 - *(const unsigned char *) s2;
 }
 
 /**
@@ -189,19 +187,19 @@ char *strchrnul(const char *s, int c)
 {
 	size_t *w, k;
 
-	c = (unsigned char)c;
+	c = (unsigned char) c;
 	if (!c)
-		return (char *)s + strlen(s);
+		return (char *) s + strlen(s);
 
-	for (; (uintptr_t)s % __ALIGN; s++)
-		if (!*s || *(unsigned char *)s == c)
-			return (char *)s;
+	for (; (uintptr_t) s % __ALIGN; s++)
+		if (!*s || *(unsigned char *) s == c)
+			return (char *) s;
 	k = ONES * c;
-	for (w = (void *)s; !HASZERO(*w) && !HASZERO(*w ^ k); w++)
+	for (w = (void *) s; !HASZERO(*w) && !HASZERO(*w ^ k); w++)
 		;
-	for (s = (void *)w; *s && *(unsigned char *)s != c; s++)
+	for (s = (void *) w; *s && *(unsigned char *) s != c; s++)
 		;
-	return (char *)s;
+	return (char *) s;
 }
 
 size_t strcspn(const char *s, const char *c)
@@ -213,9 +211,9 @@ size_t strcspn(const char *s, const char *c)
 		return strchrnul(s, *c) - a;
 
 	memset(byteset, 0, sizeof byteset);
-	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++)
+	for (; *c && BITOP(byteset, *(unsigned char *) c, |=); c++)
 		;
-	for (; *s && !BITOP(byteset, *(unsigned char *)s, &); s++)
+	for (; *s && !BITOP(byteset, *(unsigned char *) s, &); s++)
 		;
 	return s - a;
 }

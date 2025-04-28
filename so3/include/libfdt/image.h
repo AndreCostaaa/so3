@@ -249,10 +249,8 @@ enum {
 #define IMAGE_ENABLE_TIMESTAMP 0
 
 /* cmdline argument format parsing */
-int fit_parse_conf(const char *spec, ulong addr_curr, ulong *addr,
-		   const char **conf_name);
-int fit_parse_subimage(const char *spec, ulong addr_curr, ulong *addr,
-		       const char **image_name);
+int fit_parse_conf(const char *spec, ulong addr_curr, ulong *addr, const char **conf_name);
+int fit_parse_subimage(const char *spec, ulong addr_curr, ulong *addr, const char **image_name);
 
 int fit_get_subimage_count(const void *fit, int images_noffset);
 void fit_print_contents(const void *fit);
@@ -287,8 +285,7 @@ ulong fit_get_end(const void *fit);
  *     NULL, on error
  *     pointer to node name, on success
  */
-static inline const char *fit_get_name(const void *fit_hdr, int noffset,
-				       int *len)
+static inline const char *fit_get_name(const void *fit_hdr, int noffset, int *len)
 {
 	return fdt_get_name(fit_hdr, noffset, len);
 }
@@ -303,18 +300,14 @@ int fit_image_get_type(const void *fit, int noffset, uint8_t *type);
 int fit_image_get_comp(const void *fit, int noffset, uint8_t *comp);
 int fit_image_get_load(const void *fit, int noffset, ulong *load);
 int fit_image_get_entry(const void *fit, int noffset, ulong *entry);
-int fit_image_get_data(const void *fit, int noffset, const void **data,
-		       size_t *size);
+int fit_image_get_data(const void *fit, int noffset, const void **data, size_t *size);
 int fit_image_get_data_offset(const void *fit, int noffset, int *data_offset);
-int fit_image_get_data_position(const void *fit, int noffset,
-				int *data_position);
+int fit_image_get_data_position(const void *fit, int noffset, int *data_position);
 int fit_image_get_data_size(const void *fit, int noffset, int *data_size);
-int fit_image_get_data_and_size(const void *fit, int noffset, const void **data,
-				size_t *size);
+int fit_image_get_data_and_size(const void *fit, int noffset, const void **data, size_t *size);
 
 int fit_image_hash_get_algo(const void *fit, int noffset, char **algo);
-int fit_image_hash_get_value(const void *fit, int noffset, uint8_t **value,
-			     int *value_len);
+int fit_image_hash_get_value(const void *fit, int noffset, uint8_t **value, int *value_len);
 
 int fit_set_timestamp(void *fit, int noffset, time_t timestamp);
 
@@ -339,12 +332,10 @@ int fit_set_timestamp(void *fit, int noffset, time_t timestamp);
  *     0, on success
  *     libfdt error code, on failure
  */
-int fit_add_verification_data(const char *keydir, void *keydest, void *fit,
-			      const char *comment, int require_keys,
+int fit_add_verification_data(const char *keydir, void *keydest, void *fit, const char *comment, int require_keys,
 			      const char *engine_id, const char *cmdname);
 
-int fit_image_verify_with_data(const void *fit, int image_noffset,
-			       const void *data, size_t size);
+int fit_image_verify_with_data(const void *fit, int image_noffset, const void *data, size_t size);
 int fit_image_verify(const void *fit, int noffset);
 int fit_config_verify(const void *fit, int conf_noffset);
 int fit_all_image_verify(const void *fit);
@@ -370,10 +361,8 @@ int fit_conf_get_node(const void *fit, const char *conf_uname);
  */
 int fit_conf_get_prop_node(const void *fit, int noffset, const char *prop_name);
 
-int fit_check_ramdisk(const void *fit, int os_noffset, uint8_t arch,
-		      int verify);
+int fit_check_ramdisk(const void *fit, int os_noffset, uint8_t arch, int verify);
 
-int calculate_hash(const void *data, int data_len, const char *algo,
-		   uint8_t *value, int *value_len);
+int calculate_hash(const void *data, int data_len, const char *algo, uint8_t *value, int *value_len);
 
 #endif /* __IMAGE_H__ */

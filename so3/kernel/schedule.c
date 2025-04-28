@@ -112,7 +112,7 @@ void ready(tcb_t *tcb)
 
 	tcb->state = THREAD_STATE_READY;
 
-	cur = (queue_thread_t *)malloc(sizeof(queue_thread_t));
+	cur = (queue_thread_t *) malloc(sizeof(queue_thread_t));
 	BUG_ON(cur == NULL);
 
 #ifdef CONFIG_SCHED_PRIO_DYN
@@ -167,7 +167,7 @@ void zombie(void)
 
 	current()->state = THREAD_STATE_ZOMBIE;
 
-	cur = (queue_thread_t *)malloc(sizeof(queue_thread_t));
+	cur = (queue_thread_t *) malloc(sizeof(queue_thread_t));
 	BUG_ON(cur == NULL);
 
 	cur->tcb = current();
@@ -294,8 +294,7 @@ static tcb_t *next_thread(void)
 		tcb = entry->tcb;
 
 		current_time = NOW();
-		if (tcb->last_prio_inc_time + MILLISECS(PRIO_MAX_DELAY) <
-		    current_time) {
+		if (tcb->last_prio_inc_time + MILLISECS(PRIO_MAX_DELAY) < current_time) {
 			if (tcb->current_prio < 99)
 				tcb->current_prio++;
 
@@ -388,9 +387,7 @@ static tcb_t *next_thread(void)
 		entry = list_entry(pos, queue_thread_t, list);
 		tcb = entry->tcb;
 
-		if ((tcb->pcb == NULL) ||
-		    (tcb->pcb->state == PROC_STATE_READY) ||
-		    (tcb->pcb->state == PROC_STATE_RUNNING)) {
+		if ((tcb->pcb == NULL) || (tcb->pcb->state == PROC_STATE_READY) || (tcb->pcb->state == PROC_STATE_RUNNING)) {
 			spin_unlock(&schedule_lock);
 
 			/* Warning ! entry will be freed in remove_ready() */
@@ -443,37 +440,32 @@ void schedule(void)
 		next = tcb_idle;
 
 	if (next && (next != prev)) {
-		DBG("Now scheduling thread ID: %d name: %s PID: %d prio: %d\n",
-		    next->tid, next->name,
+		DBG("Now scheduling thread ID: %d name: %s PID: %d prio: %d\n", next->tid, next->name,
 		    ((next->pcb != NULL) ? next->pcb->pid : -1), next->prio);
 		if (prev)
-			DBG("Previous was threadID: %d name: %s PID: %d\n",
-			    prev->tid, prev->name);
+			DBG("Previous was threadID: %d name: %s PID: %d\n", prev->tid, prev->name);
 
 		/*
 		 * The current threads (here prev) can be in different states, not only running; it may be in *waiting* or *zombie*
 		 * depending on the thread activities. Hence, we put it in the ready state ONLY if the thread is in *running*.
 		 */
-		if ((prev != NULL) && (prev->state == THREAD_STATE_RUNNING) &&
-		    (likely(prev != tcb_idle)))
+		if ((prev != NULL) && (prev->state == THREAD_STATE_RUNNING) && (likely(prev != tcb_idle)))
 			ready(prev);
 
 		next->state = THREAD_STATE_RUNNING;
 		set_current(next);
 
 #ifdef CONFIG_MMU
-		if ((next->pcb != NULL) &&
-		    (next->pcb->pgtable != current_pgtable())) {
+		if ((next->pcb != NULL) && (next->pcb->pgtable != current_pgtable())) {
 			/* Change the process context */
 
 			next->pcb->state = PROC_STATE_RUNNING;
 
-			if ((prev != NULL) && (prev->pcb != NULL) &&
-			    (prev->pcb->state != PROC_STATE_ZOMBIE) &&
+			if ((prev != NULL) && (prev->pcb != NULL) && (prev->pcb->state != PROC_STATE_ZOMBIE) &&
 			    (prev->pcb->state != PROC_STATE_WAITING))
 				prev->pcb->state = PROC_STATE_READY;
 
-			mmu_switch((void *)__pa(next->pcb->pgtable));
+			mmu_switch((void *) __pa(next->pcb->pgtable));
 			set_pgtable(next->pcb->pgtable);
 		}
 #endif /* CONFIG_MMU */
@@ -516,8 +508,7 @@ void dump_ready(void)
 
 	list_for_each(pos, &readyThreads) {
 		cur = list_entry(pos, queue_thread_t, list);
-		lprintk("  Thread ID: %d name: %s state: %d prio: %d\n",
-			cur->tcb->tid, cur->tcb->name, cur->tcb->state,
+		lprintk("  Thread ID: %d name: %s state: %d prio: %d\n", cur->tcb->tid, cur->tcb->name, cur->tcb->state,
 			cur->tcb->prio);
 	}
 
@@ -545,8 +536,7 @@ void dump_zombie(void)
 
 	list_for_each(pos, &zombieThreads) {
 		cur = list_entry(pos, queue_thread_t, list);
-		printk("  Proc ID: %d Thread ID: %d state: %d\n",
-		       ((cur->tcb->pcb != NULL) ? cur->tcb->pcb->pid : 0),
+		printk("  Proc ID: %d Thread ID: %d state: %d\n", ((cur->tcb->pcb != NULL) ? cur->tcb->pcb->pid : 0),
 		       cur->tcb->tid, cur->tcb->state);
 	}
 

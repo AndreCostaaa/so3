@@ -49,15 +49,11 @@
 #define __HSR_CPREG_6 6
 #define __HSR_CPREG_7 7
 
-#define _HSR_CPREG32(cp, op1, crn, crm, op2)                  \
-	((__HSR_CPREG_##crn) << HSR_CP32_CRN_SHIFT) |         \
-		((__HSR_CPREG_##crm) << HSR_CP32_CRM_SHIFT) | \
-		((__HSR_CPREG_##op1) << HSR_CP32_OP1_SHIFT) | \
-		((__HSR_CPREG_##op2) << HSR_CP32_OP2_SHIFT)
+#define _HSR_CPREG32(cp, op1, crn, crm, op2)                                                        \
+	((__HSR_CPREG_##crn) << HSR_CP32_CRN_SHIFT) | ((__HSR_CPREG_##crm) << HSR_CP32_CRM_SHIFT) | \
+		((__HSR_CPREG_##op1) << HSR_CP32_OP1_SHIFT) | ((__HSR_CPREG_##op2) << HSR_CP32_OP2_SHIFT)
 
-#define _HSR_CPREG64(cp, op1, crm)                    \
-	((__HSR_CPREG_##crm) << HSR_CP64_CRM_SHIFT) | \
-		((__HSR_CPREG_##op1) << HSR_CP64_OP1_SHIFT)
+#define _HSR_CPREG64(cp, op1, crm) ((__HSR_CPREG_##crm) << HSR_CP64_CRM_SHIFT) | ((__HSR_CPREG_##op1) << HSR_CP64_OP1_SHIFT)
 
 /* Encode a register as per HSR ISS pattern */
 #define HSR_CPREG32(X) _HSR_CPREG32(X)
@@ -165,8 +161,7 @@
 #define DFSR p15, 0, c5, c0, 0 /* Data Fault Status Register */
 #define IFSR p15, 0, c5, c0, 1 /* Instruction Fault Status Register */
 #define ADFSR p15, 0, c5, c1, 0 /* Auxiliary Data Fault Status Register */
-#define AIFSR \
-	p15, 0, c5, c1, 1 /* Auxiliary Instruction Fault Status Register */
+#define AIFSR p15, 0, c5, c1, 1 /* Auxiliary Instruction Fault Status Register */
 #define HSR p15, 4, c5, c2, 0 /* Hyp. Syndrome Register */
 
 /* CP15 CR6: Fault Address Registers */
@@ -179,133 +174,76 @@
 /* CP15 CR7: Cache and address translation operations */
 #define PAR p15, 0, c7 /* Physical Address Register */
 
-#define ICIALLUIS       \
-	p15, 0, c7, c1, \
-		0 /* Invalidate all instruction caches to PoU inner shareable */
-#define BPIALLIS        \
-	p15, 0, c7, c1, \
-		6 /* Invalidate entire branch predictor array inner shareable */
+#define ICIALLUIS p15, 0, c7, c1, 0 /* Invalidate all instruction caches to PoU inner shareable */
+#define BPIALLIS p15, 0, c7, c1, 6 /* Invalidate entire branch predictor array inner shareable */
 #define ICIALLU p15, 0, c7, c5, 0 /* Invalidate all instruction caches to PoU */
-#define ICIMVAU \
-	p15, 0, c7, c5, 1 /* Invalidate instruction caches by MVA to PoU */
+#define ICIMVAU p15, 0, c7, c5, 1 /* Invalidate instruction caches by MVA to PoU */
 #define BPIALL p15, 0, c7, c5, 6 /* Invalidate entire branch predictor array */
-#define BPIMVA \
-	p15, 0, c7, c5, 7 /* Invalidate MVA from branch predictor array */
+#define BPIMVA p15, 0, c7, c5, 7 /* Invalidate MVA from branch predictor array */
 #define DCIMVAC p15, 0, c7, c6, 1 /* Invalidate data cache line by MVA to PoC */
 #define DCISW p15, 0, c7, c6, 2 /* Invalidate data cache line by set/way */
-#define ATS1CPR         \
-	p15, 0, c7, c8, \
-		0 /* Address Translation Stage 1. Non-Secure Kernel Read */
-#define ATS1CPW         \
-	p15, 0, c7, c8, \
-		1 /* Address Translation Stage 1. Non-Secure Kernel Write */
-#define ATS1CUR         \
-	p15, 0, c7, c8, \
-		2 /* Address Translation Stage 1. Non-Secure User Read */
-#define ATS1CUW         \
-	p15, 0, c7, c8, \
-		3 /* Address Translation Stage 1. Non-Secure User Write */
-#define ATS12NSOPR      \
-	p15, 0, c7, c8, \
-		4 /* Address Translation Stage 1+2 Non-Secure Kernel Read */
-#define ATS12NSOPW      \
-	p15, 0, c7, c8, \
-		5 /* Address Translation Stage 1+2 Non-Secure Kernel Write */
-#define ATS12NSOUR      \
-	p15, 0, c7, c8, \
-		6 /* Address Translation Stage 1+2 Non-Secure User Read */
-#define ATS12NSOUW      \
-	p15, 0, c7, c8, \
-		7 /* Address Translation Stage 1+2 Non-Secure User Write */
-#define DCCMVAC \
-	p15, 0, c7, c10, 1 /* Clean data or unified cache line by MVA to PoC */
+#define ATS1CPR p15, 0, c7, c8, 0 /* Address Translation Stage 1. Non-Secure Kernel Read */
+#define ATS1CPW p15, 0, c7, c8, 1 /* Address Translation Stage 1. Non-Secure Kernel Write */
+#define ATS1CUR p15, 0, c7, c8, 2 /* Address Translation Stage 1. Non-Secure User Read */
+#define ATS1CUW p15, 0, c7, c8, 3 /* Address Translation Stage 1. Non-Secure User Write */
+#define ATS12NSOPR p15, 0, c7, c8, 4 /* Address Translation Stage 1+2 Non-Secure Kernel Read */
+#define ATS12NSOPW p15, 0, c7, c8, 5 /* Address Translation Stage 1+2 Non-Secure Kernel Write */
+#define ATS12NSOUR p15, 0, c7, c8, 6 /* Address Translation Stage 1+2 Non-Secure User Read */
+#define ATS12NSOUW p15, 0, c7, c8, 7 /* Address Translation Stage 1+2 Non-Secure User Write */
+#define DCCMVAC p15, 0, c7, c10, 1 /* Clean data or unified cache line by MVA to PoC */
 #define DCCSW p15, 0, c7, c10, 2 /* Clean data cache line by set/way */
 #define DCCMVAU p15, 0, c7, c11, 1 /* Clean data cache line by MVA to PoU */
 #define DCCIMVAC p15, 0, c7, c14, 1 /* Data cache clean and invalidate by MVA */
-#define DCCISW \
-	p15, 0, c7, c14, 2 /* Clean and invalidate data cache line by set/way */
+#define DCCISW p15, 0, c7, c14, 2 /* Clean and invalidate data cache line by set/way */
 #define ATS1HR p15, 4, c7, c8, 0 /* Address Translation Stage 1 Hyp. Read */
 #define ATS1HW p15, 4, c7, c8, 1 /* Address Translation Stage 1 Hyp. Write */
 
 /* CP15 CR8: TLB maintenance operations */
 #define TLBIALLIS p15, 0, c8, c3, 0 /* Invalidate entire TLB innrer shareable */
-#define TLBIMVAIS       \
-	p15, 0, c8, c3, \
-		1 /* Invalidate unified TLB entry by MVA inner shareable */
-#define TLBIASIDIS      \
-	p15, 0, c8, c3, \
-		2 /* Invalidate unified TLB by ASID match inner shareable */
-#define TLBIMVAAIS      \
-	p15, 0, c8, c3, \
-		3 /* Invalidate unified TLB entry by MVA all ASID inner shareable */
+#define TLBIMVAIS p15, 0, c8, c3, 1 /* Invalidate unified TLB entry by MVA inner shareable */
+#define TLBIASIDIS p15, 0, c8, c3, 2 /* Invalidate unified TLB by ASID match inner shareable */
+#define TLBIMVAAIS p15, 0, c8, c3, 3 /* Invalidate unified TLB entry by MVA all ASID inner shareable */
 #define ITLBIALL p15, 0, c8, c5, 0 /* Invalidate instruction TLB */
 #define ITLBIMVA p15, 0, c8, c5, 1 /* Invalidate instruction TLB entry by MVA */
-#define ITLBIASID \
-	p15, 0, c8, c5, 2 /* Invalidate instruction TLB by ASID match */
+#define ITLBIASID p15, 0, c8, c5, 2 /* Invalidate instruction TLB by ASID match */
 #define DTLBIALL p15, 0, c8, c6, 0 /* Invalidate data TLB */
 #define DTLBIMVA p15, 0, c8, c6, 1 /* Invalidate data TLB entry by MVA */
 #define DTLBIASID p15, 0, c8, c6, 2 /* Invalidate data TLB by ASID match */
 #define TLBIALL p15, 0, c8, c7, 0 /* invalidate unified TLB */
 #define TLBIMVA p15, 0, c8, c7, 1 /* invalidate unified TLB entry by MVA */
 #define TLBIASID p15, 0, c8, c7, 2 /* invalid unified TLB by ASID match */
-#define TLBIMVAA \
-	p15, 0, c8, c7, 3 /* invalidate unified TLB entries by MVA all ASID */
-#define TLBIALLHIS      \
-	p15, 4, c8, c3, \
-		0 /* Invalidate Entire Hyp. Unified TLB inner shareable */
-#define TLBIMVAHIS      \
-	p15, 4, c8, c3, \
-		1 /* Invalidate Unified Hyp. TLB by MVA inner shareable */
-#define TLBIALLNSNHIS   \
-	p15, 4, c8, c3, \
-		4 /* Invalidate Entire Non-Secure Non-Hyp. Unified TLB inner shareable */
+#define TLBIMVAA p15, 0, c8, c7, 3 /* invalidate unified TLB entries by MVA all ASID */
+#define TLBIALLHIS p15, 4, c8, c3, 0 /* Invalidate Entire Hyp. Unified TLB inner shareable */
+#define TLBIMVAHIS p15, 4, c8, c3, 1 /* Invalidate Unified Hyp. TLB by MVA inner shareable */
+#define TLBIALLNSNHIS p15, 4, c8, c3, 4 /* Invalidate Entire Non-Secure Non-Hyp. Unified TLB inner shareable */
 #define TLBIALLH p15, 4, c8, c7, 0 /* Invalidate Entire Hyp. Unified TLB */
 #define TLBIMVAH p15, 4, c8, c7, 1 /* Invalidate Unified Hyp. TLB by MVA */
-#define TLBIALLNSNH     \
-	p15, 4, c8, c7, \
-		4 /* Invalidate Entire Non-Secure Non-Hyp. Unified TLB */
+#define TLBIALLNSNH p15, 4, c8, c7, 4 /* Invalidate Entire Non-Secure Non-Hyp. Unified TLB */
 
 /* CP15 CR9: Performance monitors */
 #define PMCR p15, 0, c9, c12, 0 /* Perf. Mon. Control Register */
 #define PMCNTENSET p15, 0, c9, c12, 1 /* Perf. Mon. Count Enable Set register */
-#define PMCNTENCLR \
-	p15, 0, c9, c12, 2 /* Perf. Mon. Count Enable Clear register */
+#define PMCNTENCLR p15, 0, c9, c12, 2 /* Perf. Mon. Count Enable Clear register */
 #define PMOVSR p15, 0, c9, c12, 3 /* Perf. Mon. Overflow Flag Status Register */
 #define PMSWINC p15, 0, c9, c12, 4 /* Perf. Mon. Software Increment register */
-#define PMSELR \
-	p15, 0, c9, c12, 5 /* Perf. Mon. Event Counter Selection Register */
-#define PMCEID0          \
-	p15, 0, c9, c12, \
-		6 /* Perf. Mon. Common Event Identification register 0 */
-#define PMCEID1          \
-	p15, 0, c9, c12, \
-		7 /* Perf. Mon. Common Event Identification register 1 */
+#define PMSELR p15, 0, c9, c12, 5 /* Perf. Mon. Event Counter Selection Register */
+#define PMCEID0 p15, 0, c9, c12, 6 /* Perf. Mon. Common Event Identification register 0 */
+#define PMCEID1 p15, 0, c9, c12, 7 /* Perf. Mon. Common Event Identification register 1 */
 #define PMCCNTR p15, 0, c9, c13, 0 /* Perf. Mon. Cycle Count Register */
 #define PMXEVCNTR p15, 0, c9, c13, 1 /* Perf. Mon. Event Type Select Register */
 #define PMXEVCNR p15, 0, c9, c13, 2 /* Perf. Mon. Event Count Register */
 #define PMUSERENR p15, 0, c9, c14, 0 /* Perf. Mon. User Enable Register */
-#define PMINTENSET \
-	p15, 0, c9, c14, 1 /* Perf. Mon. Interrupt Enable Set Register */
-#define PMINTENCLR \
-	p15, 0, c9, c14, 2 /* Perf. Mon. Interrupt Enable Clear Register */
-#define PMOVSSET \
-	p15, 0, c9, c14, 3 /* Perf. Mon. Overflow Flag Status Set register */
+#define PMINTENSET p15, 0, c9, c14, 1 /* Perf. Mon. Interrupt Enable Set Register */
+#define PMINTENCLR p15, 0, c9, c14, 2 /* Perf. Mon. Interrupt Enable Clear Register */
+#define PMOVSSET p15, 0, c9, c14, 3 /* Perf. Mon. Overflow Flag Status Set register */
 
 /* CP15 CR10: */
-#define MAIR0            \
-	p15, 0, c10, c2, \
-		0 /* Memory Attribute Indirection Register 0 AKA PRRR */
-#define MAIR1            \
-	p15, 0, c10, c2, \
-		1 /* Memory Attribute Indirection Register 1 AKA NMRR */
-#define HMAIR0 \
-	p15, 4, c10, c2, 0 /* Hyp. Memory Attribute Indirection Register 0 */
-#define HMAIR1 \
-	p15, 4, c10, c2, 1 /* Hyp. Memory Attribute Indirection Register 1 */
-#define AMAIR0 \
-	p15, 0, c10, c3, 0 /* Aux. Memory Attribute Indirection Register 0 */
-#define AMAIR1 \
-	p15, 0, c10, c3, 1 /* Aux. Memory Attribute Indirection Register 1 */
+#define MAIR0 p15, 0, c10, c2, 0 /* Memory Attribute Indirection Register 0 AKA PRRR */
+#define MAIR1 p15, 0, c10, c2, 1 /* Memory Attribute Indirection Register 1 AKA NMRR */
+#define HMAIR0 p15, 4, c10, c2, 0 /* Hyp. Memory Attribute Indirection Register 0 */
+#define HMAIR1 p15, 4, c10, c2, 1 /* Hyp. Memory Attribute Indirection Register 1 */
+#define AMAIR0 p15, 0, c10, c3, 0 /* Aux. Memory Attribute Indirection Register 0 */
+#define AMAIR1 p15, 0, c10, c3, 1 /* Aux. Memory Attribute Indirection Register 1 */
 
 /* CP15 CR11: DMA Operations for TCM Access */
 

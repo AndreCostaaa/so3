@@ -497,11 +497,9 @@
  * The number of sys timeouts used by the core stack (not apps)
  * The default number of timeouts is calculated here for all enabled modules.
  */
-#define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                       \
-	(LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
-	 LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
-	 (LWIP_IPV6 *                                                       \
-	  (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))
+#define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                                                                 \
+	(LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS + \
+	 (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))
 
 /**
  * MEMP_NUM_SYS_TIMEOUT: the number of simultaneously active timeouts.
@@ -1080,8 +1078,7 @@
  * core support for the corresponding IPv6 options.
  */
 #if !defined LWIP_MULTICAST_TX_OPTIONS || defined __DOXYGEN__
-#define LWIP_MULTICAST_TX_OPTIONS \
-	((LWIP_IGMP || LWIP_IPV6_MLD) && (LWIP_UDP || LWIP_RAW))
+#define LWIP_MULTICAST_TX_OPTIONS ((LWIP_IGMP || LWIP_IPV6_MLD) && (LWIP_UDP || LWIP_RAW))
 #endif
 /**
  * @}
@@ -1162,9 +1159,7 @@
  * This is overridable but should only be needed by very small targets
  * or when using against non standard DNS servers. */
 #if !defined LWIP_DNS_SECURE || defined __DOXYGEN__
-#define LWIP_DNS_SECURE                                                       \
-	(LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \
-	 LWIP_DNS_SECURE_RAND_SRC_PORT)
+#define LWIP_DNS_SECURE (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | LWIP_DNS_SECURE_RAND_SRC_PORT)
 #endif
 
 /* A list of DNS security features follows */
@@ -1365,9 +1360,7 @@
  * TCP snd_buf for select to return writable (combined with TCP_SNDQUEUELOWAT).
  */
 #if !defined TCP_SNDLOWAT || defined __DOXYGEN__
-#define TCP_SNDLOWAT                                               \
-	LWIP_MIN(LWIP_MAX(((TCP_SND_BUF) / 2), (2 * TCP_MSS) + 1), \
-		 (TCP_SND_BUF) - 1)
+#define TCP_SNDLOWAT LWIP_MIN(LWIP_MAX(((TCP_SND_BUF) / 2), (2 * TCP_MSS) + 1), (TCP_SND_BUF) - 1)
 #endif
 
 /**
@@ -1484,8 +1477,7 @@
  *     LWIP_CALLBACK_API==1: The PCB callback function is called directly
  *         for the event. This is the default.
  */
-#if !defined(LWIP_EVENT_API) && !defined(LWIP_CALLBACK_API) || \
-	defined __DOXYGEN__
+#if !defined(LWIP_EVENT_API) && !defined(LWIP_CALLBACK_API) || defined __DOXYGEN__
 #define LWIP_EVENT_API 0
 #define LWIP_CALLBACK_API 1
 #else
@@ -1585,9 +1577,8 @@
  * TCP_MSS, IP header, and link header.
  */
 #if !defined PBUF_POOL_BUFSIZE || defined __DOXYGEN__
-#define PBUF_POOL_BUFSIZE                                                  \
-	LWIP_MEM_ALIGN_SIZE(TCP_MSS + PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN + \
-			    PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN)
+#define PBUF_POOL_BUFSIZE \
+	LWIP_MEM_ALIGN_SIZE(TCP_MSS + PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN + PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN)
 #endif
 
 /**
@@ -3153,8 +3144,7 @@
  *   [...]
  */
 #ifdef __DOXYGEN__
-#define LWIP_HOOK_DHCP_APPEND_OPTIONS(netif, dhcp, state, msg, msg_type, \
-				      options_len_ptr)
+#define LWIP_HOOK_DHCP_APPEND_OPTIONS(netif, dhcp, state, msg, msg_type, options_len_ptr)
 #endif
 
 /**
@@ -3182,8 +3172,7 @@
  *  u8_t *ptr = (u8_t*)pbuf_get_contiguous(p, buf, sizeof(buf), LWIP_MIN(option_len, sizeof(buf)), offset);
  */
 #ifdef __DOXYGEN__
-#define LWIP_HOOK_DHCP_PARSE_OPTION(netif, dhcp, state, msg, msg_type, option, \
-				    len, pbuf, offset)
+#define LWIP_HOOK_DHCP_PARSE_OPTION(netif, dhcp, state, msg, msg_type, option, len, pbuf, offset)
 #endif
 
 /**
@@ -3211,8 +3200,7 @@
  *   [...]
  */
 #ifdef __DOXYGEN__
-#define LWIP_HOOK_DHCP6_APPEND_OPTIONS(netif, dhcp6, state, msg, msg_type, \
-				       options_len_ptr, max_len)
+#define LWIP_HOOK_DHCP6_APPEND_OPTIONS(netif, dhcp6, state, msg, msg_type, options_len_ptr, max_len)
 #endif
 
 /**
@@ -3235,8 +3223,7 @@
  * - != 0: Hook has consumed the option, 'err' is returned
  */
 #ifdef __DOXYGEN__
-#define LWIP_HOOK_SOCKETS_SETSOCKOPT(s, sock, level, optname, optval, optlen, \
-				     err)
+#define LWIP_HOOK_SOCKETS_SETSOCKOPT(s, sock, level, optname, optval, optlen, err)
 #endif
 
 /**
@@ -3259,8 +3246,7 @@
  * - != 0: Hook has consumed the option, 'err' is returned
  */
 #ifdef __DOXYGEN__
-#define LWIP_HOOK_SOCKETS_GETSOCKOPT(s, sock, level, optname, optval, optlen, \
-				     err)
+#define LWIP_HOOK_SOCKETS_GETSOCKOPT(s, sock, level, optname, optval, optlen, err)
 #endif
 
 /**

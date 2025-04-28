@@ -52,8 +52,7 @@ int fdt_size_cells(const void *fdt, int nodeoffset)
 }
 
 /* This function assumes that [address|size]_cells is 1 or 2 */
-int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset,
-			     const char *name, uint64_t addr, uint64_t size)
+int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset, const char *name, uint64_t addr, uint64_t size)
 {
 	int addr_cells, size_cells, ret;
 	uint8_t data[sizeof(fdt64_t) * 2], *prop;
@@ -74,7 +73,7 @@ int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset,
 		if ((addr > UINT32_MAX) || ((UINT32_MAX + 1 - addr) < size))
 			return -FDT_ERR_BADVALUE;
 
-		fdt32_st(prop, (uint32_t)addr);
+		fdt32_st(prop, (uint32_t) addr);
 	} else if (addr_cells == 2) {
 		fdt64_st(prop, addr);
 	} else {
@@ -87,13 +86,12 @@ int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset,
 		if (size > UINT32_MAX)
 			return -FDT_ERR_BADVALUE;
 
-		fdt32_st(prop, (uint32_t)size);
+		fdt32_st(prop, (uint32_t) size);
 	} else if (size_cells == 2) {
 		fdt64_st(prop, size);
 	} else {
 		return -FDT_ERR_BADNCELLS;
 	}
 
-	return fdt_appendprop(fdt, nodeoffset, name, data,
-			      (addr_cells + size_cells) * sizeof(fdt32_t));
+	return fdt_appendprop(fdt, nodeoffset, name, data, (addr_cells + size_cells) * sizeof(fdt32_t));
 }

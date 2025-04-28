@@ -49,9 +49,7 @@
 #define GICD_INT_EN_SET_SGI 0x0000ffff
 #define GICD_INT_EN_CLR_PPI 0xffff0000
 #define GICD_INT_DEF_PRI 0xa0
-#define GICD_INT_DEF_PRI_X4                                    \
-	((GICD_INT_DEF_PRI << 24) | (GICD_INT_DEF_PRI << 16) | \
-	 (GICD_INT_DEF_PRI << 8) | GICD_INT_DEF_PRI)
+#define GICD_INT_DEF_PRI_X4 ((GICD_INT_DEF_PRI << 24) | (GICD_INT_DEF_PRI << 16) | (GICD_INT_DEF_PRI << 8) | GICD_INT_DEF_PRI)
 
 #define GIC_CPU_CTRL 0x00
 #define GIC_CPU_PRIMASK 0x04
@@ -77,11 +75,7 @@
 
 #include <types.h>
 
-typedef enum {
-	GIC_IRQ_TYPE_SPI = 0,
-	GIC_IRQ_TYPE_PPI = 1,
-	GIC_IRQ_TYPE_SGI = 2
-} gic_irq_type_t;
+typedef enum { GIC_IRQ_TYPE_SPI = 0, GIC_IRQ_TYPE_PPI = 1, GIC_IRQ_TYPE_SGI = 2 } gic_irq_type_t;
 
 /* Bits and regs definitions */
 
@@ -93,8 +87,7 @@ struct gicd_regs {
 	volatile uint32_t _res0[29]; /* 0x000c-0x001c: reserved 5 */
 	/* 0x0020-0x003c: implementation defined 8 */
 	/* 0x0040-0x007c: reserved 16 */
-	volatile uint32_t
-		igroupr[32]; /* 0x0080 1024 interrupts with 1 bit/interrupt */
+	volatile uint32_t igroupr[32]; /* 0x0080 1024 interrupts with 1 bit/interrupt */
 	volatile uint32_t isenabler[32]; /* 0x0100 */
 	volatile uint32_t icenabler[32]; /* 0x0180 */
 	volatile uint32_t ispendr[32]; /* 0x0200 */
@@ -102,12 +95,9 @@ struct gicd_regs {
 	volatile uint32_t isactiver[32]; /* 0x0300 */
 	volatile uint32_t icactiver[32]; /* 0x0380 */
 
-	volatile uint32_t
-		ipriorityr[256]; /* 0x0400 1024 interrupts with 8 bits/interrupt */
-	volatile uint32_t
-		itargetsr[256]; /* 0x0800 1024 interrupts with 8 bits/interrupt */
-	volatile uint32_t
-		icfgr[64]; /* 0x0c00 1024 interrupts with 2 bits/interrupt */
+	volatile uint32_t ipriorityr[256]; /* 0x0400 1024 interrupts with 8 bits/interrupt */
+	volatile uint32_t itargetsr[256]; /* 0x0800 1024 interrupts with 8 bits/interrupt */
+	volatile uint32_t icfgr[64]; /* 0x0c00 1024 interrupts with 2 bits/interrupt */
 	volatile uint32_t ppisr; /* 0x0d00 */
 	volatile uint32_t spisr[63]; /* 0x0d04-0x0dfc */
 	volatile uint32_t nsacrn[64]; /* 0x0e00 (optional) */
@@ -170,8 +160,7 @@ struct __attribute__((packed)) gich_regs {
 	volatile uint32_t _res3[46]; /* 0x038-0x0ec: Reserved */
 	volatile uint32_t apr; /* 0x0f0: Active Priorities Register */
 	volatile uint32_t _res4[3]; /* 0x0f4-0x0fc: Reserved */
-	volatile uint32_t
-		lr[64]; /* 0x100: List Registers 0-63 (0x100 to 0x1FC) */
+	volatile uint32_t lr[64]; /* 0x100: List Registers 0-63 (0x100 to 0x1FC) */
 };
 
 #endif /* __ASSEMBLY__ */
@@ -195,9 +184,7 @@ struct __attribute__((packed)) gich_regs {
 #define GICD_INT_EN_SET_SGI 0x0000ffff
 #define GICD_INT_EN_CLR_PPI 0xffff0000
 #define GICD_INT_DEF_PRI 0xa0
-#define GICD_INT_DEF_PRI_X4                                    \
-	((GICD_INT_DEF_PRI << 24) | (GICD_INT_DEF_PRI << 16) | \
-	 (GICD_INT_DEF_PRI << 8) | GICD_INT_DEF_PRI)
+#define GICD_INT_DEF_PRI_X4 ((GICD_INT_DEF_PRI << 24) | (GICD_INT_DEF_PRI << 16) | (GICD_INT_DEF_PRI << 8) | GICD_INT_DEF_PRI)
 #define GICD_CTLR 0x0000
 #define GICD_CTLR_ARE_NS (1 << 4)
 #define GICD_TYPER 0x0004
@@ -287,7 +274,7 @@ void gicc_init(void);
 void gic_raise_softirq(int cpu, unsigned int irq);
 void gic_hw_reset(void);
 
-#define is_sgi(irqn) ((u32)(irqn) < 16)
+#define is_sgi(irqn) ((u32) (irqn) < 16)
 #define is_ppi(irqn) ((irqn) > 15 && (irqn) < 32)
 #define is_spi(irqn) ((irqn) > 31 && (irqn) < 1020)
 

@@ -44,10 +44,8 @@
 /*
  * Data preload for architectures that support it
  */
-#if defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) ||     \
-	defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) ||   \
-	defined(__ARM_ARCH_6T2__) || defined(__ARM_ARCH_6Z__) || \
-	defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_7A__) || \
+#if defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) || defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) ||       \
+	defined(__ARM_ARCH_6T2__) || defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_7A__) || \
 	defined(__ARM_ARCH_7R__)
 #define PLD(code...) code
 #else

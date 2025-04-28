@@ -163,8 +163,8 @@ extern unsigned short int htons(unsigned short int);
 #define htonl(x) ___htonl(x)
 #define ntohl(x) ___ntohl(x)
 #else
-#define htonl(x) ((unsigned long)___htonl(x))
-#define ntohl(x) ((unsigned long)___ntohl(x))
+#define htonl(x) ((unsigned long) ___htonl(x))
+#define ntohl(x) ((unsigned long) ___ntohl(x))
 #endif
 #define htons(x) ___htons(x)
 #define ntohs(x) ___ntohs(x)

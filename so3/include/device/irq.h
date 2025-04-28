@@ -100,8 +100,7 @@ irqdesc_t *irq_to_desc(uint32_t irq);
 void irq_mask(int irq);
 void irq_unmask(int irq);
 
-void irq_bind(int irq, irq_handler_t handler, irq_handler_t irq_deferred_fn,
-	      void *data);
+void irq_bind(int irq, irq_handler_t handler, irq_handler_t irq_deferred_fn, void *data);
 void irq_unbind(int irq);
 
 void irq_set_irq_ops(int irq, irq_ops_t *irq_ops);

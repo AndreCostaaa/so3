@@ -151,8 +151,7 @@
 #define UART011_TXDMAE (1 << 1) /* enable transmit dma */
 #define UART011_RXDMAE (1 << 0) /* enable receive dma */
 
-#define UART01x_RSR_ANY \
-	(UART01x_RSR_OE | UART01x_RSR_BE | UART01x_RSR_PE | UART01x_RSR_FE)
+#define UART01x_RSR_ANY (UART01x_RSR_OE | UART01x_RSR_BE | UART01x_RSR_PE | UART01x_RSR_FE)
 #define UART01x_FR_MODEM_ANY (UART01x_FR_DCD | UART01x_FR_DSR | UART01x_FR_CTS)
 
 #endif /* PL011_H */

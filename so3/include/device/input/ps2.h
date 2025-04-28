@@ -18,8 +18,7 @@
 
 #include <types.h>
 
-#define CLAMP(x, low, high) \
-	(((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 #define MOUSE_STATUS_REMOTE 0x40
 #define MOUSE_STATUS_ENABLED 0x20
@@ -71,6 +70,5 @@ struct ps2_key {
 	uint8_t state;
 };
 
-void get_mouse_state(uint8_t *packet, struct ps2_mouse *, uint16_t max_x,
-		     uint16_t max_y);
+void get_mouse_state(uint8_t *packet, struct ps2_mouse *, uint16_t max_x, uint16_t max_y);
 void get_kb_key(uint8_t *packet, uint8_t len, struct ps2_key *);

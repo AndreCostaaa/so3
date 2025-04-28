@@ -116,10 +116,10 @@ err_t sys_mutex_new(sys_mutex_t *mutex)
 	mutex_t *so3_mutex;
 	LWIP_ASSERT("mutex != NULL", mutex != NULL);
 
-	so3_mutex = (mutex_t *)malloc(sizeof(mutex_t));
+	so3_mutex = (mutex_t *) malloc(sizeof(mutex_t));
 	mutex_init(so3_mutex);
 
-	mutex->mut = (void *)so3_mutex;
+	mutex->mut = (void *) so3_mutex;
 
 	if (mutex->mut == NULL) {
 		return ERR_MEM;
@@ -162,7 +162,7 @@ err_t sys_sem_new(sys_sem_t *sem, u8_t initial_count)
 	LWIP_ASSERT("sem != NULL", sem != NULL);
 	LWIP_ASSERT("initial_count invalid (count >= 0)", (initial_count >= 0));
 
-	sem->sem = (sem_t *)malloc(sizeof(sem_t));
+	sem->sem = (sem_t *) malloc(sizeof(sem_t));
 
 	if (sem->sem == NULL) {
 		return ERR_MEM;
@@ -221,13 +221,12 @@ err_t sys_mbox_new(sys_mbox_t *sys_mbox, int size)
 	mutex_t *mutex;
 	LWIP_UNUSED_ARG(size);
 
-	mbox = (_mbox_t *)malloc(sizeof(_mbox_t));
-	not_empty = (sem_t *)malloc(sizeof(sem_t));
-	not_full = (sem_t *)malloc(sizeof(sem_t));
-	mutex = (mutex_t *)malloc(sizeof(mutex_t));
+	mbox = (_mbox_t *) malloc(sizeof(_mbox_t));
+	not_empty = (sem_t *) malloc(sizeof(sem_t));
+	not_full = (sem_t *) malloc(sizeof(sem_t));
+	mutex = (mutex_t *) malloc(sizeof(mutex_t));
 
-	if (mbox == NULL || not_empty == NULL || not_full == NULL ||
-	    mutex == NULL) {
+	if (mbox == NULL || not_empty == NULL || not_full == NULL || mutex == NULL) {
 		return ERR_MEM;
 	}
 
@@ -254,8 +253,7 @@ void sys_mbox_post(sys_mbox_t *sys_mbox, void *msg)
 	_mbox_t *mbox;
 	uint32_t first = 0;
 
-	LWIP_ASSERT("invalid mbox",
-		    (sys_mbox_t != NULL) && (sys_mbox->mbox != NULL));
+	LWIP_ASSERT("invalid mbox", (sys_mbox_t != NULL) && (sys_mbox->mbox != NULL));
 
 	mbox = sys_mbox->mbox;
 
@@ -291,15 +289,13 @@ err_t sys_mbox_trypost(sys_mbox_t *sys_mbox, void *msg)
 	u8_t first;
 	_mbox_t *mbox;
 
-	LWIP_ASSERT("invalid mbox",
-		    (sys_mbox != NULL) && (sys_mbox->mbox != NULL));
+	LWIP_ASSERT("invalid mbox", (sys_mbox != NULL) && (sys_mbox->mbox != NULL));
 
 	mbox = sys_mbox->mbox;
 
 	mutex_lock(mbox->mutex);
 
-	LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_trypost: mbox %p msg %p\n",
-				(void *)mbox, (void *)msg));
+	LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_trypost: mbox %p msg %p\n", (void *) mbox, (void *) msg));
 
 	if ((mbox->last + 1) >= (mbox->first + SYS_MBOX_SIZE)) {
 		mutex_unlock(mbox->mutex);
@@ -335,8 +331,7 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *sys_mbox, void **msg, u32_t timeout_ms)
 	int start_time = sys_now();
 	_mbox_t *mbox;
 
-	LWIP_ASSERT("invalid mbox",
-		    (sys_mbox != NULL) && (sys_mbox->mbox != NULL));
+	LWIP_ASSERT("invalid mbox", (sys_mbox != NULL) && (sys_mbox->mbox != NULL));
 
 	mbox = sys_mbox->mbox;
 
@@ -350,8 +345,7 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *sys_mbox, void **msg, u32_t timeout_ms)
 		/* We block while waiting for a mail to arrive in the mailbox. We
            must be prepared to timeout. */
 		if (timeout_ms > 0) {
-			if (sem_timeddown(mbox->not_empty,
-					  timeout_ms * 1000000ull)) {
+			if (sem_timeddown(mbox->not_empty, timeout_ms * 1000000ull)) {
 				return SYS_ARCH_TIMEOUT;
 			}
 		} else {
@@ -362,12 +356,10 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *sys_mbox, void **msg, u32_t timeout_ms)
 	}
 
 	if (msg != NULL) {
-		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_fetch: mbox %p msg %p\n",
-					(void *)mbox, *msg));
+		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_fetch: mbox %p msg %p\n", (void *) mbox, *msg));
 		*msg = mbox->msgs[mbox->first % SYS_MBOX_SIZE];
 	} else {
-		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_fetch: mbox %p, null msg\n",
-					(void *)mbox));
+		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_fetch: mbox %p, null msg\n", (void *) mbox));
 	}
 
 	mbox->first++;
@@ -384,8 +376,7 @@ u32_t sys_arch_mbox_fetch(sys_mbox_t *sys_mbox, void **msg, u32_t timeout_ms)
 u32_t sys_arch_mbox_tryfetch(sys_mbox_t *sys_mbox, void **msg)
 {
 	_mbox_t *mbox;
-	LWIP_ASSERT("invalid mbox",
-		    (sys_mbox != NULL) && (sys_mbox->mbox != NULL));
+	LWIP_ASSERT("invalid mbox", (sys_mbox != NULL) && (sys_mbox->mbox != NULL));
 
 	// TODO Patch
 	if (sys_mbox == NULL || sys_mbox->mbox == NULL)
@@ -401,13 +392,10 @@ u32_t sys_arch_mbox_tryfetch(sys_mbox_t *sys_mbox, void **msg)
 	}
 
 	if (msg != NULL) {
-		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_tryfetch: mbox %p msg %p\n",
-					(void *)mbox, *msg));
+		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_tryfetch: mbox %p msg %p\n", (void *) mbox, *msg));
 		*msg = mbox->msgs[mbox->first % SYS_MBOX_SIZE];
 	} else {
-		LWIP_DEBUGF(SYS_DEBUG,
-			    ("sys_mbox_tryfetch: mbox %p, null msg\n",
-			     (void *)mbox));
+		LWIP_DEBUGF(SYS_DEBUG, ("sys_mbox_tryfetch: mbox %p, null msg\n", (void *) mbox));
 	}
 
 	mbox->first++;
@@ -443,8 +431,7 @@ typedef struct _thread_function_adapter_data _thread_function_adapter_data_t;
 
 void *_thread_function_adapter(void *arg)
 {
-	_thread_function_adapter_data_t *adapter_data =
-		(_thread_function_adapter_data_t *)arg;
+	_thread_function_adapter_data_t *adapter_data = (_thread_function_adapter_data_t *) arg;
 
 	adapter_data->function(adapter_data->arg);
 	free(adapter_data);
@@ -452,20 +439,17 @@ void *_thread_function_adapter(void *arg)
 	return NULL;
 }
 
-sys_thread_t sys_thread_new(const char *name, lwip_thread_fn function,
-			    void *arg, int stacksize, int prio)
+sys_thread_t sys_thread_new(const char *name, lwip_thread_fn function, void *arg, int stacksize, int prio)
 {
 	sys_thread_t sys_thread;
-	_thread_function_adapter_data_t *adapter_data =
-		malloc(sizeof(_thread_function_adapter_data_t));
+	_thread_function_adapter_data_t *adapter_data = malloc(sizeof(_thread_function_adapter_data_t));
 
 	LWIP_UNUSED_ARG(stacksize);
 
 	adapter_data->arg = arg;
 	adapter_data->function = function;
 
-	sys_thread.thread_handle = kernel_thread(_thread_function_adapter, name,
-						 adapter_data, prio);
+	sys_thread.thread_handle = kernel_thread(_thread_function_adapter, name, adapter_data, prio);
 
 	return sys_thread;
 }

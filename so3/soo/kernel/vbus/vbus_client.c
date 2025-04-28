@@ -66,9 +66,7 @@ const char *vbus_strstate(enum vbus_state state)
  * be NULL, the device will switch to %VbusStateClosing, and the error will
  * be saved in the store.
  */
-void vbus_watch_path(struct vbus_device *dev, char *path,
-		     struct vbus_watch *watch,
-		     void (*callback)(struct vbus_watch *))
+void vbus_watch_path(struct vbus_device *dev, char *path, struct vbus_watch *watch, void (*callback)(struct vbus_watch *))
 {
 	watch->node = path;
 	watch->callback = callback;
@@ -91,8 +89,7 @@ void vbus_watch_path(struct vbus_device *dev, char *path,
  * free, the device will switch to %VbusStateClosing, and the error will be
  * saved in the store.
  */
-void vbus_watch_pathfmt(struct vbus_device *dev, struct vbus_watch *watch,
-			void (*callback)(struct vbus_watch *),
+void vbus_watch_pathfmt(struct vbus_device *dev, struct vbus_watch *watch, void (*callback)(struct vbus_watch *),
 			const char *pathfmt, ...)
 {
 	va_list ap;
@@ -103,8 +100,7 @@ void vbus_watch_pathfmt(struct vbus_device *dev, struct vbus_watch *watch,
 	va_end(ap);
 
 	if (!path) {
-		lprintk("%s - line %d: Allocating path for watch failed for device %s\n",
-			__func__, __LINE__, dev->nodename);
+		lprintk("%s - line %d: Allocating path for watch failed for device %s\n", __func__, __LINE__, dev->nodename);
 		BUG();
 	}
 	vbus_watch_path(dev, path, watch, callback);
@@ -138,8 +134,7 @@ void vbus_alloc_evtchn(struct vbus_device *dev, uint32_t *evtchn)
 
 	args.u.avz_evtchn.evtchn_op.cmd = EVTCHNOP_alloc_unbound;
 	args.u.avz_evtchn.evtchn_op.u.alloc_unbound.dom = DOMID_SELF;
-	args.u.avz_evtchn.evtchn_op.u.alloc_unbound.remote_dom =
-		dev->otherend_id;
+	args.u.avz_evtchn.evtchn_op.u.alloc_unbound.remote_dom = dev->otherend_id;
 
 	avz_hypercall(&args);
 
@@ -151,25 +146,21 @@ void vbus_alloc_evtchn(struct vbus_device *dev, uint32_t *evtchn)
  * on success and stores the local evtchn in *evtchn. On error, returns -errno,
  * switches the device to VbusStateClosing, and saves the error in VBstore.
  */
-void vbus_bind_evtchn(struct vbus_device *dev, uint32_t remote_evtchn,
-		      uint32_t *evtchn)
+void vbus_bind_evtchn(struct vbus_device *dev, uint32_t remote_evtchn, uint32_t *evtchn)
 {
 	avz_hyp_t args;
 
 	args.cmd = AVZ_EVENT_CHANNEL_OP;
 	args.u.avz_evtchn.evtchn_op.cmd = EVTCHNOP_bind_interdomain;
 
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom =
-		dev->otherend_id;
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn =
-		remote_evtchn;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom = dev->otherend_id;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn = remote_evtchn;
 
 	avz_hypercall(&args);
 
 	*evtchn = args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn;
 
-	DBG("%s: got local evtchn: %d for remote evtchn: %d\n", __func__,
-	    *evtchn, remote_evtchn);
+	DBG("%s: got local evtchn: %d for remote evtchn: %d\n", __func__, *evtchn, remote_evtchn);
 }
 
 /**

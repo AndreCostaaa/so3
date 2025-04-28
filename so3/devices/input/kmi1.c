@@ -106,8 +106,7 @@ int pl050_init_mouse(dev_t *dev, int fdt_offset)
 	const struct fdt_property *prop;
 	int prop_len;
 
-	printk("%s: probing a mouse driver (PL050), please make sure such a device exists...\n",
-	       __func__);
+	printk("%s: probing a mouse driver (PL050), please make sure such a device exists...\n", __func__);
 
 	prop = fdt_get_property(__fdt_addr, fdt_offset, "reg", &prop_len);
 	BUG_ON(!prop);
@@ -115,13 +114,11 @@ int pl050_init_mouse(dev_t *dev, int fdt_offset)
 
 	/* Mapping the two mem area of GIC (distributor & CPU interface) */
 #ifdef CONFIG_ARCH_ARM32
-	pl050_mouse.base =
-		(void *)io_map(fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-			       fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	pl050_mouse.base = (void *) io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]),
+					   fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 #else
-	pl050_mouse.base =
-		(void *)io_map(fdt64_to_cpu(((const fdt64_t *)prop->data)[0]),
-			       fdt64_to_cpu(((const fdt64_t *)prop->data)[1]));
+	pl050_mouse.base = (void *) io_map(fdt64_to_cpu(((const fdt64_t *) prop->data)[0]),
+					   fdt64_to_cpu(((const fdt64_t *) prop->data)[1]));
 #endif
 
 	fdt_interrupt_node(fdt_offset, &pl050_mouse.irq_def);
@@ -142,13 +139,13 @@ int ioctl_mouse(int fd, unsigned long cmd, unsigned long args)
 	switch (cmd) {
 	case GET_STATE:
 		/* Return the mouse coordinates and button states. */
-		*((struct ps2_mouse *)args) = state;
+		*((struct ps2_mouse *) args) = state;
 
 		break;
 
 	case SET_SIZE:
 		/* Set the display maximum size. */
-		res = *((struct display_res *)args);
+		res = *((struct display_res *) args);
 		break;
 
 	default:

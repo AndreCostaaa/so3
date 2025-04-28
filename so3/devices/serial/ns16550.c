@@ -38,7 +38,7 @@ typedef struct {
 } ns16550_dev_t;
 
 static ns16550_dev_t ns16550_dev = {
-	.io = (ns16550_t *)CONFIG_UART_LL_PADDR,
+	.io = (ns16550_t *) CONFIG_UART_LL_PADDR,
 };
 
 static int baudrate_div_calc(int baudrate)
@@ -107,13 +107,11 @@ static int ns16550_init(dev_t *dev, int fdt_offset)
 	BUG_ON(prop_len != 2 * sizeof(unsigned long));
 
 #ifdef CONFIG_ARCH_ARM32
-	ns16550_dev.io = (ns16550_t *)io_map(
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	ns16550_dev.io = (ns16550_t *) io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]),
+					      fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 #else
-	ns16550_dev.io = (ns16550_t *)io_map(
-		fdt64_to_cpu(((const fdt64_t *)prop->data)[0]),
-		fdt64_to_cpu(((const fdt64_t *)prop->data)[1]));
+	ns16550_dev.io = (ns16550_t *) io_map(fdt64_to_cpu(((const fdt64_t *) prop->data)[0]),
+					      fdt64_to_cpu(((const fdt64_t *) prop->data)[1]));
 #endif
 
 	serial_ops.put_byte = ns16550_put_byte;
@@ -135,8 +133,7 @@ static int ns16550_init(dev_t *dev, int fdt_offset)
 	iowrite32(&ns16550_dev.io->dlh, (divider >> 8) & 0xFF);
 
 	/* 8N1 standard configuration */
-	iowrite32(&ns16550_dev.io->lcr,
-		  UART_PARITY_DIS | UART_1_STOP | UART_8BITS);
+	iowrite32(&ns16550_dev.io->lcr, UART_PARITY_DIS | UART_1_STOP | UART_8BITS);
 
 	/* Force RTS and DTR lines */
 	iowrite32(&ns16550_dev.io->mcr, UART_RTS | UART_DTR);

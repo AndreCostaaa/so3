@@ -52,11 +52,7 @@ extern "C" {
 #define AUTOIP_RANGE_END (AUTOIP_NET | 0xFEFF)
 
 /* AutoIP client states */
-typedef enum {
-	AUTOIP_STATE_OFF,
-	AUTOIP_STATE_CHECKING,
-	AUTOIP_STATE_BOUND
-} autoip_state_enum_t;
+typedef enum { AUTOIP_STATE_OFF, AUTOIP_STATE_CHECKING, AUTOIP_STATE_BOUND } autoip_state_enum_t;
 
 #ifdef __cplusplus
 }

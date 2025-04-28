@@ -143,20 +143,16 @@ typedef enum {
 
 /* DHCP options */
 #define DHCP_OPTION_REQUESTED_IP 50 /* RFC 2132 9.1, requested IP address */
-#define DHCP_OPTION_LEASE_TIME \
-	51 /* RFC 2132 9.2, time in seconds, in 4 bytes */
-#define DHCP_OPTION_OVERLOAD \
-	52 /* RFC2132 9.3, use file and/or sname field for options */
+#define DHCP_OPTION_LEASE_TIME 51 /* RFC 2132 9.2, time in seconds, in 4 bytes */
+#define DHCP_OPTION_OVERLOAD 52 /* RFC2132 9.3, use file and/or sname field for options */
 
 #define DHCP_OPTION_MESSAGE_TYPE 53 /* RFC 2132 9.6, important for DHCP */
 #define DHCP_OPTION_MESSAGE_TYPE_LEN 1
 
 #define DHCP_OPTION_SERVER_ID 54 /* RFC 2132 9.7, server IP address */
-#define DHCP_OPTION_PARAMETER_REQUEST_LIST \
-	55 /* RFC 2132 9.8, requested option types */
+#define DHCP_OPTION_PARAMETER_REQUEST_LIST 55 /* RFC 2132 9.8, requested option types */
 
-#define DHCP_OPTION_MAX_MSG_SIZE \
-	57 /* RFC 2132 9.10, message size accepted >= 576 */
+#define DHCP_OPTION_MAX_MSG_SIZE 57 /* RFC 2132 9.10, message size accepted >= 576 */
 #define DHCP_OPTION_MAX_MSG_SIZE_LEN 2
 
 #define DHCP_OPTION_T1 58 /* T1 renewal time */

@@ -35,8 +35,7 @@ void delete_labels(struct label **labels)
 	for_each_label(*labels, label) label->deleted = 1;
 }
 
-struct property *build_property(char *name, struct data val,
-				struct srcpos *srcpos)
+struct property *build_property(char *name, struct data val, struct srcpos *srcpos)
 {
 	struct property *new = xmalloc(sizeof(*new));
 
@@ -84,8 +83,7 @@ struct property *reverse_properties(struct property *first)
 	return head;
 }
 
-struct node *build_node(struct property *proplist, struct node *children,
-			struct srcpos *srcpos)
+struct node *build_node(struct property *proplist, struct node *children, struct srcpos *srcpos)
 {
 	struct node *new = xmalloc(sizeof(*new));
 	struct node *child;
@@ -148,8 +146,7 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 	old_node->deleted = 0;
 
 	/* Add new node labels to old node */
-	for_each_label_withdel(new_node->labels, l)
-		add_label(&old_node->labels, l->label);
+	for_each_label_withdel(new_node->labels, l) add_label(&old_node->labels, l->label);
 
 	/* Move properties from the new node to the old node.  If there
 	 * is a collision, replace the old value with the new */
@@ -170,8 +167,7 @@ struct node *merge_nodes(struct node *old_node, struct node *new_node)
 		{
 			if (streq(old_prop->name, new_prop->name)) {
 				/* Add new labels to old property */
-				for_each_label_withdel(new_prop->labels, l)
-					add_label(&old_prop->labels, l->label);
+				for_each_label_withdel(new_prop->labels, l) add_label(&old_prop->labels, l->label);
 
 				old_prop->val = new_prop->val;
 				old_prop->deleted = 0;
@@ -334,8 +330,7 @@ void delete_node(struct node *node)
 	delete_labels(&node->labels);
 }
 
-void append_to_property(struct node *node, char *name, const void *data,
-			int len, enum markertype type)
+void append_to_property(struct node *node, char *name, const void *data, int len, enum markertype type)
 {
 	struct data d;
 	struct property *p;
@@ -365,8 +360,7 @@ struct reserve_info *build_reserve_entry(uint64_t address, uint64_t size)
 	return new;
 }
 
-struct reserve_info *chain_reserve_entry(struct reserve_info *first,
-					 struct reserve_info *list)
+struct reserve_info *chain_reserve_entry(struct reserve_info *first, struct reserve_info *list)
 {
 	assert(first->next == NULL);
 
@@ -374,8 +368,7 @@ struct reserve_info *chain_reserve_entry(struct reserve_info *first,
 	return first;
 }
 
-struct reserve_info *add_reserve_entry(struct reserve_info *list,
-				       struct reserve_info *new)
+struct reserve_info *add_reserve_entry(struct reserve_info *list, struct reserve_info *new)
 {
 	struct reserve_info *last;
 
@@ -392,9 +385,8 @@ struct reserve_info *add_reserve_entry(struct reserve_info *list,
 	return list;
 }
 
-struct dt_info *build_dt_info(unsigned int dtsflags,
-			      struct reserve_info *reservelist,
-			      struct node *tree, uint32_t boot_cpuid_phys)
+struct dt_info *build_dt_info(unsigned int dtsflags, struct reserve_info *reservelist, struct node *tree,
+			      uint32_t boot_cpuid_phys)
 {
 	struct dt_info *dti;
 
@@ -423,8 +415,7 @@ struct property *get_property(struct node *node, const char *propname)
 {
 	struct property *prop;
 
-	for_each_property(node,
-			  prop) if (streq(prop->name, propname)) return prop;
+	for_each_property(node, prop) if (streq(prop->name, propname)) return prop;
 
 	return NULL;
 }
@@ -432,17 +423,16 @@ struct property *get_property(struct node *node, const char *propname)
 cell_t propval_cell(struct property *prop)
 {
 	assert(prop->val.len == sizeof(cell_t));
-	return fdt32_to_cpu(*((fdt32_t *)prop->val.val));
+	return fdt32_to_cpu(*((fdt32_t *) prop->val.val));
 }
 
 cell_t propval_cell_n(struct property *prop, int n)
 {
 	assert(prop->val.len / sizeof(cell_t) >= n);
-	return fdt32_to_cpu(*((fdt32_t *)prop->val.val + n));
+	return fdt32_to_cpu(*((fdt32_t *) prop->val.val + n));
 }
 
-struct property *get_property_by_label(struct node *tree, const char *label,
-				       struct node **node)
+struct property *get_property_by_label(struct node *tree, const char *label, struct node **node)
 {
 	struct property *prop;
 	struct node *c;
@@ -453,8 +443,7 @@ struct property *get_property_by_label(struct node *tree, const char *label,
 	{
 		struct label *l;
 
-		for_each_label(prop->labels,
-			       l) if (streq(l->label, label)) return prop;
+		for_each_label(prop->labels, l) if (streq(l->label, label)) return prop;
 	}
 
 	for_each_child(tree, c)
@@ -468,8 +457,7 @@ struct property *get_property_by_label(struct node *tree, const char *label,
 	return NULL;
 }
 
-struct marker *get_marker_label(struct node *tree, const char *label,
-				struct node **node, struct property **prop)
+struct marker *get_marker_label(struct node *tree, const char *label, struct node **node, struct property **prop)
 {
 	struct marker *m;
 	struct property *p;
@@ -481,8 +469,7 @@ struct marker *get_marker_label(struct node *tree, const char *label,
 	{
 		*prop = p;
 		m = p->val.markers;
-		for_each_marker_of_type(m, LABEL) if (streq(m->ref,
-							    label)) return m;
+		for_each_marker_of_type(m, LABEL) if (streq(m->ref, label)) return m;
 	}
 
 	for_each_child(tree, c)
@@ -501,8 +488,7 @@ struct node *get_subnode(struct node *node, const char *nodename)
 {
 	struct node *child;
 
-	for_each_child(node,
-		       child) if (streq(child->name, nodename)) return child;
+	for_each_child(node, child) if (streq(child->name, nodename)) return child;
 
 	return NULL;
 }
@@ -525,8 +511,7 @@ struct node *get_node_by_path(struct node *tree, const char *path)
 
 	for_each_child(tree, child)
 	{
-		if (p && (strlen(child->name) == p - path) &&
-		    strprefixeq(path, p - path, child->name))
+		if (p && (strlen(child->name) == p - path) && strprefixeq(path, p - path, child->name))
 			return get_node_by_path(child, p + 1);
 		else if (!p && streq(path, child->name))
 			return child;
@@ -605,8 +590,7 @@ cell_t get_node_phandle(struct node *root, struct node *node)
 	d = data_add_marker(d, TYPE_UINT32, NULL);
 	d = data_append_cell(d, phandle);
 
-	if (!get_property(node, "linux,phandle") &&
-	    (phandle_format & PHANDLE_LEGACY))
+	if (!get_property(node, "linux,phandle") && (phandle_format & PHANDLE_LEGACY))
 		add_property(node, build_property("linux,phandle", d, NULL));
 
 	if (!get_property(node, "phandle") && (phandle_format & PHANDLE_EPAPR))
@@ -645,8 +629,8 @@ static int cmp_reserve_info(const void *ax, const void *bx)
 {
 	const struct reserve_info *a, *b;
 
-	a = *((const struct reserve_info *const *)ax);
-	b = *((const struct reserve_info *const *)bx);
+	a = *((const struct reserve_info *const *) ax);
+	b = *((const struct reserve_info *const *) bx);
 
 	if (a->address < b->address)
 		return -1;
@@ -690,8 +674,8 @@ static int cmp_prop(const void *ax, const void *bx)
 {
 	const struct property *a, *b;
 
-	a = *((const struct property *const *)ax);
-	b = *((const struct property *const *)bx);
+	a = *((const struct property *const *) ax);
+	b = *((const struct property *const *) bx);
 
 	return strcmp(a->name, b->name);
 }
@@ -724,8 +708,8 @@ static int cmp_subnode(const void *ax, const void *bx)
 {
 	const struct node *a, *b;
 
-	a = *((const struct node *const *)ax);
-	b = *((const struct node *const *)bx);
+	a = *((const struct node *const *) ax);
+	b = *((const struct node *const *) bx);
 
 	return strcmp(a->name, b->name);
 }
@@ -807,8 +791,7 @@ static bool any_label_tree(struct dt_info *dti, struct node *node)
 	return false;
 }
 
-static void generate_label_tree_internal(struct dt_info *dti, struct node *an,
-					 struct node *node, bool allocph)
+static void generate_label_tree_internal(struct dt_info *dti, struct node *an, struct node *node, bool allocph)
 {
 	struct node *dt = dti->dt;
 	struct node *c;
@@ -831,21 +814,16 @@ static void generate_label_tree_internal(struct dt_info *dti, struct node *an,
 			}
 
 			/* insert it */
-			p = build_property(
-				l->label,
-				data_copy_escape_string(node->fullpath,
-							strlen(node->fullpath)),
-				NULL);
+			p = build_property(l->label, data_copy_escape_string(node->fullpath, strlen(node->fullpath)), NULL);
 			add_property(an, p);
 		}
 
 		/* force allocation of a phandle for this node */
 		if (allocph)
-			(void)get_node_phandle(dt, node);
+			(void) get_node_phandle(dt, node);
 	}
 
-	for_each_child(node, c)
-		generate_label_tree_internal(dti, an, c, allocph);
+	for_each_child(node, c) generate_label_tree_internal(dti, an, c, allocph);
 }
 
 static bool any_fixup_tree(struct dt_info *dti, struct node *node)
@@ -873,9 +851,7 @@ static bool any_fixup_tree(struct dt_info *dti, struct node *node)
 	return false;
 }
 
-static void add_fixup_entry(struct dt_info *dti, struct node *fn,
-			    struct node *node, struct property *prop,
-			    struct marker *m)
+static void add_fixup_entry(struct dt_info *dti, struct node *fn, struct node *node, struct property *prop, struct marker *m)
 {
 	char *entry;
 
@@ -892,8 +868,7 @@ static void add_fixup_entry(struct dt_info *dti, struct node *fn,
 	free(entry);
 }
 
-static void generate_fixups_tree_internal(struct dt_info *dti, struct node *fn,
-					  struct node *node)
+static void generate_fixups_tree_internal(struct dt_info *dti, struct node *fn, struct node *node)
 {
 	struct node *dt = dti->dt;
 	struct node *c;
@@ -940,8 +915,7 @@ static bool any_local_fixup_tree(struct dt_info *dti, struct node *node)
 	return false;
 }
 
-static void add_local_fixup_entry(struct dt_info *dti, struct node *lfn,
-				  struct node *node, struct property *prop,
+static void add_local_fixup_entry(struct dt_info *dti, struct node *lfn, struct node *node, struct property *prop,
 				  struct marker *m, struct node *refnode)
 {
 	struct node *wn, *nwn; /* local fixup node, walk node, new */
@@ -972,13 +946,10 @@ static void add_local_fixup_entry(struct dt_info *dti, struct node *lfn,
 	free(compp);
 
 	value_32 = cpu_to_fdt32(m->offset);
-	append_to_property(wn, prop->name, &value_32, sizeof(value_32),
-			   TYPE_UINT32);
+	append_to_property(wn, prop->name, &value_32, sizeof(value_32), TYPE_UINT32);
 }
 
-static void generate_local_fixups_tree_internal(struct dt_info *dti,
-						struct node *lfn,
-						struct node *node)
+static void generate_local_fixups_tree_internal(struct dt_info *dti, struct node *lfn, struct node *node)
 {
 	struct node *dt = dti->dt;
 	struct node *c;
@@ -993,35 +964,30 @@ static void generate_local_fixups_tree_internal(struct dt_info *dti,
 		{
 			refnode = get_node_by_ref(dt, m->ref);
 			if (refnode)
-				add_local_fixup_entry(dti, lfn, node, prop, m,
-						      refnode);
+				add_local_fixup_entry(dti, lfn, node, prop, m, refnode);
 		}
 	}
 
-	for_each_child(node, c)
-		generate_local_fixups_tree_internal(dti, lfn, c);
+	for_each_child(node, c) generate_local_fixups_tree_internal(dti, lfn, c);
 }
 
 void generate_label_tree(struct dt_info *dti, char *name, bool allocph)
 {
 	if (!any_label_tree(dti, dti->dt))
 		return;
-	generate_label_tree_internal(dti, build_root_node(dti->dt, name),
-				     dti->dt, allocph);
+	generate_label_tree_internal(dti, build_root_node(dti->dt, name), dti->dt, allocph);
 }
 
 void generate_fixups_tree(struct dt_info *dti, char *name)
 {
 	if (!any_fixup_tree(dti, dti->dt))
 		return;
-	generate_fixups_tree_internal(dti, build_root_node(dti->dt, name),
-				      dti->dt);
+	generate_fixups_tree_internal(dti, build_root_node(dti->dt, name), dti->dt);
 }
 
 void generate_local_fixups_tree(struct dt_info *dti, char *name)
 {
 	if (!any_local_fixup_tree(dti, dti->dt))
 		return;
-	generate_local_fixups_tree_internal(dti, build_root_node(dti->dt, name),
-					    dti->dt);
+	generate_local_fixups_tree_internal(dti, build_root_node(dti->dt, name), dti->dt);
 }

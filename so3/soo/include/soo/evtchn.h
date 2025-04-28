@@ -75,20 +75,12 @@ void evtchn_do_upcall(void *data);
  * Returns IRQ or negative errno.
  * UNBIND: Takes IRQ to unbind from; automatically closes the event channel.
  */
-extern int bind_evtchn_to_irq_handler(unsigned int evtchn,
-				      irq_handler_t handler,
-				      irq_handler_t thread_fn, void *data);
-extern int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
-						 unsigned int remote_evtchn,
-						 irq_handler_t handler,
-						 irq_handler_t thread_fn,
-						 void *data);
-extern void bind_virq_to_irqhandler(unsigned int virq, irq_handler_t handler,
-				    irq_handler_t thread_fn, void *data);
+extern int bind_evtchn_to_irq_handler(unsigned int evtchn, irq_handler_t handler, irq_handler_t thread_fn, void *data);
+extern int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain, unsigned int remote_evtchn, irq_handler_t handler,
+						 irq_handler_t thread_fn, void *data);
+extern void bind_virq_to_irqhandler(unsigned int virq, irq_handler_t handler, irq_handler_t thread_fn, void *data);
 
-extern int bind_existing_interdomain_evtchn(unsigned int local_channel,
-					    unsigned int remote_domain,
-					    unsigned int remote_evtchn);
+extern int bind_existing_interdomain_evtchn(unsigned int local_channel, unsigned int remote_domain, unsigned int remote_evtchn);
 
 /*
  * Common unbind function for all event sources. Takes IRQ to unbind from.

@@ -51,7 +51,7 @@ void cpu_on(unsigned long cpuid, addr_t entry_point)
 		break;
 	}
 
-	*((volatile addr_t *)release_vaddr) = entry_point;
+	*((volatile addr_t *) release_vaddr) = entry_point;
 
 	__asm_flush_dcache_range(release_vaddr, release_vaddr + sizeof(addr_t));
 

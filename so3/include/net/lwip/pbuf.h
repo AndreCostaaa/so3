@@ -52,9 +52,7 @@ extern "C" {
  * Currently, the pbuf_custom code is only needed for one specific configuration
  * of IP_FRAG, unless required by external driver/application code. */
 #ifndef LWIP_SUPPORT_CUSTOM_PBUF
-#define LWIP_SUPPORT_CUSTOM_PBUF                    \
-	((IP_FRAG && !LWIP_NETIF_TX_SINGLE_PBUF) || \
-	 (LWIP_IPV6 && LWIP_IPV6_FRAG))
+#define LWIP_SUPPORT_CUSTOM_PBUF ((IP_FRAG && !LWIP_NETIF_TX_SINGLE_PBUF) || (LWIP_IPV6 && LWIP_IPV6_FRAG))
 #endif
 
 /** @ingroup pbuf
@@ -92,8 +90,7 @@ typedef enum {
 	/** Includes spare room for transport layer header, e.g. UDP header.
    * Use this if you intend to pass the pbuf to functions like udp_send().
    */
-	PBUF_TRANSPORT = PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN +
-			 PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN,
+	PBUF_TRANSPORT = PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN + PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN,
 	/** Includes spare room for IP header.
    * Use this if you intend to pass the pbuf to functions like raw_send().
    */
@@ -151,9 +148,8 @@ typedef enum {
       pbuf_alloc() allocates PBUF_RAM pbufs as unchained pbufs (although that might
       change in future versions).
       This should be used for all OUTGOING packets (TX).*/
-	PBUF_RAM = (PBUF_ALLOC_FLAG_DATA_CONTIGUOUS |
-		    PBUF_TYPE_FLAG_STRUCT_DATA_CONTIGUOUS |
-		    PBUF_TYPE_ALLOC_SRC_MASK_STD_HEAP),
+	PBUF_RAM =
+		(PBUF_ALLOC_FLAG_DATA_CONTIGUOUS | PBUF_TYPE_FLAG_STRUCT_DATA_CONTIGUOUS | PBUF_TYPE_ALLOC_SRC_MASK_STD_HEAP),
 	/** pbuf data is stored in ROM, i.e. struct pbuf and its payload are located in
       totally different memory areas. Since it points to ROM, payload does not
       have to be copied when queued for transmission. */
@@ -161,17 +157,14 @@ typedef enum {
 	/** pbuf comes from the pbuf pool. Much like PBUF_ROM but payload might change
       so it has to be duplicated when queued before transmitting, depending on
       who has a 'ref' to it. */
-	PBUF_REF = (PBUF_TYPE_FLAG_DATA_VOLATILE |
-		    PBUF_TYPE_ALLOC_SRC_MASK_STD_MEMP_PBUF),
+	PBUF_REF = (PBUF_TYPE_FLAG_DATA_VOLATILE | PBUF_TYPE_ALLOC_SRC_MASK_STD_MEMP_PBUF),
 	/** pbuf payload refers to RAM. This one comes from a pool and should be used
       for RX. Payload can be chained (scatter-gather RX) but like PBUF_RAM, struct
       pbuf and its payload are allocated in one piece of contiguous memory (so
       the first payload byte can be calculated from struct pbuf).
       Don't use this for TX, if the pool becomes empty e.g. because of TCP queuing,
       you are unable to receive TCP acks! */
-	PBUF_POOL =
-		(PBUF_ALLOC_FLAG_RX | PBUF_TYPE_FLAG_STRUCT_DATA_CONTIGUOUS |
-		 PBUF_TYPE_ALLOC_SRC_MASK_STD_MEMP_PBUF_POOL)
+	PBUF_POOL = (PBUF_ALLOC_FLAG_RX | PBUF_TYPE_FLAG_STRUCT_DATA_CONTIGUOUS | PBUF_TYPE_ALLOC_SRC_MASK_STD_MEMP_PBUF_POOL)
 } pbuf_type;
 
 /** indicates this packet's data should be immediately passed to the application */
@@ -284,14 +277,12 @@ void pbuf_free_ooseq(void);
 struct pbuf *pbuf_alloc(pbuf_layer l, u16_t length, pbuf_type type);
 struct pbuf *pbuf_alloc_reference(void *payload, u16_t length, pbuf_type type);
 #if LWIP_SUPPORT_CUSTOM_PBUF
-struct pbuf *pbuf_alloced_custom(pbuf_layer l, u16_t length, pbuf_type type,
-				 struct pbuf_custom *p, void *payload_mem,
+struct pbuf *pbuf_alloced_custom(pbuf_layer l, u16_t length, pbuf_type type, struct pbuf_custom *p, void *payload_mem,
 				 u16_t payload_mem_len);
 #endif /* LWIP_SUPPORT_CUSTOM_PBUF */
 void pbuf_realloc(struct pbuf *p, u16_t size);
 #define pbuf_get_allocsrc(p) ((p)->type_internal & PBUF_TYPE_ALLOC_SRC_MASK)
-#define pbuf_match_allocsrc(p, type) \
-	(pbuf_get_allocsrc(p) == ((type) & PBUF_TYPE_ALLOC_SRC_MASK))
+#define pbuf_match_allocsrc(p, type) (pbuf_get_allocsrc(p) == ((type) & PBUF_TYPE_ALLOC_SRC_MASK))
 #define pbuf_match_type(p, type) pbuf_match_allocsrc(p, type)
 u8_t pbuf_header(struct pbuf *p, s16_t header_size);
 u8_t pbuf_header_force(struct pbuf *p, s16_t header_size);
@@ -306,19 +297,15 @@ void pbuf_cat(struct pbuf *head, struct pbuf *tail);
 void pbuf_chain(struct pbuf *head, struct pbuf *tail);
 struct pbuf *pbuf_dechain(struct pbuf *p);
 err_t pbuf_copy(struct pbuf *p_to, const struct pbuf *p_from);
-u16_t pbuf_copy_partial(const struct pbuf *p, void *dataptr, u16_t len,
-			u16_t offset);
-void *pbuf_get_contiguous(const struct pbuf *p, void *buffer, size_t bufsize,
-			  u16_t len, u16_t offset);
+u16_t pbuf_copy_partial(const struct pbuf *p, void *dataptr, u16_t len, u16_t offset);
+void *pbuf_get_contiguous(const struct pbuf *p, void *buffer, size_t bufsize, u16_t len, u16_t offset);
 err_t pbuf_take(struct pbuf *buf, const void *dataptr, u16_t len);
-err_t pbuf_take_at(struct pbuf *buf, const void *dataptr, u16_t len,
-		   u16_t offset);
+err_t pbuf_take_at(struct pbuf *buf, const void *dataptr, u16_t len, u16_t offset);
 struct pbuf *pbuf_skip(struct pbuf *in, u16_t in_offset, u16_t *out_offset);
 struct pbuf *pbuf_coalesce(struct pbuf *p, pbuf_layer layer);
 struct pbuf *pbuf_clone(pbuf_layer l, pbuf_type type, struct pbuf *p);
 #if LWIP_CHECKSUM_ON_COPY
-err_t pbuf_fill_chksum(struct pbuf *p, u16_t start_offset, const void *dataptr,
-		       u16_t len, u16_t *chksum);
+err_t pbuf_fill_chksum(struct pbuf *p, u16_t start_offset, const void *dataptr, u16_t len, u16_t *chksum);
 #endif /* LWIP_CHECKSUM_ON_COPY */
 #if LWIP_TCP && TCP_QUEUE_OOSEQ && LWIP_WND_SCALE
 void pbuf_split_64k(struct pbuf *p, struct pbuf **rest);
@@ -328,8 +315,7 @@ u8_t pbuf_get_at(const struct pbuf *p, u16_t offset);
 int pbuf_try_get_at(const struct pbuf *p, u16_t offset);
 void pbuf_put_at(struct pbuf *p, u16_t offset, u8_t data);
 u16_t pbuf_memcmp(const struct pbuf *p, u16_t offset, const void *s2, u16_t n);
-u16_t pbuf_memfind(const struct pbuf *p, const void *mem, u16_t mem_len,
-		   u16_t start_offset);
+u16_t pbuf_memfind(const struct pbuf *p, const void *mem, u16_t mem_len, u16_t start_offset);
 u16_t pbuf_strstr(const struct pbuf *p, const char *substr);
 
 #ifdef __cplusplus

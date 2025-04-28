@@ -68,8 +68,7 @@ void dump_evtchn_pending(void)
 
 	printk("   Evtchn info in Agency/ME domain %d\n\n", ME_domID());
 	for (i = 0; i < NR_EVTCHN; i++)
-		printk("e:%d m:%d p:%d  ", i, evtchn_info.evtchn_mask[i],
-		       avz_shared->evtchn_pending[i]);
+		printk("e:%d m:%d p:%d  ", i, evtchn_info.evtchn_mask[i], avz_shared->evtchn_pending[i]);
 
 	printk("\n\n");
 }
@@ -97,8 +96,7 @@ retry:
 
 	while (true) {
 		for (evtchn = 0; evtchn < NR_EVTCHN; evtchn++)
-			if ((avz_shared->evtchn_pending[evtchn]) &&
-			    !evtchn_is_masked(evtchn))
+			if ((avz_shared->evtchn_pending[evtchn]) && !evtchn_is_masked(evtchn))
 				break;
 
 		/* Found an evtchn? */
@@ -111,9 +109,8 @@ retry:
 
 		if (loopmax > 500) /* Probably something wrong ;-) */
 			printk("%s: Warning trying to process evtchn: %d IRQ: %d for quite a long time (dom ID: %d) on CPU %d / masked: %d...\n",
-			       __func__, evtchn,
-			       evtchn_info.evtchn_to_irq[evtchn], ME_domID(),
-			       smp_processor_id(), evtchn_is_masked(evtchn));
+			       __func__, evtchn, evtchn_info.evtchn_to_irq[evtchn], ME_domID(), smp_processor_id(),
+			       evtchn_is_masked(evtchn));
 
 		virq = evtchn_info.evtchn_to_irq[evtchn];
 		clear_evtchn(evtchn_from_irq(virq));
@@ -184,8 +181,7 @@ void unbind_domain_evtchn(unsigned int domID, unsigned int evtchn)
 	evtchn_info.valid[evtchn] = false;
 }
 
-static int bind_interdomain_evtchn_to_irq(unsigned int remote_domain,
-					  unsigned int remote_evtchn)
+static int bind_interdomain_evtchn_to_irq(unsigned int remote_domain, unsigned int remote_evtchn)
 {
 	avz_hyp_t args;
 	int virq;
@@ -193,22 +189,17 @@ static int bind_interdomain_evtchn_to_irq(unsigned int remote_domain,
 	args.cmd = AVZ_EVENT_CHANNEL_OP;
 	args.u.avz_evtchn.evtchn_op.cmd = EVTCHNOP_bind_interdomain;
 
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom =
-		remote_domain;
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn =
-		remote_evtchn;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom = remote_domain;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn = remote_evtchn;
 
 	avz_hypercall(&args);
 
-	virq = bind_evtchn_to_virq(
-		args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn);
+	virq = bind_evtchn_to_virq(args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn);
 
 	return virq;
 }
 
-int bind_existing_interdomain_evtchn(unsigned local_evtchn,
-				     unsigned int remote_domain,
-				     unsigned int remote_evtchn)
+int bind_existing_interdomain_evtchn(unsigned local_evtchn, unsigned int remote_domain, unsigned int remote_evtchn)
 {
 	avz_hyp_t args;
 
@@ -216,17 +207,13 @@ int bind_existing_interdomain_evtchn(unsigned local_evtchn,
 
 	args.u.avz_evtchn.evtchn_op.cmd = EVTCHNOP_bind_existing_interdomain;
 
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn =
-		local_evtchn;
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom =
-		remote_domain;
-	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn =
-		remote_evtchn;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn = local_evtchn;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom = remote_domain;
+	args.u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn = remote_evtchn;
 
 	avz_hypercall(&args);
 
-	return bind_evtchn_to_virq(
-		args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn);
+	return bind_evtchn_to_virq(args.u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn);
 }
 
 void bind_virq(unsigned int virq)
@@ -281,8 +268,7 @@ static void unbind_from_irq(unsigned int irq)
 	spin_unlock(&irq_mapping_update_lock);
 }
 
-int bind_evtchn_to_irq_handler(unsigned int evtchn, irq_handler_t handler,
-			       irq_handler_t thread_fn, void *data)
+int bind_evtchn_to_irq_handler(unsigned int evtchn, irq_handler_t handler, irq_handler_t thread_fn, void *data)
 {
 	unsigned int irq;
 
@@ -293,15 +279,12 @@ int bind_evtchn_to_irq_handler(unsigned int evtchn, irq_handler_t handler,
 	return irq;
 }
 
-int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
-					  unsigned int remote_evtchn,
-					  irq_handler_t handler,
+int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain, unsigned int remote_evtchn, irq_handler_t handler,
 					  irq_handler_t thread_fn, void *data)
 {
 	int irq;
 
-	DBG("%s: remote evtchn: %d remote domain: %d\n", __func__,
-	    remote_evtchn, remote_domain);
+	DBG("%s: remote evtchn: %d remote domain: %d\n", __func__, remote_evtchn, remote_domain);
 	irq = bind_interdomain_evtchn_to_irq(remote_domain, remote_evtchn);
 	if (irq < 0)
 		BUG();
@@ -311,8 +294,7 @@ int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
 	return irq;
 }
 
-void bind_virq_to_irqhandler(unsigned int virq, irq_handler_t handler,
-			     irq_handler_t thread_fn, void *data)
+void bind_virq_to_irqhandler(unsigned int virq, irq_handler_t handler, irq_handler_t thread_fn, void *data)
 {
 	bind_virq(virq);
 

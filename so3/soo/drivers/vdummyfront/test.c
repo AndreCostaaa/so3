@@ -60,10 +60,8 @@ static void prepare_predef_packets(void)
 #endif
 
 	for (i = 0; i < SOOTEST_N_PREDEF_PACKETS; i++) {
-		predef_packets[i] =
-			(char *)kzalloc(VDUMMY_PACKET_SIZE, GFP_KERNEL);
-		predef_packets_hashes[i] =
-			(char *)kzalloc(SOOTEST_SHA1_HASH_LEN, GFP_KERNEL);
+		predef_packets[i] = (char *) kzalloc(VDUMMY_PACKET_SIZE, GFP_KERNEL);
+		predef_packets_hashes[i] = (char *) kzalloc(SOOTEST_SHA1_HASH_LEN, GFP_KERNEL);
 	}
 
 	/* Packet 0: 0x00 0x01 .. 0x0f 0x00 0x01 ... */
@@ -103,26 +101,16 @@ static void prepare_predef_packets(void)
 	sha1_hash(packet, VDUMMY_PACKET_SIZE, predef_packets_hashes[5]);
 
 	/* Empty packets (TBD) */
-	sha1_hash(predef_packets[6], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[6]);
-	sha1_hash(predef_packets[7], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[7]);
-	sha1_hash(predef_packets[8], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[8]);
-	sha1_hash(predef_packets[9], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[9]);
-	sha1_hash(predef_packets[10], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[10]);
-	sha1_hash(predef_packets[11], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[11]);
-	sha1_hash(predef_packets[12], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[12]);
-	sha1_hash(predef_packets[13], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[13]);
-	sha1_hash(predef_packets[14], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[14]);
-	sha1_hash(predef_packets[15], VDUMMY_PACKET_SIZE,
-		  predef_packets_hashes[15]);
+	sha1_hash(predef_packets[6], VDUMMY_PACKET_SIZE, predef_packets_hashes[6]);
+	sha1_hash(predef_packets[7], VDUMMY_PACKET_SIZE, predef_packets_hashes[7]);
+	sha1_hash(predef_packets[8], VDUMMY_PACKET_SIZE, predef_packets_hashes[8]);
+	sha1_hash(predef_packets[9], VDUMMY_PACKET_SIZE, predef_packets_hashes[9]);
+	sha1_hash(predef_packets[10], VDUMMY_PACKET_SIZE, predef_packets_hashes[10]);
+	sha1_hash(predef_packets[11], VDUMMY_PACKET_SIZE, predef_packets_hashes[11]);
+	sha1_hash(predef_packets[12], VDUMMY_PACKET_SIZE, predef_packets_hashes[12]);
+	sha1_hash(predef_packets[13], VDUMMY_PACKET_SIZE, predef_packets_hashes[13]);
+	sha1_hash(predef_packets[14], VDUMMY_PACKET_SIZE, predef_packets_hashes[14]);
+	sha1_hash(predef_packets[15], VDUMMY_PACKET_SIZE, predef_packets_hashes[15]);
 
 #ifdef DEBUG
 	lprintk("packgen: pre-defined packets\n");
@@ -192,8 +180,7 @@ void sootest_dummy_process_received_echo(char *packet)
 	lprintk_buffer(echo_packet_hash, SOOTEST_SHA1_HASH_LEN);
 #endif
 
-	if (!memcmp(echo_packet_hash, sent_packet_hash,
-		    SOOTEST_SHA1_HASH_LEN)) {
+	if (!memcmp(echo_packet_hash, sent_packet_hash, SOOTEST_SHA1_HASH_LEN)) {
 #ifdef DEBUG
 		lprintk("OK\n");
 #endif
@@ -213,8 +200,7 @@ void sootest_dummy_process_received_echo(char *packet)
 	} else {
 		if (unlikely(packet_count == SOOTEST_N_PREDEF_PACKETS - 1)) {
 			lprintk("SOOTEST: ");
-			lprintk_buffer_separator(packet_bitmap,
-						 sizeof(packet_bitmap), '-');
+			lprintk_buffer_separator(packet_bitmap, sizeof(packet_bitmap), '-');
 			memset(packet_bitmap, 0, sizeof(packet_bitmap));
 			packet_count = 0;
 			iter_count++;

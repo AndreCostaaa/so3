@@ -65,17 +65,17 @@ ROXML_STATIC_INLINE ROXML_INT unsigned long int roxml_thread_id(node_t *n)
 
 ROXML_STATIC_INLINE ROXML_INT int roxml_lock_init(node_t *n)
 {
-	xpath_tok_table_t *table = (xpath_tok_table_t *)n->priv;
+	xpath_tok_table_t *table = (xpath_tok_table_t *) n->priv;
 	table->lock = malloc(sizeof(struct mutex));
 
-	mutex_init((struct mutex *)table->lock);
+	mutex_init((struct mutex *) table->lock);
 
 	return 0;
 }
 
 ROXML_STATIC_INLINE ROXML_INT int roxml_lock_destroy(node_t *n)
 {
-	xpath_tok_table_t *table = (xpath_tok_table_t *)n->priv;
+	xpath_tok_table_t *table = (xpath_tok_table_t *) n->priv;
 
 	free(table->lock);
 
@@ -88,9 +88,9 @@ ROXML_STATIC_INLINE ROXML_INT int roxml_lock(node_t *n)
 	while (n->prnt)
 		n = n->prnt;
 
-	table = (xpath_tok_table_t *)n->priv;
+	table = (xpath_tok_table_t *) n->priv;
 
-	mutex_lock((struct mutex *)table->lock);
+	mutex_lock((struct mutex *) table->lock);
 
 	return 0;
 }
@@ -101,9 +101,9 @@ ROXML_STATIC_INLINE ROXML_INT int roxml_unlock(node_t *n)
 	while (n->prnt)
 		n = n->prnt;
 
-	table = (xpath_tok_table_t *)n->priv;
+	table = (xpath_tok_table_t *) n->priv;
 
-	mutex_unlock((struct mutex *)table->lock);
+	mutex_unlock((struct mutex *) table->lock);
 
 	return 0;
 }

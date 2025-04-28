@@ -27,26 +27,23 @@
 #define DECLARE_BITMAP(name, bits) unsigned long name[BITS_TO_LONGS(bits)]
 
 /* sizeof() for a structure/union field */
-#define FIELD_SIZEOF(type, fld) (sizeof(((type *)0)->fld))
+#define FIELD_SIZEOF(type, fld) (sizeof(((type *) 0)->fld))
 
 /* create 64-bit mask with bytes 0 to size-1 set to 0xff */
 #define BYTE_MASK(size) (0xffffffffffffffffULL >> ((8 - (size)) * 8))
 
 /* create 64-bit mask with all bits in [last:first] set */
-#define BIT_MASK(last, first) \
-	((0xffffffffffffffffULL >> (64 - ((last) + 1 - (first)))) << (first))
+#define BIT_MASK(last, first) ((0xffffffffffffffffULL >> (64 - ((last) + 1 - (first)))) << (first))
 
 /* extract the field value at [last:first] from an input of up to 64 bits */
-#define GET_FIELD(value, last, first) \
-	(((value) & BIT_MASK((last), (first))) >> (first))
+#define GET_FIELD(value, last, first) (((value) & BIT_MASK((last), (first))) >> (first))
 
 /* set the field value at [last:first] from an input of up to 64 bits*/
-#define SET_FIELD(value, last, first) \
-	((value) << (first) & BIT_MASK((last), (first)))
+#define SET_FIELD(value, last, first) ((value) << (first) & BIT_MASK((last), (first)))
 
 /* mandatory macros */
 #undef NULL
-#define NULL ((void *)0)
+#define NULL ((void *) 0)
 
 /* mandatory types */
 
@@ -58,7 +55,7 @@ typedef signed long ptrdiff_t;
 typedef unsigned int wchar_t;
 
 #define __ALIGN_MASK(x, mask) (((x) + (mask)) & ~(mask))
-#define ALIGN(x, a) __ALIGN_MASK((x), (typeof(x))(a) - 1)
+#define ALIGN(x, a) __ALIGN_MASK((x), (typeof(x)) (a) - 1)
 
 /* Old compatibility names for C types.  */
 typedef unsigned long int ulong;
@@ -177,30 +174,24 @@ typedef u64 time_t;
  */
 #define PAD_COUNT(s, pad) (((s) - 1) / (pad) + 1)
 #define PAD_SIZE(s, pad) (PAD_COUNT(s, pad) * pad)
-#define ALLOC_ALIGN_BUFFER_PAD(type, name, size, align, pad)               \
-	char __##name[ROUND(PAD_SIZE((size) * sizeof(type), pad), align) + \
-		      (align - 1)];                                        \
-                                                                           \
-	type *name = (type *)ALIGN((uintptr_t)__##name, align)
-#define ALLOC_ALIGN_BUFFER(type, name, size, align) \
-	ALLOC_ALIGN_BUFFER_PAD(type, name, size, align, 1)
-#define ALLOC_CACHE_ALIGN_BUFFER_PAD(type, name, size, pad) \
-	ALLOC_ALIGN_BUFFER_PAD(type, name, size, ARCH_DMA_MINALIGN, pad)
-#define ALLOC_CACHE_ALIGN_BUFFER(type, name, size) \
-	ALLOC_ALIGN_BUFFER(type, name, size, ARCH_DMA_MINALIGN)
+#define ALLOC_ALIGN_BUFFER_PAD(type, name, size, align, pad)                             \
+	char __##name[ROUND(PAD_SIZE((size) * sizeof(type), pad), align) + (align - 1)]; \
+                                                                                         \
+	type *name = (type *) ALIGN((uintptr_t) __##name, align)
+#define ALLOC_ALIGN_BUFFER(type, name, size, align) ALLOC_ALIGN_BUFFER_PAD(type, name, size, align, 1)
+#define ALLOC_CACHE_ALIGN_BUFFER_PAD(type, name, size, pad) ALLOC_ALIGN_BUFFER_PAD(type, name, size, ARCH_DMA_MINALIGN, pad)
+#define ALLOC_CACHE_ALIGN_BUFFER(type, name, size) ALLOC_ALIGN_BUFFER(type, name, size, ARCH_DMA_MINALIGN)
 
 /*
  * DEFINE_CACHE_ALIGN_BUFFER() is similar to ALLOC_CACHE_ALIGN_BUFFER, but it's
  * purpose is to allow allocating aligned buffers outside of function scope.
  * Usage of this macro shall be avoided or used with extreme care!
  */
-#define DEFINE_ALIGN_BUFFER(type, name, size, align)                         \
-	static char __##name[roundup(size * sizeof(type), align)] __aligned( \
-		align);                                                      \
-                                                                             \
-	static type *name = (type *)__##name
-#define DEFINE_CACHE_ALIGN_BUFFER(type, name, size) \
-	DEFINE_ALIGN_BUFFER(type, name, size, ARCH_DMA_MINALIGN)
+#define DEFINE_ALIGN_BUFFER(type, name, size, align)                                \
+	static char __##name[roundup(size * sizeof(type), align)] __aligned(align); \
+                                                                                    \
+	static type *name = (type *) __##name
+#define DEFINE_CACHE_ALIGN_BUFFER(type, name, size) DEFINE_ALIGN_BUFFER(type, name, size, ARCH_DMA_MINALIGN)
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 

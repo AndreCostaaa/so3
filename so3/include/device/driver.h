@@ -39,10 +39,8 @@ typedef struct driver_initcall driver_initcall_t;
 		.init = _init,                                 \
 	}
 
-#define REGISTER_DRIVER_CORE(_compatible, _init) \
-	REGISTER_DRIVER_INITCALL(_compatible, core, _init)
-#define REGISTER_DRIVER_POSTCORE(_compatible, _init) \
-	REGISTER_DRIVER_INITCALL(_compatible, postcore, _init)
+#define REGISTER_DRIVER_CORE(_compatible, _init) REGISTER_DRIVER_INITCALL(_compatible, core, _init)
+#define REGISTER_DRIVER_POSTCORE(_compatible, _init) REGISTER_DRIVER_INITCALL(_compatible, postcore, _init)
 
 void init_driver_from_dtb(void);
 

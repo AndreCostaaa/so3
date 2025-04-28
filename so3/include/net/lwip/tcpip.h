@@ -86,11 +86,9 @@ err_t tcpip_callback_wait(tcpip_callback_fn function, void *ctx);
  * @deprecated use tcpip_try_callback() or tcpip_callback() instead
  */
 #define tcpip_callback_with_block(function, ctx, block) \
-	((block != 0) ? tcpip_callback(function, ctx) : \
-			tcpip_try_callback(function, ctx))
+	((block != 0) ? tcpip_callback(function, ctx) : tcpip_try_callback(function, ctx))
 
-struct tcpip_callback_msg *tcpip_callbackmsg_new(tcpip_callback_fn function,
-						 void *ctx);
+struct tcpip_callback_msg *tcpip_callbackmsg_new(tcpip_callback_fn function, void *ctx);
 void tcpip_callbackmsg_delete(struct tcpip_callback_msg *msg);
 err_t tcpip_callbackmsg_trycallback(struct tcpip_callback_msg *msg);
 err_t tcpip_callbackmsg_trycallback_fromisr(struct tcpip_callback_msg *msg);

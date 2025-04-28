@@ -21,14 +21,10 @@
  * error on failure.  @buf is always zero terminated.
  *
  */
-int string_get_size(u64 size, const enum string_size_units units, char *buf,
-		    int len)
+int string_get_size(u64 size, const enum string_size_units units, char *buf, int len)
 {
-	static const char *const units_10[] = { "B",  "kB", "MB", "GB", "TB",
-						"PB", "EB", "ZB", "YB", NULL };
-	static const char *const units_2[] = { "B",   "KiB", "MiB", "GiB",
-					       "TiB", "PiB", "EiB", "ZiB",
-					       "YiB", NULL };
+	static const char *const units_10[] = { "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB", NULL };
+	static const char *const units_2[] = { "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB", NULL };
 	static const char *const *const units_str[] = {
 		[STRING_UNITS_10] = units_10,
 		[STRING_UNITS_2] = units_2,
@@ -56,14 +52,12 @@ int string_get_size(u64 size, const enum string_size_units units, char *buf,
 		if (j) {
 			remainder *= 1000;
 			do_div(remainder, divisor[units]);
-			snprintf(tmp, sizeof(tmp), ".%03lld",
-				 (unsigned long long)remainder);
+			snprintf(tmp, sizeof(tmp), ".%03lld", (unsigned long long) remainder);
 			tmp[j + 1] = '\0';
 		}
 	}
 
-	snprintf(buf, len, "%lld%s %s", (unsigned long long)size, tmp,
-		 units_str[units][i]);
+	snprintf(buf, len, "%lld%s %s", (unsigned long long) size, tmp, units_str[units][i]);
 
 	return 0;
 }
@@ -211,19 +205,16 @@ int string_unescape(char *src, char *dst, size_t size, unsigned int flags)
 			src++;
 			size--;
 
-			if (flags & UNESCAPE_SPACE &&
-			    unescape_space(&src, &out))
+			if (flags & UNESCAPE_SPACE && unescape_space(&src, &out))
 				continue;
 
-			if (flags & UNESCAPE_OCTAL &&
-			    unescape_octal(&src, &out))
+			if (flags & UNESCAPE_OCTAL && unescape_octal(&src, &out))
 				continue;
 
 			if (flags & UNESCAPE_HEX && unescape_hex(&src, &out))
 				continue;
 
-			if (flags & UNESCAPE_SPECIAL &&
-			    unescape_special(&src, &out))
+			if (flags & UNESCAPE_SPECIAL && unescape_special(&src, &out))
 				continue;
 
 			*out++ = '\\';
@@ -429,8 +420,7 @@ static int escape_hex(unsigned char c, char **dst, size_t *osz)
  * Even in the case of error @dst pointer will be updated to point to the byte
  * after the last processed character.
  */
-int string_escape_mem(const char *src, size_t isz, char **dst, size_t osz,
-		      unsigned int flags, const char *esc)
+int string_escape_mem(const char *src, size_t isz, char **dst, size_t osz, unsigned int flags, const char *esc)
 {
 	char *out = *dst, *p = out;
 	bool is_dict = esc && *esc;
@@ -450,8 +440,7 @@ int string_escape_mem(const char *src, size_t isz, char **dst, size_t osz,
 		 * In these cases we just pass through a character to the
 		 * output buffer.
 		 */
-		if ((flags & ESCAPE_NP && isprint(c)) ||
-		    (is_dict && !strchr(esc, c))) {
+		if ((flags & ESCAPE_NP && isprint(c)) || (is_dict && !strchr(esc, c))) {
 			/* do nothing */
 		} else {
 			if (flags & ESCAPE_SPACE) {
@@ -511,8 +500,8 @@ char *strrchr(const char *s, int c)
 	char *ret = 0;
 
 	do {
-		if (*s == (char)c)
-			ret = (char *)s;
+		if (*s == (char) c)
+			ret = (char *) s;
 
 	} while (*s++);
 

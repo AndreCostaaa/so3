@@ -80,7 +80,7 @@ void avz_setup(void)
 
 	lprintk("SOO Virtualizer (avz) shared page:\n\n");
 
-	lprintk("- Dom phys offset: %lx\n\n", (addr_t)mem_info.phys_base);
+	lprintk("- Dom phys offset: %lx\n\n", (addr_t) mem_info.phys_base);
 
 	virq_init();
 
@@ -91,11 +91,9 @@ void avz_setup(void)
 
 void post_init_setup(void)
 {
-	printk("Mapping VBstore shared page pfn %d\n",
-	       avz_shared->dom_desc.u.ME.vbstore_pfn);
+	printk("Mapping VBstore shared page pfn %d\n", avz_shared->dom_desc.u.ME.vbstore_pfn);
 
-	__intf = (void *)io_map(
-		pfn_to_phys(avz_shared->dom_desc.u.ME.vbstore_pfn), PAGE_SIZE);
+	__intf = (void *) io_map(pfn_to_phys(avz_shared->dom_desc.u.ME.vbstore_pfn), PAGE_SIZE);
 	BUG_ON(!__intf);
 
 	printk("SOO Mobile Entity booting ...\n");

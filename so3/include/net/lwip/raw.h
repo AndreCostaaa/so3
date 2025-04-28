@@ -68,8 +68,7 @@ struct raw_pcb;
  * If returning 1, the callback is responsible for freeing the pbuf
  * if it's not used any more.
  */
-typedef u8_t (*raw_recv_fn)(void *arg, struct raw_pcb *pcb, struct pbuf *p,
-			    const ip_addr_t *addr);
+typedef u8_t (*raw_recv_fn)(void *arg, struct raw_pcb *pcb, struct pbuf *p, const ip_addr_t *addr);
 
 /** the RAW protocol control block */
 struct raw_pcb {
@@ -110,8 +109,7 @@ err_t raw_connect(struct raw_pcb *pcb, const ip_addr_t *ipaddr);
 void raw_disconnect(struct raw_pcb *pcb);
 
 err_t raw_sendto(struct raw_pcb *pcb, struct pbuf *p, const ip_addr_t *ipaddr);
-err_t raw_sendto_if_src(struct raw_pcb *pcb, struct pbuf *p,
-			const ip_addr_t *dst_ip, struct netif *netif,
+err_t raw_sendto_if_src(struct raw_pcb *pcb, struct pbuf *p, const ip_addr_t *dst_ip, struct netif *netif,
 			const ip_addr_t *src_ip);
 err_t raw_send(struct raw_pcb *pcb, struct pbuf *p);
 
@@ -120,14 +118,13 @@ void raw_recv(struct raw_pcb *pcb, raw_recv_fn recv, void *recv_arg);
 #define raw_flags(pcb) ((pcb)->flags)
 #define raw_setflags(pcb, f) ((pcb)->flags = (f))
 
-#define raw_set_flags(pcb, set_flags)                              \
-	do {                                                       \
-		(pcb)->flags = (u8_t)((pcb)->flags | (set_flags)); \
+#define raw_set_flags(pcb, set_flags)                               \
+	do {                                                        \
+		(pcb)->flags = (u8_t) ((pcb)->flags | (set_flags)); \
 	} while (0)
-#define raw_clear_flags(pcb, clr_flags)                                     \
-	do {                                                                \
-		(pcb)->flags =                                              \
-			(u8_t)((pcb)->flags & (u8_t)(~(clr_flags) & 0xff)); \
+#define raw_clear_flags(pcb, clr_flags)                                              \
+	do {                                                                         \
+		(pcb)->flags = (u8_t) ((pcb)->flags & (u8_t) (~(clr_flags) & 0xff)); \
 	} while (0)
 #define raw_is_flag_set(pcb, flag) (((pcb)->flags & (flag)) != 0)
 

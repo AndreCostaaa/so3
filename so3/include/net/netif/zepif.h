@@ -43,8 +43,7 @@
 #include "lwip/opt.h"
 #include "netif/lowpan6.h"
 
-#if LWIP_IPV6 && \
-	LWIP_UDP /* don't build if not configured for use in lwipopts.h */
+#if LWIP_IPV6 && LWIP_UDP /* don't build if not configured for use in lwipopts.h */
 
 #include "lwip/netif.h"
 

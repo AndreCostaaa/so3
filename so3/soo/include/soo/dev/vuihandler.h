@@ -54,18 +54,15 @@ typedef struct __attribute__((packed)) {
 #define VUIHANDLER_MAX_PAYLOAD_SIZE 1024
 /* Maximal size of a BT packet's data (the header is included) */
 
-#define VUIHANDLER_MAX_PKT_SIZE \
-	(sizeof(vuihandler_pkt_t) + VUIHANDLER_MAX_PAYLOAD_SIZE)
+#define VUIHANDLER_MAX_PKT_SIZE (sizeof(vuihandler_pkt_t) + VUIHANDLER_MAX_PAYLOAD_SIZE)
 
 /* Shared buffer size */
-#define VUIHANDLER_BUFFER_SIZE \
-	(VUIHANDLER_MAX_PACKETS * VUIHANDLER_MAX_PKT_SIZE)
+#define VUIHANDLER_BUFFER_SIZE (VUIHANDLER_MAX_PACKETS * VUIHANDLER_MAX_PKT_SIZE)
 
 #define VUIHANDLER_BEACON 0
 #define VUIHANDLER_DATA 1
 #define VUIHANDLER_ASK_LIST 4 /* Ask for the XML ME list */
-#define VUIHANDLER_SEND \
-	5 /* Specify that the packet contains an event data to be forwarded to the ME */
+#define VUIHANDLER_SEND 5 /* Specify that the packet contains an event data to be forwarded to the ME */
 #define VUIHANDLER_SELECT 6 /* Ask for the ME model */
 #define VUIHANDLER_POST 7
 
@@ -85,8 +82,7 @@ typedef struct {
 	uint32_t val;
 } vuihandler_tx_response_t;
 
-DEFINE_RING_TYPES(vuihandler_tx, vuihandler_tx_request_t,
-		  vuihandler_tx_response_t);
+DEFINE_RING_TYPES(vuihandler_tx, vuihandler_tx_request_t, vuihandler_tx_response_t);
 
 /* Not used */
 typedef struct {
@@ -100,8 +96,7 @@ typedef struct {
 	uint8_t buf[VUIHANDLER_MAX_PAYLOAD_SIZE];
 } vuihandler_rx_response_t;
 
-DEFINE_RING_TYPES(vuihandler_rx, vuihandler_rx_request_t,
-		  vuihandler_rx_response_t);
+DEFINE_RING_TYPES(vuihandler_rx, vuihandler_rx_request_t, vuihandler_rx_response_t);
 
 typedef struct {
 	uint64_t spid;
@@ -163,8 +158,7 @@ typedef void (*ui_send_model_t)(void);
  * @param ui_interrupt: callbacks to be called when receiving a VUIHANDLER_POST or VUIHANDLER_DATA packet.
  *
  */
-void vuihandler_register_callbacks(ui_send_model_t ui_send_model,
-				   ui_interrupt_t ui_interrupt);
+void vuihandler_register_callbacks(ui_send_model_t ui_send_model, ui_interrupt_t ui_interrupt);
 
 void vuihandler_send(void *data, size_t size, uint8_t type);
 

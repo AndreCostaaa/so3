@@ -49,7 +49,7 @@ int devfs_open(int fd, const char *filename)
 /* Close the dev directory */
 int devfs_close(int fd)
 {
-	devfs_data *priv = (devfs_data *)vfs_get_priv(fd);
+	devfs_data *priv = (devfs_data *) vfs_get_priv(fd);
 	if (!priv) {
 		return 0;
 	}
@@ -60,35 +60,30 @@ int devfs_close(int fd)
 struct dirent *devfs_readdir(int fd)
 {
 	struct dirent *dent;
-	devfs_data *priv = (devfs_data *)vfs_get_priv(fd);
+	devfs_data *priv = (devfs_data *) vfs_get_priv(fd);
 	bool is_single_entry;
 
 	dent = &priv->dent;
 
 	/* Whenever we are done with a certain devclass entry this pointer is null */
 	if (!priv->current_devclass) {
-		priv->current_devclass =
-			devclass_get_by_index(priv->current_devclass_index);
+		priv->current_devclass = devclass_get_by_index(priv->current_devclass_index);
 
 		if (!priv->current_devclass) {
 			return NULL;
 		}
-		priv->current_devclass_entry_id =
-			priv->current_devclass->id_start;
+		priv->current_devclass_entry_id = priv->current_devclass->id_start;
 	}
 
-	is_single_entry = priv->current_devclass->id_start ==
-			  priv->current_devclass->id_end;
+	is_single_entry = priv->current_devclass->id_start == priv->current_devclass->id_end;
 
 	/* Special case is when there's only one entry,
 	 * we don't actually need to specify the id after the name
 	 */
 	if (is_single_entry) {
-		snprintf(dent->d_name, sizeof(dent->d_name), "%s",
-			 priv->current_devclass->class);
+		snprintf(dent->d_name, sizeof(dent->d_name), "%s", priv->current_devclass->class);
 	} else {
-		snprintf(dent->d_name, sizeof(dent->d_name), "%s%d",
-			 priv->current_devclass->class,
+		snprintf(dent->d_name, sizeof(dent->d_name), "%s%d", priv->current_devclass->class,
 			 priv->current_devclass_entry_id);
 	}
 
@@ -96,8 +91,7 @@ struct dirent *devfs_readdir(int fd)
 	dent->d_type = DT_CHR;
 
 	// check if this was the last entry id
-	if (is_single_entry ||
-	    priv->current_devclass_entry_id == priv->current_devclass->id_end) {
+	if (is_single_entry || priv->current_devclass_entry_id == priv->current_devclass->id_end) {
 		priv->current_devclass_index++;
 		/* We are done with this devclass, make it NULL */
 		priv->current_devclass = NULL;

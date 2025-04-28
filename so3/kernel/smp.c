@@ -119,11 +119,9 @@ void secondary_start_kernel(void)
 
 #ifdef CONFIG_SOO
 	if (cpu == AGENCY_RT_CPU) {
-		__mmu_switch_kernel((void *)current_domain->pagetable_paddr,
-				    true);
+		__mmu_switch_kernel((void *) current_domain->pagetable_paddr, true);
 #else
-	__mmu_switch_kernel((void *)domains[DOMID_AGENCY]->pagetable_paddr,
-			    true);
+	__mmu_switch_kernel((void *) domains[DOMID_AGENCY]->pagetable_paddr, true);
 #endif /* CONFIG_SOO */
 
 		booted[cpu] = 1;
@@ -140,8 +138,7 @@ void secondary_start_kernel(void)
 			pre_ret_to_el1_with_spin(CPU3_RELEASE_ADDR);
 			break;
 		default:
-			printk("%s: trying to start CPU %d that is not supported.\n",
-			       __func__, cpu);
+			printk("%s: trying to start CPU %d that is not supported.\n", __func__, cpu);
 		}
 #endif
 
@@ -197,11 +194,11 @@ void cpu_up(unsigned int cpu)
 
 	switch (cpu) {
 	case AGENCY_RT_CPU:
-		secondary_data.stack = (void *)__cpu1_stack;
+		secondary_data.stack = (void *) __cpu1_stack;
 		break;
 
 	default:
-		secondary_data.stack = (void *)__cpu3_stack;
+		secondary_data.stack = (void *) __cpu3_stack;
 	}
 
 	secondary_data.pgdir = __pa(__sys_root_pgtable);
@@ -252,13 +249,11 @@ void smp_init(void)
 	 * The size must be enough to reach the stack.
 	 */
 
-	create_mapping(NULL, mem_info.phys_base, mem_info.phys_base, SZ_128M,
-		       false);
+	create_mapping(NULL, mem_info.phys_base, mem_info.phys_base, SZ_128M, false);
 
 #ifdef CONFIG_SOO
 
-	printk("CPU #%d is the second CPU reserved for Agency realtime activity.\n",
-	       AGENCY_RT_CPU);
+	printk("CPU #%d is the second CPU reserved for Agency realtime activity.\n", AGENCY_RT_CPU);
 
 	/* Since the RT domain is never scheduled, we set the current domain bound to
 		 * CPU #1 to this unique domain.

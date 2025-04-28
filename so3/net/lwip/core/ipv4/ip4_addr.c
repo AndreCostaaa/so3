@@ -71,12 +71,10 @@ u8_t ip4_addr_isbroadcast_u32(u32_t addr, const struct netif *netif)
 	} else if (addr == ip4_addr_get_u32(netif_ip4_addr(netif))) {
 		return 0;
 		/*  on the same (sub) network... */
-	} else if (ip4_addr_netcmp(&ipaddr, netif_ip4_addr(netif),
-				   netif_ip4_netmask(netif))
+	} else if (ip4_addr_netcmp(&ipaddr, netif_ip4_addr(netif), netif_ip4_netmask(netif))
 		   /* ...and host identifier bits are all ones? =>... */
 		   && ((addr & ~ip4_addr_get_u32(netif_ip4_netmask(netif))) ==
-		       (IPADDR_BROADCAST &
-			~ip4_addr_get_u32(netif_ip4_netmask(netif))))) {
+		       (IPADDR_BROADCAST & ~ip4_addr_get_u32(netif_ip4_netmask(netif))))) {
 		/* => network broadcast address */
 		return 1;
 	} else {
@@ -170,12 +168,10 @@ int ip4addr_aton(const char *cp, ip4_addr_t *addr)
 		}
 		for (;;) {
 			if (lwip_isdigit(c)) {
-				val = (val * base) + (u32_t)(c - '0');
+				val = (val * base) + (u32_t) (c - '0');
 				c = *++cp;
 			} else if (base == 16 && lwip_isxdigit(c)) {
-				val = (val << 4) |
-				      (u32_t)(c + 10 -
-					      (lwip_islower(c) ? 'a' : 'A'));
+				val = (val << 4) | (u32_t) (c + 10 - (lwip_islower(c) ? 'a' : 'A'));
 				c = *++cp;
 			} else {
 				break;
@@ -238,8 +234,7 @@ int ip4addr_aton(const char *cp, ip4_addr_t *addr)
 		if (val > 0xff) {
 			return 0;
 		}
-		if ((parts[0] > 0xff) || (parts[1] > 0xff) ||
-		    (parts[2] > 0xff)) {
+		if ((parts[0] > 0xff) || (parts[1] > 0xff) || (parts[2] > 0xff)) {
 			return 0;
 		}
 		val |= (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8);
@@ -291,13 +286,13 @@ char *ip4addr_ntoa_r(const ip4_addr_t *addr, char *buf, int buflen)
 	s_addr = ip4_addr_get_u32(addr);
 
 	rp = buf;
-	ap = (u8_t *)&s_addr;
+	ap = (u8_t *) &s_addr;
 	for (n = 0; n < 4; n++) {
 		i = 0;
 		do {
-			rem = *ap % (u8_t)10;
-			*ap /= (u8_t)10;
-			inv[i++] = (char)('0' + rem);
+			rem = *ap % (u8_t) 10;
+			*ap /= (u8_t) 10;
+			inv[i++] = (char) ('0' + rem);
 		} while (*ap);
 		while (i--) {
 			if (len++ >= buflen) {

@@ -49,9 +49,7 @@
 
 extern void secondary_startup(void);
 
-unsigned long __invoke_psci_fn_smc(unsigned long function_id,
-				   unsigned long arg0, unsigned long arg1,
-				   unsigned long arg2)
+unsigned long __invoke_psci_fn_smc(unsigned long function_id, unsigned long arg0, unsigned long arg1, unsigned long arg2)
 {
 	struct arm_smccc_res res;
 
@@ -60,9 +58,7 @@ unsigned long __invoke_psci_fn_smc(unsigned long function_id,
 	return res.a0;
 }
 
-unsigned long __invoke_psci_fn_hvc(unsigned long function_id,
-				   unsigned long arg0, unsigned long arg1,
-				   unsigned long arg2)
+unsigned long __invoke_psci_fn_hvc(unsigned long function_id, unsigned long arg0, unsigned long arg1, unsigned long arg2)
 {
 	struct arm_smccc_res res;
 

@@ -32,7 +32,7 @@ void udelay(u64 us)
 	u64 __delay = 0ull, target;
 
 #warning review the way how to calculate the delay...
-	target = ((us / ((u64)1000000ull / (u64)100))) * jiffies_ref;
+	target = ((us / ((u64) 1000000ull / (u64) 100))) * jiffies_ref;
 
 	while (__delay < target)
 		__delay++;
@@ -44,7 +44,7 @@ void udelay(u64 us)
  */
 void delay_handler(void *arg)
 {
-	tcb_t *tcb = (tcb_t *)arg;
+	tcb_t *tcb = (tcb_t *) arg;
 	/*
 	 * delay_handler may be called two ways differently; the first one (and more standard way)
 	 * is right after an interrupt context during the softirq action processing. In this case,

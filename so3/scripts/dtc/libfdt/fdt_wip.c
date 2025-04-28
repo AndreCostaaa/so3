@@ -10,27 +10,24 @@
 
 #include "libfdt_internal.h"
 
-int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
-					const char *name, int namelen,
-					uint32_t idx, const void *val, int len)
+int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset, const char *name, int namelen, uint32_t idx, const void *val,
+					int len)
 {
 	void *propval;
 	int proplen;
 
-	propval =
-		fdt_getprop_namelen_w(fdt, nodeoffset, name, namelen, &proplen);
+	propval = fdt_getprop_namelen_w(fdt, nodeoffset, name, namelen, &proplen);
 	if (!propval)
 		return proplen;
 
 	if (proplen < (len + idx))
 		return -FDT_ERR_NOSPACE;
 
-	memcpy((char *)propval + idx, val, len);
+	memcpy((char *) propval + idx, val, len);
 	return 0;
 }
 
-int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
-			const void *val, int len)
+int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name, const void *val, int len)
 {
 	const void *propval;
 	int proplen;
@@ -42,15 +39,14 @@ int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
 	if (proplen != len)
 		return -FDT_ERR_NOSPACE;
 
-	return fdt_setprop_inplace_namelen_partial(fdt, nodeoffset, name,
-						   strlen(name), 0, val, len);
+	return fdt_setprop_inplace_namelen_partial(fdt, nodeoffset, name, strlen(name), 0, val, len);
 }
 
 static void fdt_nop_region_(void *start, int len)
 {
 	fdt32_t *p;
 
-	for (p = start; (char *)p < ((char *)start + len); p++)
+	for (p = start; (char *) p < ((char *) start + len); p++)
 		*p = cpu_to_fdt32(FDT_NOP);
 }
 
@@ -86,7 +82,6 @@ int fdt_nop_node(void *fdt, int nodeoffset)
 	if (endoffset < 0)
 		return endoffset;
 
-	fdt_nop_region_(fdt_offset_ptr_w(fdt, nodeoffset, 0),
-			endoffset - nodeoffset);
+	fdt_nop_region_(fdt_offset_ptr_w(fdt, nodeoffset, 0), endoffset - nodeoffset);
 	return 0;
 }

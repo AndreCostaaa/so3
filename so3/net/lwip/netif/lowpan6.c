@@ -112,9 +112,7 @@ static struct lowpan6_ieee802154_data lowpan6_data;
 #define LWIP_6LOWPAN_CONTEXTS(netif) NULL
 #endif
 
-static const struct lowpan6_link_addr ieee_802154_broadcast = { 2,
-								{ 0xff,
-								  0xff } };
+static const struct lowpan6_link_addr ieee_802154_broadcast = { 2, { 0xff, 0xff } };
 
 #if LWIP_6LOWPAN_INFER_SHORT_ADDRESS
 static struct lowpan6_link_addr short_mac_addr = { 2, { 0, 0 } };
@@ -128,8 +126,7 @@ static struct lowpan6_link_addr short_mac_addr = { 2, { 0, 0 } };
  * Since the length is variable:
  * @returns the header length
  */
-static u8_t lowpan6_write_iee802154_header(struct ieee_802154_hdr *hdr,
-					   const struct lowpan6_link_addr *src,
+static u8_t lowpan6_write_iee802154_header(struct ieee_802154_hdr *hdr, const struct lowpan6_link_addr *src,
 					   const struct lowpan6_link_addr *dst)
 {
 	u8_t ieee_header_len;
@@ -158,7 +155,7 @@ static u8_t lowpan6_write_iee802154_header(struct ieee_802154_hdr *hdr,
 	hdr->sequence_number = lowpan6_data.tx_frame_seq_num++;
 	hdr->destination_pan_id = lowpan6_data.ieee_802154_pan_id; /* pan id */
 
-	buffer = (u8_t *)hdr;
+	buffer = (u8_t *) hdr;
 	ieee_header_len = 5;
 	i = dst->addr_len;
 	/* reverse memcpy of dst addr */
@@ -184,9 +181,7 @@ static u8_t lowpan6_write_iee802154_header(struct ieee_802154_hdr *hdr,
  * @param dest pointer to destination address filled from the header
  * @returns ERR_OK if successful
  */
-static err_t lowpan6_parse_iee802154_header(struct pbuf *p,
-					    struct lowpan6_link_addr *src,
-					    struct lowpan6_link_addr *dest)
+static err_t lowpan6_parse_iee802154_header(struct pbuf *p, struct lowpan6_link_addr *src, struct lowpan6_link_addr *dest)
 {
 	u8_t *puc;
 	s8_t i;
@@ -194,7 +189,7 @@ static err_t lowpan6_parse_iee802154_header(struct pbuf *p,
 	u16_t datagram_offset;
 
 	/* Parse IEEE 802.15.4 header */
-	puc = (u8_t *)p->payload;
+	puc = (u8_t *) p->payload;
 	frame_control = puc[0] | (puc[1] << 8);
 	datagram_offset = 2;
 	if (frame_control & IEEE_802154_FC_SEQNO_SUPPR) {
@@ -266,17 +261,17 @@ u16_t lowpan6_calc_crc(const void *buf, u16_t len)
 	u16_t i;
 	u8_t b;
 	u16_t crc = 0;
-	const u8_t *p = (const u8_t *)buf;
+	const u8_t *p = (const u8_t *) buf;
 
 	for (i = 0; i < len; i++) {
 		u8_t data = *p;
 		for (b = 0U; b < 8U; b++) {
 			if (((data ^ crc) & 1) != 0) {
-				crc = (u16_t)((crc >> 1) ^ CCITT_POLY_16);
+				crc = (u16_t) ((crc >> 1) ^ CCITT_POLY_16);
 			} else {
-				crc = (u16_t)(crc >> 1);
+				crc = (u16_t) (crc >> 1);
 			}
-			data = (u8_t)(data >> 1);
+			data = (u8_t) (data >> 1);
 		}
 		p++;
 	}
@@ -299,8 +294,7 @@ static void free_reass_datagram(struct lowpan6_reass_helper *lrh)
 /**
  * Removes a datagram from the reassembly queue.
  **/
-static void dequeue_datagram(struct lowpan6_reass_helper *lrh,
-			     struct lowpan6_reass_helper *prev)
+static void dequeue_datagram(struct lowpan6_reass_helper *lrh, struct lowpan6_reass_helper *prev)
 {
 	if (lowpan6_data.reass_list == lrh) {
 		lowpan6_data.reass_list = lowpan6_data.reass_list->next_packet;
@@ -338,8 +332,7 @@ void lowpan6_tmr(void)
  * Fragments an IPv6 datagram into 6LowPAN units, which fit into IEEE 802.15.4 frames.
  * If configured, will compress IPv6 and or UDP headers.
  * */
-static err_t lowpan6_frag(struct netif *netif, struct pbuf *p,
-			  const struct lowpan6_link_addr *src,
+static err_t lowpan6_frag(struct netif *netif, struct pbuf *p, const struct lowpan6_link_addr *src,
 			  const struct lowpan6_link_addr *dst)
 {
 	struct pbuf *p_frag;
@@ -352,8 +345,7 @@ static err_t lowpan6_frag(struct netif *netif, struct pbuf *p,
 	u16_t datagram_offset;
 	err_t err = ERR_IF;
 
-	LWIP_ASSERT("lowpan6_frag: netif->linkoutput not set",
-		    netif->linkoutput != NULL);
+	LWIP_ASSERT("lowpan6_frag: netif->linkoutput not set", netif->linkoutput != NULL);
 
 	/* We'll use a dedicated pbuf for building 6LowPAN fragments. */
 	p_frag = pbuf_alloc(PBUF_RAW, 127, PBUF_RAM);
@@ -361,23 +353,18 @@ static err_t lowpan6_frag(struct netif *netif, struct pbuf *p,
 		MIB2_STATS_NETIF_INC(netif, ifoutdiscards);
 		return ERR_MEM;
 	}
-	LWIP_ASSERT("this needs a pbuf in one piece",
-		    p_frag->len == p_frag->tot_len);
+	LWIP_ASSERT("this needs a pbuf in one piece", p_frag->len == p_frag->tot_len);
 
 	/* Write IEEE 802.15.4 header. */
-	buffer = (u8_t *)p_frag->payload;
-	ieee_header_len = lowpan6_write_iee802154_header(
-		(struct ieee_802154_hdr *)buffer, src, dst);
-	LWIP_ASSERT("ieee_header_len < p_frag->len",
-		    ieee_header_len < p_frag->len);
+	buffer = (u8_t *) p_frag->payload;
+	ieee_header_len = lowpan6_write_iee802154_header((struct ieee_802154_hdr *) buffer, src, dst);
+	LWIP_ASSERT("ieee_header_len < p_frag->len", ieee_header_len < p_frag->len);
 
 #if LWIP_6LOWPAN_IPHC
 	/* Perform 6LowPAN IPv6 header compression according to RFC 6282 */
 	/* do the header compression (this does NOT copy any non-compressed data) */
-	err = lowpan6_compress_headers(netif, (u8_t *)p->payload, p->len,
-				       &buffer[ieee_header_len],
-				       p_frag->len - ieee_header_len,
-				       &lowpan6_header_len, &hidden_header_len,
+	err = lowpan6_compress_headers(netif, (u8_t *) p->payload, p->len, &buffer[ieee_header_len],
+				       p_frag->len - ieee_header_len, &lowpan6_header_len, &hidden_header_len,
 				       LWIP_6LOWPAN_CONTEXTS(netif), src, dst);
 	if (err != ERR_OK) {
 		MIB2_STATS_NETIF_INC(netif, ifoutdiscards);
@@ -404,95 +391,73 @@ static err_t lowpan6_frag(struct netif *netif, struct pbuf *p,
 	}
 
 	/* Fragment, or 1 packet? */
-	max_data_len =
-		LOWPAN6_MAX_PAYLOAD - ieee_header_len - lowpan6_header_len;
+	max_data_len = LOWPAN6_MAX_PAYLOAD - ieee_header_len - lowpan6_header_len;
 	if (remaining_len > max_data_len) {
 		u16_t data_len;
 		/* We must move the 6LowPAN header to make room for the FRAG header. */
-		memmove(&buffer[ieee_header_len + 4], &buffer[ieee_header_len],
-			lowpan6_header_len);
+		memmove(&buffer[ieee_header_len + 4], &buffer[ieee_header_len], lowpan6_header_len);
 
 		/* Now we need to fragment the packet. FRAG1 header first */
-		buffer[ieee_header_len] =
-			0xc0 | (((p->tot_len + hidden_header_len) >> 8) & 0x7);
-		buffer[ieee_header_len + 1] = (p->tot_len + hidden_header_len) &
-					      0xff;
+		buffer[ieee_header_len] = 0xc0 | (((p->tot_len + hidden_header_len) >> 8) & 0x7);
+		buffer[ieee_header_len + 1] = (p->tot_len + hidden_header_len) & 0xff;
 
 		lowpan6_data.tx_datagram_tag++;
-		buffer[ieee_header_len + 2] =
-			(lowpan6_data.tx_datagram_tag >> 8) & 0xff;
-		buffer[ieee_header_len + 3] = lowpan6_data.tx_datagram_tag &
-					      0xff;
+		buffer[ieee_header_len + 2] = (lowpan6_data.tx_datagram_tag >> 8) & 0xff;
+		buffer[ieee_header_len + 3] = lowpan6_data.tx_datagram_tag & 0xff;
 
 		/* Fragment follows. */
 		data_len = (max_data_len - 4) & 0xf8;
 		frag_len = data_len + lowpan6_header_len;
 
-		pbuf_copy_partial(
-			p, buffer + ieee_header_len + lowpan6_header_len + 4,
-			frag_len - lowpan6_header_len, 0);
+		pbuf_copy_partial(p, buffer + ieee_header_len + lowpan6_header_len + 4, frag_len - lowpan6_header_len, 0);
 		remaining_len -= frag_len - lowpan6_header_len;
 		/* datagram offset holds the offset before compression */
-		datagram_offset =
-			frag_len - lowpan6_header_len + hidden_header_len;
-		LWIP_ASSERT("datagram offset must be a multiple of 8",
-			    (datagram_offset & 7) == 0);
+		datagram_offset = frag_len - lowpan6_header_len + hidden_header_len;
+		LWIP_ASSERT("datagram offset must be a multiple of 8", (datagram_offset & 7) == 0);
 
 		/* Calculate frame length */
-		p_frag->len = p_frag->tot_len = ieee_header_len + 4 + frag_len +
-						2; /* add 2 bytes for crc*/
+		p_frag->len = p_frag->tot_len = ieee_header_len + 4 + frag_len + 2; /* add 2 bytes for crc*/
 
 		/* 2 bytes CRC */
-		crc = LWIP_6LOWPAN_DO_CALC_CRC(p_frag->payload,
-					       p_frag->len - 2);
+		crc = LWIP_6LOWPAN_DO_CALC_CRC(p_frag->payload, p_frag->len - 2);
 		pbuf_take_at(p_frag, &crc, 2, p_frag->len - 2);
 
 		/* send the packet */
 		MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p_frag->tot_len);
-		LWIP_DEBUGF(LWIP_LOWPAN6_DEBUG | LWIP_DBG_TRACE,
-			    ("lowpan6_send: sending packet %p\n", (void *)p));
+		LWIP_DEBUGF(LWIP_LOWPAN6_DEBUG | LWIP_DBG_TRACE, ("lowpan6_send: sending packet %p\n", (void *) p));
 		err = netif->linkoutput(netif, p_frag);
 
 		while ((remaining_len > 0) && (err == ERR_OK)) {
-			struct ieee_802154_hdr *hdr =
-				(struct ieee_802154_hdr *)buffer;
+			struct ieee_802154_hdr *hdr = (struct ieee_802154_hdr *) buffer;
 			/* new frame, new seq num for ACK */
 			hdr->sequence_number = lowpan6_data.tx_frame_seq_num++;
 
-			buffer[ieee_header_len] |=
-				0x20; /* Change FRAG1 to FRAGN */
+			buffer[ieee_header_len] |= 0x20; /* Change FRAG1 to FRAGN */
 
-			LWIP_ASSERT("datagram offset must be a multiple of 8",
-				    (datagram_offset & 7) == 0);
+			LWIP_ASSERT("datagram offset must be a multiple of 8", (datagram_offset & 7) == 0);
 			buffer[ieee_header_len + 4] =
-				(u8_t)(datagram_offset >>
-				       3); /* datagram offset in FRAGN header (datagram_offset is max. 11 bit) */
+				(u8_t) (datagram_offset >>
+					3); /* datagram offset in FRAGN header (datagram_offset is max. 11 bit) */
 
 			frag_len = (127 - ieee_header_len - 5 - 2) & 0xf8;
 			if (frag_len > remaining_len) {
 				frag_len = remaining_len;
 			}
 
-			pbuf_copy_partial(p, buffer + ieee_header_len + 5,
-					  frag_len, p->tot_len - remaining_len);
+			pbuf_copy_partial(p, buffer + ieee_header_len + 5, frag_len, p->tot_len - remaining_len);
 			remaining_len -= frag_len;
 			datagram_offset += frag_len;
 
 			/* Calculate frame length */
-			p_frag->len = p_frag->tot_len =
-				frag_len + 5 + ieee_header_len + 2;
+			p_frag->len = p_frag->tot_len = frag_len + 5 + ieee_header_len + 2;
 
 			/* 2 bytes CRC */
-			crc = LWIP_6LOWPAN_DO_CALC_CRC(p_frag->payload,
-						       p_frag->len - 2);
+			crc = LWIP_6LOWPAN_DO_CALC_CRC(p_frag->payload, p_frag->len - 2);
 			pbuf_take_at(p_frag, &crc, 2, p_frag->len - 2);
 
 			/* send the packet */
-			MIB2_STATS_NETIF_ADD(netif, ifoutoctets,
-					     p_frag->tot_len);
-			LWIP_DEBUGF(LWIP_LOWPAN6_DEBUG | LWIP_DBG_TRACE,
-				    ("lowpan6_send: sending packet %p\n",
-				     (void *)p));
+			MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p_frag->tot_len);
+			LWIP_DEBUGF(LWIP_LOWPAN6_DEBUG | LWIP_DBG_TRACE, ("lowpan6_send: sending packet %p\n", (void *) p));
 			err = netif->linkoutput(netif, p_frag);
 		}
 	} else {
@@ -500,25 +465,20 @@ static err_t lowpan6_frag(struct netif *netif, struct pbuf *p,
 		frag_len = remaining_len;
 
 		/* Copy IPv6 packet */
-		pbuf_copy_partial(p,
-				  buffer + ieee_header_len + lowpan6_header_len,
-				  frag_len, 0);
+		pbuf_copy_partial(p, buffer + ieee_header_len + lowpan6_header_len, frag_len, 0);
 		remaining_len = 0;
 
 		/* Calculate frame length */
-		p_frag->len = p_frag->tot_len =
-			frag_len + lowpan6_header_len + ieee_header_len + 2;
+		p_frag->len = p_frag->tot_len = frag_len + lowpan6_header_len + ieee_header_len + 2;
 		LWIP_ASSERT("", p_frag->len <= 127);
 
 		/* 2 bytes CRC */
-		crc = LWIP_6LOWPAN_DO_CALC_CRC(p_frag->payload,
-					       p_frag->len - 2);
+		crc = LWIP_6LOWPAN_DO_CALC_CRC(p_frag->payload, p_frag->len - 2);
 		pbuf_take_at(p_frag, &crc, 2, p_frag->len - 2);
 
 		/* send the packet */
 		MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p_frag->tot_len);
-		LWIP_DEBUGF(LWIP_LOWPAN6_DEBUG | LWIP_DBG_TRACE,
-			    ("lowpan6_send: sending packet %p\n", (void *)p));
+		LWIP_DEBUGF(LWIP_LOWPAN6_DEBUG | LWIP_DBG_TRACE, ("lowpan6_send: sending packet %p\n", (void *) p));
 		err = netif->linkoutput(netif, p_frag);
 	}
 
@@ -565,13 +525,11 @@ err_t lowpan6_set_short_addr(u8_t addr_high, u8_t addr_low)
 #endif /* LWIP_6LOWPAN_INFER_SHORT_ADDRESS */
 
 /* Create IEEE 802.15.4 address from netif address */
-static err_t lowpan6_hwaddr_to_addr(struct netif *netif,
-				    struct lowpan6_link_addr *addr)
+static err_t lowpan6_hwaddr_to_addr(struct netif *netif, struct lowpan6_link_addr *addr)
 {
 	addr->addr_len = 8;
 	if (netif->hwaddr_len == 8) {
-		LWIP_ERROR("NETIF_MAX_HWADDR_LEN >= 8 required",
-			   sizeof(netif->hwaddr) >= 8, return ERR_VAL;);
+		LWIP_ERROR("NETIF_MAX_HWADDR_LEN >= 8 required", sizeof(netif->hwaddr) >= 8, return ERR_VAL;);
 		SMEMCPY(addr->addr, netif->hwaddr, 8);
 	} else if (netif->hwaddr_len == 6) {
 		/* Copy from MAC-48 */
@@ -597,8 +555,7 @@ static err_t lowpan6_hwaddr_to_addr(struct netif *netif,
  *
  * @return err_t
  */
-err_t lowpan6_output(struct netif *netif, struct pbuf *q,
-		     const ip6_addr_t *ip6addr)
+err_t lowpan6_output(struct netif *netif, struct pbuf *q, const ip6_addr_t *ip6addr)
 {
 	err_t result;
 	const u8_t *hwaddr;
@@ -610,7 +567,7 @@ err_t lowpan6_output(struct netif *netif, struct pbuf *q,
 
 #if LWIP_6LOWPAN_INFER_SHORT_ADDRESS
 	/* Check if we can compress source address (use aligned copy) */
-	ip6_hdr = (struct ip6_hdr *)q->payload;
+	ip6_hdr = (struct ip6_hdr *) q->payload;
 	ip6_addr_copy_from_packed(ip6_src, ip6_hdr->src);
 	ip6_addr_assign_zone(&ip6_src, IP6_UNICAST, netif);
 	if (lowpan6_get_address_mode(&ip6_src, &short_mac_addr) == 3) {
@@ -642,10 +599,9 @@ err_t lowpan6_output(struct netif *netif, struct pbuf *q,
 		/* If source address was compressible to short_mac_addr, and dest has same subnet and
      * is also compressible to 2-bytes, assume we can infer dest as a short address too. */
 		dest.addr_len = 2;
-		dest.addr[0] = ((u8_t *)q->payload)[38];
-		dest.addr[1] = ((u8_t *)q->payload)[39];
-		if ((src.addr_len == 2) &&
-		    (ip6_addr_netcmp_zoneless(&ip6_hdr->src, &ip6_hdr->dest)) &&
+		dest.addr[0] = ((u8_t *) q->payload)[38];
+		dest.addr[1] = ((u8_t *) q->payload)[39];
+		if ((src.addr_len == 2) && (ip6_addr_netcmp_zoneless(&ip6_hdr->src, &ip6_hdr->dest)) &&
 		    (lowpan6_get_address_mode(ip6addr, &dest) == 3)) {
 			MIB2_STATS_NETIF_INC(netif, ifoutucastpkts);
 			return lowpan6_frag(netif, q, &src, &dest);
@@ -703,13 +659,13 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 	}
 
 	/* Check dispatch. */
-	puc = (u8_t *)p->payload;
+	puc = (u8_t *) p->payload;
 
 	b = *puc;
 	if ((b & 0xf8) == 0xc0) {
 		/* FRAG1 dispatch. add this packet to reassembly list. */
-		datagram_size = ((u16_t)(puc[0] & 0x07) << 8) | (u16_t)puc[1];
-		datagram_tag = ((u16_t)puc[2] << 8) | (u16_t)puc[3];
+		datagram_size = ((u16_t) (puc[0] & 0x07) << 8) | (u16_t) puc[1];
+		datagram_tag = ((u16_t) puc[2] << 8) | (u16_t) puc[3];
 
 		/* check for duplicate */
 		lrh = lowpan6_data.reass_list;
@@ -717,11 +673,9 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 			u8_t discard = 0;
 			lrh_next = lrh->next_packet;
 			if ((lrh->sender_addr.addr_len == src.addr_len) &&
-			    (memcmp(lrh->sender_addr.addr, src.addr,
-				    src.addr_len) == 0)) {
+			    (memcmp(lrh->sender_addr.addr, src.addr, src.addr_len) == 0)) {
 				/* address match with packet in reassembly. */
-				if ((datagram_tag == lrh->datagram_tag) &&
-				    (datagram_size == lrh->datagram_size)) {
+				if ((datagram_tag == lrh->datagram_tag) && (datagram_size == lrh->datagram_size)) {
 					/* duplicate fragment. */
 					goto lowpan6_input_discard;
 				} else {
@@ -741,8 +695,7 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 
 		pbuf_remove_header(p, 4); /* hide frag1 dispatch */
 
-		lrh = (struct lowpan6_reass_helper *)mem_malloc(
-			sizeof(struct lowpan6_reass_helper));
+		lrh = (struct lowpan6_reass_helper *) mem_malloc(sizeof(struct lowpan6_reass_helper));
 		if (lrh == NULL) {
 			goto lowpan6_input_discard;
 		}
@@ -754,14 +707,12 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 		lrh->datagram_size = datagram_size;
 		lrh->datagram_tag = datagram_tag;
 		lrh->frags = NULL;
-		if (*(u8_t *)p->payload == 0x41) {
+		if (*(u8_t *) p->payload == 0x41) {
 			/* This is a complete IPv6 packet, just skip dispatch byte. */
 			pbuf_remove_header(p, 1); /* hide dispatch byte. */
 			lrh->reass = p;
-		} else if ((*(u8_t *)p->payload & 0xe0) == 0x60) {
-			lrh->reass = lowpan6_decompress(
-				p, datagram_size, LWIP_6LOWPAN_CONTEXTS(netif),
-				&src, &dest);
+		} else if ((*(u8_t *) p->payload & 0xe0) == 0x60) {
+			lrh->reass = lowpan6_decompress(p, datagram_size, LWIP_6LOWPAN_CONTEXTS(netif), &src, &dest);
 			if (lrh->reass == NULL) {
 				/* decompression failed */
 				mem_free(lrh);
@@ -776,20 +727,15 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 		return ERR_OK;
 	} else if ((b & 0xf8) == 0xe0) {
 		/* FRAGN dispatch, find packet being reassembled. */
-		datagram_size = ((u16_t)(puc[0] & 0x07) << 8) | (u16_t)puc[1];
-		datagram_tag = ((u16_t)puc[2] << 8) | (u16_t)puc[3];
-		datagram_offset = (u16_t)puc[4] << 3;
-		pbuf_remove_header(
-			p,
-			4); /* hide frag1 dispatch but keep datagram offset for reassembly */
+		datagram_size = ((u16_t) (puc[0] & 0x07) << 8) | (u16_t) puc[1];
+		datagram_tag = ((u16_t) puc[2] << 8) | (u16_t) puc[3];
+		datagram_offset = (u16_t) puc[4] << 3;
+		pbuf_remove_header(p, 4); /* hide frag1 dispatch but keep datagram offset for reassembly */
 
-		for (lrh = lowpan6_data.reass_list; lrh != NULL;
-		     lrh_prev = lrh, lrh = lrh->next_packet) {
+		for (lrh = lowpan6_data.reass_list; lrh != NULL; lrh_prev = lrh, lrh = lrh->next_packet) {
 			if ((lrh->sender_addr.addr_len == src.addr_len) &&
-			    (memcmp(lrh->sender_addr.addr, src.addr,
-				    src.addr_len) == 0) &&
-			    (datagram_tag == lrh->datagram_tag) &&
-			    (datagram_size == lrh->datagram_size)) {
+			    (memcmp(lrh->sender_addr.addr, src.addr, src.addr_len) == 0) &&
+			    (datagram_tag == lrh->datagram_tag) && (datagram_size == lrh->datagram_size)) {
 				break;
 			}
 		}
@@ -815,17 +761,12 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 		} else {
 			/* find the correct place to insert */
 			struct pbuf *q, *last;
-			u16_t new_frag_len =
-				p->len -
-				1; /* p->len includes datagram_offset byte */
-			for (q = lrh->frags, last = NULL; q != NULL;
-			     last = q, q = q->next) {
-				u16_t q_datagram_offset =
-					((u8_t *)q->payload)[0] << 3;
+			u16_t new_frag_len = p->len - 1; /* p->len includes datagram_offset byte */
+			for (q = lrh->frags, last = NULL; q != NULL; last = q, q = q->next) {
+				u16_t q_datagram_offset = ((u8_t *) q->payload)[0] << 3;
 				u16_t q_frag_len = q->len - 1;
 				if (datagram_offset < q_datagram_offset) {
-					if (datagram_offset + new_frag_len >
-					    q_datagram_offset) {
+					if (datagram_offset + new_frag_len > q_datagram_offset) {
 						/* overlap, discard old fragments */
 						dequeue_datagram(lrh, lrh_prev);
 						free_reass_datagram(lrh);
@@ -833,8 +774,7 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 					}
 					/* insert here */
 					break;
-				} else if (datagram_offset ==
-					   q_datagram_offset) {
+				} else if (datagram_offset == q_datagram_offset) {
 					if (q_frag_len != new_frag_len) {
 						/* fragment mismatch, discard old fragments */
 						dequeue_datagram(lrh, lrh_prev);
@@ -859,8 +799,7 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 			u16_t offset = lrh->reass->len;
 			struct pbuf *q;
 			for (q = lrh->frags; q != NULL; q = q->next) {
-				u16_t q_datagram_offset =
-					((u8_t *)q->payload)[0] << 3;
+				u16_t q_datagram_offset = ((u8_t *) q->payload)[0] << 3;
 				if (q_datagram_offset != offset) {
 					/* not complete, wait for more fragments */
 					return ERR_OK;
@@ -869,16 +808,14 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 			}
 			if (offset == datagram_size) {
 				/* all fragments received, combine pbufs */
-				u16_t datagram_left =
-					datagram_size - lrh->reass->len;
+				u16_t datagram_left = datagram_size - lrh->reass->len;
 				for (q = lrh->frags; q != NULL; q = q->next) {
 					/* hide datagram_offset byte now */
 					pbuf_remove_header(q, 1);
 					q->tot_len = datagram_left;
 					datagram_left -= q->len;
 				}
-				LWIP_ASSERT("datagram_left == 0",
-					    datagram_left == 0);
+				LWIP_ASSERT("datagram_left == 0", datagram_left == 0);
 				q = lrh->reass;
 				q->tot_len = datagram_size;
 				q->next = lrh->frags;
@@ -900,9 +837,7 @@ err_t lowpan6_input(struct pbuf *p, struct netif *netif)
 			pbuf_remove_header(p, 1); /* hide dispatch byte. */
 		} else if ((b & 0xe0) == 0x60) {
 			/* IPv6 headers are compressed using IPHC. */
-			p = lowpan6_decompress(p, datagram_size,
-					       LWIP_6LOWPAN_CONTEXTS(netif),
-					       &src, &dest);
+			p = lowpan6_decompress(p, datagram_size, LWIP_6LOWPAN_CONTEXTS(netif), &src, &dest);
 			if (p == NULL) {
 				MIB2_STATS_NETIF_INC(netif, ifindiscards);
 				return ERR_OK;

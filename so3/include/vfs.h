@@ -92,7 +92,7 @@
 #define DT_SOCK 12 /* Socket device */
 
 /* Return error values */
-#define MAP_FAILED ((void *)-1) /* mmap fail */
+#define MAP_FAILED ((void *) -1) /* mmap fail */
 
 #ifndef __ASSEMBLY__
 
@@ -112,8 +112,7 @@ struct file_operations {
 	struct dirent *(*readdir)(int fd);
 	int (*mkdir)(int fd, void *);
 	int (*stat)(const char *path, struct stat *st);
-	void *(*mmap)(int fd, addr_t virt_addr, uint32_t page_count,
-		      off_t offset);
+	void *(*mmap)(int fd, addr_t virt_addr, uint32_t page_count, off_t offset);
 	int (*unlink)(int fd, void *);
 	int (*mount)(const char *);
 	int (*unmount)(const char *);

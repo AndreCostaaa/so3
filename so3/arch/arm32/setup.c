@@ -42,7 +42,7 @@ extern unsigned char __irq_stack_start[];
 /* Force the variable to be stored in .data section so that the BSS can be freely cleared.
  * The value is set during the head.S execution before clear_bss().
  */
-avz_shared_t *avz_shared = (avz_shared_t *)0xbeef;
+avz_shared_t *avz_shared = (avz_shared_t *) 0xbeef;
 addr_t avz_guest_phys_offset;
 void (*__printch)(char c);
 
@@ -89,14 +89,10 @@ void setup_exception_stacks(void)
 		"mov	sp, r14\n\t"
 		"msr	cpsr_c, %9"
 		:
-		: "r"(stk), "I"(PSR_F_BIT | PSR_I_BIT | PSR_IRQ_MODE),
-		  "I"(offsetof(struct stack, irq[0])),
-		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_ABT_MODE),
-		  "I"(offsetof(struct stack, abt[0])),
-		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_UND_MODE),
-		  "I"(offsetof(struct stack, und[0])),
-		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_FIQ_MODE),
-		  "I"(offsetof(struct stack, fiq[0])),
+		: "r"(stk), "I"(PSR_F_BIT | PSR_I_BIT | PSR_IRQ_MODE), "I"(offsetof(struct stack, irq[0])),
+		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_ABT_MODE), "I"(offsetof(struct stack, abt[0])),
+		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_UND_MODE), "I"(offsetof(struct stack, und[0])),
+		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_FIQ_MODE), "I"(offsetof(struct stack, fiq[0])),
 		  "I"(PSR_F_BIT | PSR_I_BIT | PSR_SVC_MODE)
 		: "r14");
 }
@@ -134,7 +130,7 @@ void setup_arch(void)
 
 	__printch = avz_shared->printch;
 
-	HYPERVISOR_hypercall_addr = (uint32_t *)avz_shared->hypercall_vaddr;
+	HYPERVISOR_hypercall_addr = (uint32_t *) avz_shared->hypercall_vaddr;
 
 #endif /* CONFIG_SO3VIRT */
 

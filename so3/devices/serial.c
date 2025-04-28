@@ -58,8 +58,7 @@ char serial_getc(void)
 	char c;
 
 #ifdef CONFIG_SO3VIRT
-	static char *input_str[2] = { "Agency domain",
-				      "Agency AVZ Hypervisor" };
+	static char *input_str[2] = { "Agency domain", "Agency AVZ Hypervisor" };
 	static bool focus_on_avz = false;
 #endif
 
@@ -82,15 +81,13 @@ char serial_getc(void)
 		focus_on_avz = !focus_on_avz;
 
 		lprintk("*** Serial input -> %s (type 'CTRL-%c' twice to switch input to %s).\n",
-			input_str[(focus_on_avz ? 1 : 0)], 'a',
-			input_str[(focus_on_avz ? 0 : 1)]);
+			input_str[(focus_on_avz ? 1 : 0)], 'a', input_str[(focus_on_avz ? 0 : 1)]);
 
 		return 0;
 	}
 
 	if (focus_on_avz) {
-		hypercall_trampoline(__HYPERVISOR_console_io,
-				     CONSOLEIO_process_char, 1, (long)&c, 0);
+		hypercall_trampoline(__HYPERVISOR_console_io, CONSOLEIO_process_char, 1, (long) &c, 0);
 
 		return 0;
 	}

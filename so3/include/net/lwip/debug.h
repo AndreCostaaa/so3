@@ -151,7 +151,7 @@
 #ifdef LWIP_DEBUG
 #define LWIP_DEBUG_ENABLED(debug)                                    \
 	(((debug) & LWIP_DBG_ON) && ((debug) & LWIP_DBG_TYPES_ON) && \
-	 ((s16_t)((debug) & LWIP_DBG_MASK_LEVEL) >= LWIP_DBG_MIN_LEVEL))
+	 ((s16_t) ((debug) & LWIP_DBG_MASK_LEVEL) >= LWIP_DBG_MIN_LEVEL))
 
 #define LWIP_DEBUGF(debug, message)                    \
 	do {                                           \
