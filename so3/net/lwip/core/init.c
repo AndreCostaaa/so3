@@ -160,9 +160,7 @@ PACK_STRUCT_END
 #if (LWIP_TCP && ((TCP_MAXRTX > 12) || (TCP_SYNMAXRTX > 12)))
 #error "If you want to use TCP, TCP_MAXRTX and TCP_SYNMAXRTX must less or equal to 12 (due to tcp_backoff table), so, you have to reduce them in your lwipopts.h"
 #endif
-#if (LWIP_TCP && TCP_LISTEN_BACKLOG &&    \
-     ((TCP_DEFAULT_LISTEN_BACKLOG < 0) || \
-      (TCP_DEFAULT_LISTEN_BACKLOG > 0xff)))
+#if (LWIP_TCP && TCP_LISTEN_BACKLOG && ((TCP_DEFAULT_LISTEN_BACKLOG < 0) || (TCP_DEFAULT_LISTEN_BACKLOG > 0xff)))
 #error "If you want to use TCP backlog, TCP_DEFAULT_LISTEN_BACKLOG must fit into an u8_t"
 #endif
 #if (LWIP_TCP && LWIP_TCP_SACK_OUT && !TCP_QUEUE_OOSEQ)
@@ -192,8 +190,7 @@ PACK_STRUCT_END
 #if (!LWIP_ARP && LWIP_AUTOIP)
 #error "If you want to use AUTOIP, you have to define LWIP_ARP=1 in your lwipopts.h"
 #endif
-#if (LWIP_TCP && ((LWIP_EVENT_API && LWIP_CALLBACK_API) || \
-		  (!LWIP_EVENT_API && !LWIP_CALLBACK_API)))
+#if (LWIP_TCP && ((LWIP_EVENT_API && LWIP_CALLBACK_API) || (!LWIP_EVENT_API && !LWIP_CALLBACK_API)))
 #error "One and exactly one of LWIP_EVENT_API and LWIP_CALLBACK_API has to be enabled in your lwipopts.h"
 #endif
 #if (LWIP_ALTCP && LWIP_EVENT_API)
@@ -208,8 +205,7 @@ PACK_STRUCT_END
 #if (PBUF_POOL_BUFSIZE <= MEM_ALIGNMENT)
 #error "PBUF_POOL_BUFSIZE must be greater than MEM_ALIGNMENT or the offset may take the full first pbuf"
 #endif
-#if (DNS_LOCAL_HOSTLIST && !DNS_LOCAL_HOSTLIST_IS_DYNAMIC && \
-     !(defined(DNS_LOCAL_HOSTLIST_INIT)))
+#if (DNS_LOCAL_HOSTLIST && !DNS_LOCAL_HOSTLIST_IS_DYNAMIC && !(defined(DNS_LOCAL_HOSTLIST_INIT)))
 #error "you have to define define DNS_LOCAL_HOSTLIST_INIT {{'host1', 0x123}, {'host2', 0x234}} to initialize DNS_LOCAL_HOSTLIST"
 #endif
 #if PPP_SUPPORT && !PPPOS_SUPPORT && !PPPOE_SUPPORT && !PPPOL2TP_SUPPORT
@@ -262,8 +258,7 @@ PACK_STRUCT_END
 #ifdef ETHARP_ALWAYS_INSERT
 #error "ETHARP_ALWAYS_INSERT option is deprecated. Remove it from your lwipopts.h."
 #endif
-#if !NO_SYS && LWIP_TCPIP_CORE_LOCKING && LWIP_COMPAT_MUTEX && \
-	!defined(LWIP_COMPAT_MUTEX_ALLOWED)
+#if !NO_SYS && LWIP_TCPIP_CORE_LOCKING && LWIP_COMPAT_MUTEX && !defined(LWIP_COMPAT_MUTEX_ALLOWED)
 #error "LWIP_COMPAT_MUTEX cannot prevent priority inversion. It is recommended to implement priority-aware mutexes. (Define LWIP_COMPAT_MUTEX_ALLOWED to disable this error.)"
 #endif
 
@@ -282,8 +277,7 @@ PACK_STRUCT_END
 #error "lwip_sanity_check: WARNING: MEMP_NUM_NETCONN cannot be 0 when using sockets!"
 #endif
 #else /* MEMP_MEM_MALLOC */
-#if MEMP_NUM_NETCONN > (MEMP_NUM_TCP_PCB + MEMP_NUM_TCP_PCB_LISTEN + \
-			MEMP_NUM_UDP_PCB + MEMP_NUM_RAW_PCB)
+#if MEMP_NUM_NETCONN > (MEMP_NUM_TCP_PCB + MEMP_NUM_TCP_PCB_LISTEN + MEMP_NUM_UDP_PCB + MEMP_NUM_RAW_PCB)
 #error "lwip_sanity_check: WARNING: MEMP_NUM_NETCONN should be less than the sum of MEMP_NUM_{TCP,RAW,UDP}_PCB+MEMP_NUM_TCP_PCB_LISTEN. If you know what you are doing, define LWIP_DISABLE_MEMP_SANITY_CHECKS to 1 to disable this error."
 #endif
 #endif /* LWIP_NETCONN || LWIP_SOCKET */
@@ -320,16 +314,13 @@ PACK_STRUCT_END
 #if TCP_SNDQUEUELOWAT >= TCP_SND_QUEUELEN
 #error "lwip_sanity_check: WARNING: TCP_SNDQUEUELOWAT must be less than TCP_SND_QUEUELEN. If you know what you are doing, define LWIP_DISABLE_TCP_SANITY_CHECKS to 1 to disable this error."
 #endif
-#if !MEMP_MEM_MALLOC && PBUF_POOL_SIZE &&                                      \
-	(PBUF_POOL_BUFSIZE <= (PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN + \
-			       PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN))
+#if !MEMP_MEM_MALLOC && PBUF_POOL_SIZE && \
+	(PBUF_POOL_BUFSIZE <= (PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN + PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN))
 #error "lwip_sanity_check: WARNING: PBUF_POOL_BUFSIZE does not provide enough space for protocol headers. If you know what you are doing, define LWIP_DISABLE_TCP_SANITY_CHECKS to 1 to disable this error."
 #endif
-#if !MEMP_MEM_MALLOC && PBUF_POOL_SIZE &&                                    \
-	(TCP_WND >                                                           \
-	 (PBUF_POOL_SIZE * (PBUF_POOL_BUFSIZE -                              \
-			    (PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN + \
-			     PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN))))
+#if !MEMP_MEM_MALLOC && PBUF_POOL_SIZE &&                 \
+	(TCP_WND > (PBUF_POOL_SIZE * (PBUF_POOL_BUFSIZE - \
+				      (PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN + PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN))))
 #error "lwip_sanity_check: WARNING: TCP_WND is larger than space provided by PBUF_POOL_SIZE * (PBUF_POOL_BUFSIZE - protocol headers). If you know what you are doing, define LWIP_DISABLE_TCP_SANITY_CHECKS to 1 to disable this error."
 #endif
 #if TCP_WND < TCP_MSS
@@ -348,15 +339,11 @@ void lwip_init(void)
 #ifndef LWIP_SKIP_CONST_CHECK
 	int a = 0;
 	LWIP_UNUSED_ARG(a);
-	LWIP_ASSERT(
-		"LWIP_CONST_CAST not implemented correctly. Check your lwIP port.",
-		LWIP_CONST_CAST(void *, &a) == &a);
+	LWIP_ASSERT("LWIP_CONST_CAST not implemented correctly. Check your lwIP port.", LWIP_CONST_CAST(void *, &a) == &a);
 #endif
 #ifndef LWIP_SKIP_PACKING_CHECK
-	LWIP_ASSERT(
-		"Struct packing not implemented correctly. Check your lwIP port.",
-		sizeof(struct packed_struct_test) ==
-			PACKED_STRUCT_TEST_EXPECTED_SIZE);
+	LWIP_ASSERT("Struct packing not implemented correctly. Check your lwIP port.",
+		    sizeof(struct packed_struct_test) == PACKED_STRUCT_TEST_EXPECTED_SIZE);
 #endif
 
 	/* Modules initialization */

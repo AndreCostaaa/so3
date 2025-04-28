@@ -70,7 +70,7 @@ void gnttab_map(domid_t domid, grant_ref_t grant_ref, void **vaddr)
 
 	avz_gnttab(&gnttab_op);
 
-	*vaddr = (void *)io_map(pfn_to_phys(gnttab_op.pfn), PAGE_SIZE);
+	*vaddr = (void *) io_map(pfn_to_phys(gnttab_op.pfn), PAGE_SIZE);
 	BUG_ON(!*vaddr);
 }
 

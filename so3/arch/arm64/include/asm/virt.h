@@ -171,8 +171,7 @@
 #define HCR_SWIO_SHIFT 1
 #define HCR_VM_MASK 0x000000001
 #define HCR_VM_SHIFT 0
-#define HCR_DEFAULT_BITS \
-	(HCR_AMO_MASK | HCR_IMO_MASK | HCR_FMO_MASK | HCR_VM_MASK)
+#define HCR_DEFAULT_BITS (HCR_AMO_MASK | HCR_IMO_MASK | HCR_FMO_MASK | HCR_VM_MASK)
 
 /*
  * The bits we set in HCR:
@@ -192,17 +191,13 @@
  * FMO:		Override CPSR.F and enable signaling with VF
  * SWIO:	Turn set/way invalidates into set/way clean+invalidate
  */
-#define HCR_AGENCY_FLAGS \
-	(HCR_VM_MASK | HCR_API_MASK | HCR_APK_MASK | HCR_RW_MASK)
+#define HCR_AGENCY_FLAGS (HCR_VM_MASK | HCR_API_MASK | HCR_APK_MASK | HCR_RW_MASK)
 
-#define HCR_ME_FLAGS                                                \
-	(HCR_VM_MASK | HCR_API_MASK | HCR_APK_MASK | HCR_AMO_MASK | \
-	 HCR_RW_MASK | HCR_FMO_MASK | HCR_IMO_MASK)
+#define HCR_ME_FLAGS (HCR_VM_MASK | HCR_API_MASK | HCR_APK_MASK | HCR_AMO_MASK | HCR_RW_MASK | HCR_FMO_MASK | HCR_IMO_MASK)
 
-#define HCR_GUEST_FLAGS                                                   \
-	(HCR_TSC | HCR_TSW | HCR_TWE | HCR_TWI | HCR_VM | HCR_TVM |       \
-	 HCR_BSU_IS | HCR_FB | HCR_TAC | HCR_AMO | HCR_SWIO | HCR_TIDCP | \
-	 HCR_RW | HCR_TLOR | HCR_FMO | HCR_IMO)
+#define HCR_GUEST_FLAGS                                                                                                  \
+	(HCR_TSC | HCR_TSW | HCR_TWE | HCR_TWI | HCR_VM | HCR_TVM | HCR_BSU_IS | HCR_FB | HCR_TAC | HCR_AMO | HCR_SWIO | \
+	 HCR_TIDCP | HCR_RW | HCR_TLOR | HCR_FMO | HCR_IMO)
 
 #define HCR_VIRT_EXCP_MASK (HCR_VSE_MASK | HCR_VI_MASK | HCR_VF_MASK)
 #define HCR_HOST_NVHE_FLAGS (HCR_RW_MASK | HCR_API_MASK | HCR_APK_MASK)

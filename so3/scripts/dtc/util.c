@@ -121,7 +121,7 @@ bool util_is_printable_string(const void *data, int len)
 
 	while (s < se) {
 		ss = s;
-		while (s < se && *s && isprint((unsigned char)*s))
+		while (s < se && *s && isprint((unsigned char) *s))
 			s++;
 
 		/* not zero, or not done yet */
@@ -279,8 +279,7 @@ char *utilfdt_read(const char *filename, size_t *len)
 	int ret = utilfdt_read_err(filename, &buff, len);
 
 	if (ret) {
-		fprintf(stderr, "Couldn't open blob from '%s': %s\n", filename,
-			strerror(ret));
+		fprintf(stderr, "Couldn't open blob from '%s': %s\n", filename, strerror(ret));
 		return NULL;
 	}
 	/* Successful read */
@@ -323,8 +322,7 @@ int utilfdt_write(const char *filename, const void *blob)
 	int ret = utilfdt_write_err(filename, blob);
 
 	if (ret) {
-		fprintf(stderr, "Couldn't write blob to '%s': %s\n", filename,
-			strerror(ret));
+		fprintf(stderr, "Couldn't write blob to '%s': %s\n", filename, strerror(ret));
 	}
 	return ret ? -1 : 0;
 }
@@ -356,10 +354,7 @@ int utilfdt_decode_type(const char *fmt, int *type, int *size)
 
 	/* convert qualifier (bhL) to byte size */
 	if (*fmt != 's')
-		*size = qualifier == 'b' ? 1 :
-			qualifier == 'h' ? 2 :
-			qualifier == 'l' ? 4 :
-					   -1;
+		*size = qualifier == 'b' ? 1 : qualifier == 'h' ? 2 : qualifier == 'l' ? 4 : -1;
 	*type = *fmt++;
 
 	/* that should be it! */
@@ -389,15 +384,14 @@ void utilfdt_print_data(const char *data, int len)
 		} while (s < data + len);
 
 	} else if ((len % 4) == 0) {
-		const fdt32_t *cell = (const fdt32_t *)data;
+		const fdt32_t *cell = (const fdt32_t *) data;
 
 		printf(" = <");
 		for (i = 0, len /= 4; i < len; i++)
-			printf("0x%08x%s", fdt32_to_cpu(cell[i]),
-			       i < (len - 1) ? " " : "");
+			printf("0x%08x%s", fdt32_to_cpu(cell[i]), i < (len - 1) ? " " : "");
 		printf(">");
 	} else {
-		const unsigned char *p = (const unsigned char *)data;
+		const unsigned char *p = (const unsigned char *) data;
 		printf(" = [");
 		for (i = 0; i < len; i++)
 			printf("%02x%s", *p++, i < len - 1 ? " " : "");
@@ -411,9 +405,7 @@ void NORETURN util_version(void)
 	exit(0);
 }
 
-void NORETURN util_usage(const char *errmsg, const char *synopsis,
-			 const char *short_opts,
-			 struct option const long_opts[],
+void NORETURN util_usage(const char *errmsg, const char *synopsis, const char *short_opts, struct option const long_opts[],
 			 const char *const opts_help[])
 {
 	FILE *fp = errmsg ? stderr : stdout;
@@ -454,9 +446,7 @@ void NORETURN util_usage(const char *errmsg, const char *synopsis,
 			fprintf(fp, "--%-*s", optlen, long_opts[i].name);
 		else
 			fprintf(fp, "--%s %s%*s", long_opts[i].name, a_arg,
-				(int)(optlen - strlen(long_opts[i].name) -
-				      a_arg_len),
-				"");
+				(int) (optlen - strlen(long_opts[i].name) - a_arg_len), "");
 
 		/* finally the help text */
 		fprintf(fp, "%s\n", opts_help[i]);

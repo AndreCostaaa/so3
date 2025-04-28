@@ -65,8 +65,7 @@ extern "C" {
  * @param netif   network interface to handle conflict information on
  * @param state   acd_callback_enum_t
  */
-typedef void (*acd_conflict_callback_t)(struct netif *netif,
-					acd_callback_enum_t state);
+typedef void (*acd_conflict_callback_t)(struct netif *netif, acd_callback_enum_t state);
 
 /** ACD state information per netif */
 struct acd {
@@ -89,8 +88,7 @@ struct acd {
 	acd_conflict_callback_t acd_conflict_callback;
 };
 
-err_t acd_add(struct netif *netif, struct acd *acd,
-	      acd_conflict_callback_t acd_conflict_callback);
+err_t acd_add(struct netif *netif, struct acd *acd, acd_conflict_callback_t acd_conflict_callback);
 
 err_t acd_start(struct netif *netif, struct acd *acd, ip4_addr_t ipaddr);
 
@@ -102,8 +100,7 @@ void acd_tmr(void);
 
 void acd_network_changed_link_down(struct netif *netif);
 
-void acd_netif_ip_addr_changed(struct netif *netif, const ip_addr_t *old_addr,
-			       const ip_addr_t *new_addr);
+void acd_netif_ip_addr_changed(struct netif *netif, const ip_addr_t *old_addr, const ip_addr_t *new_addr);
 
 #ifdef __cplusplus
 }

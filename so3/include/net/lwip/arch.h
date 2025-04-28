@@ -69,7 +69,7 @@
 
 /** Define random number generator function of your system */
 #ifdef __DOXYGEN__
-#define LWIP_RAND() ((u32_t)rand())
+#define LWIP_RAND() ((u32_t) rand())
 #endif
 
 /** Platform specific diagnostic output.<br>
@@ -92,12 +92,11 @@
  * systems, this should be defined to something less resource-consuming.
  */
 #ifndef LWIP_PLATFORM_ASSERT
-#define LWIP_PLATFORM_ASSERT(x)                                         \
-	do {                                                            \
-		printf("Assertion \"%s\" failed at line %d in %s\n", x, \
-		       __LINE__, __FILE__);                             \
-		fflush(NULL);                                           \
-		abort();                                                \
+#define LWIP_PLATFORM_ASSERT(x)                                                              \
+	do {                                                                                 \
+		printf("Assertion \"%s\" failed at line %d in %s\n", x, __LINE__, __FILE__); \
+		fflush(NULL);                                                                \
+		abort();                                                                     \
 	} while (0)
 #include <stdio.h>
 #include <stdlib.h>
@@ -224,32 +223,28 @@ typedef int ssize_t;
 #endif
 
 #if LWIP_NO_CTYPE_H
-#define lwip_in_range(c, lo, up) ((u8_t)(c) >= (lo) && (u8_t)(c) <= (up))
+#define lwip_in_range(c, lo, up) ((u8_t) (c) >= (lo) && (u8_t) (c) <= (up))
 #define lwip_isdigit(c) lwip_in_range((c), '0', '9')
-#define lwip_isxdigit(c)                                    \
-	(lwip_isdigit(c) || lwip_in_range((c), 'a', 'f') || \
-	 lwip_in_range((c), 'A', 'F'))
+#define lwip_isxdigit(c) (lwip_isdigit(c) || lwip_in_range((c), 'a', 'f') || lwip_in_range((c), 'A', 'F'))
 #define lwip_islower(c) lwip_in_range((c), 'a', 'z')
-#define lwip_isspace(c)                                             \
-	((c) == ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || \
-	 (c) == '\t' || (c) == '\v')
+#define lwip_isspace(c) ((c) == ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || (c) == '\t' || (c) == '\v')
 #define lwip_isupper(c) lwip_in_range((c), 'A', 'Z')
 #define lwip_tolower(c) (lwip_isupper(c) ? (c) - 'A' + 'a' : c)
 #define lwip_toupper(c) (lwip_islower(c) ? (c) - 'a' + 'A' : c)
 #else
 #include <ctype.h>
-#define lwip_isdigit(c) isdigit((unsigned char)(c))
-#define lwip_isxdigit(c) isxdigit((unsigned char)(c))
-#define lwip_islower(c) islower((unsigned char)(c))
-#define lwip_isspace(c) isspace((unsigned char)(c))
-#define lwip_isupper(c) isupper((unsigned char)(c))
-#define lwip_tolower(c) tolower((unsigned char)(c))
-#define lwip_toupper(c) toupper((unsigned char)(c))
+#define lwip_isdigit(c) isdigit((unsigned char) (c))
+#define lwip_isxdigit(c) isxdigit((unsigned char) (c))
+#define lwip_islower(c) islower((unsigned char) (c))
+#define lwip_isspace(c) isspace((unsigned char) (c))
+#define lwip_isupper(c) isupper((unsigned char) (c))
+#define lwip_tolower(c) tolower((unsigned char) (c))
+#define lwip_toupper(c) toupper((unsigned char) (c))
 #endif
 
 /** C++ const_cast<target_type>(val) equivalent to remove constness from a value (GCC -Wcast-qual) */
 #ifndef LWIP_CONST_CAST
-#define LWIP_CONST_CAST(target_type, val) ((target_type)((ptrdiff_t)val))
+#define LWIP_CONST_CAST(target_type, val) ((target_type) ((ptrdiff_t) val))
 #endif
 
 /** Get rid of alignment cast warnings (GCC -Wcast-align) */
@@ -261,8 +256,7 @@ typedef int ssize_t;
  * e.g. "conversion from 'u8_t' to 'void *' of greater size"
  */
 #ifndef LWIP_PTR_NUMERIC_CAST
-#define LWIP_PTR_NUMERIC_CAST(target_type, val) \
-	LWIP_CONST_CAST(target_type, val)
+#define LWIP_PTR_NUMERIC_CAST(target_type, val) LWIP_CONST_CAST(target_type, val)
 #endif
 
 /** Avoid warnings/errors related to implicitly casting away packed attributes by doing a explicit cast */
@@ -281,8 +275,7 @@ typedef int ssize_t;
  * \#define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) u32_t variable_name[(size + sizeof(u32_t) - 1) / sizeof(u32_t)]
  */
 #ifndef LWIP_DECLARE_MEMORY_ALIGNED
-#define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
-	u8_t variable_name[LWIP_MEM_ALIGN_BUFFER(size)]
+#define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) u8_t variable_name[LWIP_MEM_ALIGN_BUFFER(size)]
 #endif
 
 /** Calculate memory size for an aligned buffer - returns the next highest
@@ -290,8 +283,7 @@ typedef int ssize_t;
  * LWIP_MEM_ALIGN_SIZE(4) will both yield 4 for MEM_ALIGNMENT == 4).
  */
 #ifndef LWIP_MEM_ALIGN_SIZE
-#define LWIP_MEM_ALIGN_SIZE(size) \
-	(((size) + MEM_ALIGNMENT - 1U) & ~(MEM_ALIGNMENT - 1U))
+#define LWIP_MEM_ALIGN_SIZE(size) (((size) + MEM_ALIGNMENT - 1U) & ~(MEM_ALIGNMENT - 1U))
 #endif
 
 /** Calculate safe memory size for an aligned buffer when using an unaligned
@@ -306,9 +298,7 @@ typedef int ssize_t;
  * so that ADDR % MEM_ALIGNMENT == 0
  */
 #ifndef LWIP_MEM_ALIGN
-#define LWIP_MEM_ALIGN(addr)                                \
-	((void *)(((mem_ptr_t)(addr) + MEM_ALIGNMENT - 1) & \
-		  ~(mem_ptr_t)(MEM_ALIGNMENT - 1)))
+#define LWIP_MEM_ALIGN(addr) ((void *) (((mem_ptr_t) (addr) + MEM_ALIGNMENT - 1) & ~(mem_ptr_t) (MEM_ALIGNMENT - 1)))
 #endif
 
 #ifdef __cplusplus
@@ -387,7 +377,7 @@ extern "C" {
 
 /** Eliminates compiler warning about unused arguments (GCC -Wextra -Wunused). */
 #ifndef LWIP_UNUSED_ARG
-#define LWIP_UNUSED_ARG(x) (void)x
+#define LWIP_UNUSED_ARG(x) (void) x
 #endif /* LWIP_UNUSED_ARG */
 
 /** LWIP_PROVIDE_ERRNO==1: Let lwIP provide ERRNO values and the 'errno' variable.

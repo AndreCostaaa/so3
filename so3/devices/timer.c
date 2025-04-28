@@ -60,13 +60,11 @@ u64 get_s_time(void)
 	 * between cycle_now and cycle_last.
 	 */
 	if (unlikely((cycle_now < clocksource_timer.cycle_last) &&
-		     (clocksource_timer.cycle_last - cycle_now <
-		      CYCLE_DELTA_MIN))) {
+		     (clocksource_timer.cycle_last - cycle_now < CYCLE_DELTA_MIN))) {
 		cycle_now = clocksource_timer.cycle_last;
 		cycle_delta = 0;
 	} else
-		cycle_delta = (cycle_now - clocksource_timer.cycle_last) &
-			      clocksource_timer.mask;
+		cycle_delta = (cycle_now - clocksource_timer.cycle_last) & clocksource_timer.mask;
 
 	clocksource_timer.cycle_last = cycle_now;
 

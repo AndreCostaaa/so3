@@ -37,7 +37,7 @@
 
 extern const unsigned char _ctype[];
 
-#define __ismask(x) (_ctype[(int)(unsigned char)(x)])
+#define __ismask(x) (_ctype[(int) (unsigned char) (x)])
 
 #define isalnum(c) ((__ismask(c) & (_U | _L | _D)) != 0)
 #define isalpha(c) ((__ismask(c) & (_U | _L)) != 0)
@@ -57,8 +57,8 @@ extern const unsigned char _ctype[];
  */
 #define isblank(c) (c == ' ' || c == '\t')
 
-#define isascii(c) (((unsigned char)(c)) <= 0x7f)
-#define toascii(c) (((unsigned char)(c)) & 0x7f)
+#define isascii(c) (((unsigned char) (c)) <= 0x7f)
+#define toascii(c) (((unsigned char) (c)) & 0x7f)
 
 static inline unsigned char __tolower(unsigned char c)
 {

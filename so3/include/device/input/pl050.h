@@ -34,8 +34,7 @@
 #define KMICR_FC (0 << 0)
 
 /* Status register values */
-#define KMISTAT_TXEMPTY \
-	(1 << 6) /* transmit register is empty, can be written */
+#define KMISTAT_TXEMPTY (1 << 6) /* transmit register is empty, can be written */
 #define KMISTAT_TXBUSY (1 << 5) /* data is being sent */
 #define KMISTAT_RXFULL (1 << 4) /* receive register is full, can be read */
 #define KMISTAT_RXBUSY (1 << 3) /* data is being received */
@@ -48,5 +47,4 @@
 #define KMIIR_RXINTR (1 << 0) /* receiver interrupt asserted */
 
 void pl050_write(void *base, uint8_t data);
-void pl050_init(void *base, irq_def_t *irq_def,
-		irq_return_t (*isr)(int, void *));
+void pl050_init(void *base, irq_def_t *irq_def, irq_return_t (*isr)(int, void *));

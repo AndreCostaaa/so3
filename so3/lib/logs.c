@@ -59,7 +59,7 @@ void logs(const char *fmt, ...)
 	char *p, *q;
 
 	va_start(args, fmt);
-	(void)vsnprintf(buf, sizeof(buf), fmt, args);
+	(void) vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
 	sprintf(msg, "[ME:%d] %s", ME_domID(), buf);

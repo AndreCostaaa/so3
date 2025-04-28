@@ -163,24 +163,17 @@ will need to increase long long */
 #define ALIGN_H(size) (((size) + sizeof(long) - 1U) & ~(sizeof(long) - 1U))
 #define ALIGN_D(size) ALIGN_H(size)
 
-#define CMSG_FIRSTHDR(mhdr)                                 \
-	((mhdr)->msg_controllen >= sizeof(struct cmsghdr) ? \
-		 (struct cmsghdr *)(mhdr)->msg_control :    \
-		 (struct cmsghdr *)NULL)
+#define CMSG_FIRSTHDR(mhdr) \
+	((mhdr)->msg_controllen >= sizeof(struct cmsghdr) ? (struct cmsghdr *) (mhdr)->msg_control : (struct cmsghdr *) NULL)
 
-#define CMSG_NXTHDR(mhdr, cmsg)                                              \
-	(((cmsg) == NULL) ?                                                  \
-		 CMSG_FIRSTHDR(mhdr) :                                       \
-		 (((u8_t *)(cmsg) + ALIGN_H((cmsg)->cmsg_len) +              \
-			   ALIGN_D(sizeof(struct cmsghdr)) >                 \
-		   (u8_t *)((mhdr)->msg_control) + (mhdr)->msg_controllen) ? \
-			  (struct cmsghdr *)NULL :                           \
-			  (struct cmsghdr *)((                               \
-				  void *)((u8_t *)(cmsg) +                   \
-					  ALIGN_H((cmsg)->cmsg_len)))))
+#define CMSG_NXTHDR(mhdr, cmsg)                                                                               \
+	(((cmsg) == NULL) ? CMSG_FIRSTHDR(mhdr) :                                                             \
+			    (((u8_t *) (cmsg) + ALIGN_H((cmsg)->cmsg_len) + ALIGN_D(sizeof(struct cmsghdr)) > \
+			      (u8_t *) ((mhdr)->msg_control) + (mhdr)->msg_controllen) ?                      \
+				     (struct cmsghdr *) NULL :                                                \
+				     (struct cmsghdr *) ((void *) ((u8_t *) (cmsg) + ALIGN_H((cmsg)->cmsg_len)))))
 
-#define CMSG_DATA(cmsg) \
-	((void *)((u8_t *)(cmsg) + ALIGN_D(sizeof(struct cmsghdr))))
+#define CMSG_DATA(cmsg) ((void *) ((u8_t *) (cmsg) + ALIGN_D(sizeof(struct cmsghdr))))
 
 #define CMSG_SPACE(length) (ALIGN_D(sizeof(struct cmsghdr)) + ALIGN_H(length))
 
@@ -202,8 +195,7 @@ struct ifreq {
  */
 #define SO_REUSEADDR 0x0004 /* Allow local address reuse */
 #define SO_KEEPALIVE 0x0008 /* keep connections alive */
-#define SO_BROADCAST \
-	0x0020 /* permit to send and to receive broadcast messages (see IP_SOF_BROADCAST option) */
+#define SO_BROADCAST 0x0020 /* permit to send and to receive broadcast messages (see IP_SOF_BROADCAST option) */
 
 /*
  * Additional options, not kept in so_options.
@@ -213,10 +205,9 @@ struct ifreq {
 #define SO_DONTROUTE 0x0010 /* Unimplemented: just use interface addresses */
 #define SO_USELOOPBACK 0x0040 /* Unimplemented: bypass hardware when possible */
 #define SO_LINGER 0x0080 /* linger on close if data present */
-#define SO_DONTLINGER ((int)(~SO_LINGER))
+#define SO_DONTLINGER ((int) (~SO_LINGER))
 #define SO_OOBINLINE 0x0100 /* Unimplemented: leave received OOB data in line */
-#define SO_REUSEPORT \
-	0x0200 /* Unimplemented: allow local address & port reuse */
+#define SO_REUSEPORT 0x0200 /* Unimplemented: allow local address & port reuse */
 #define SO_SNDBUF 0x1001 /* Unimplemented: send buffer size */
 #define SO_RCVBUF 0x1002 /* receive buffer size */
 #define SO_SNDLOWAT 0x1003 /* Unimplemented: send low-water mark */
@@ -287,24 +278,18 @@ struct linger {
  * Options for level IPPROTO_TCP
  */
 #define TCP_NODELAY 0x01 /* don't delay send to coalesce packets */
-#define TCP_KEEPALIVE \
-	0x02 /* send KEEPALIVE probes when idle for pcb->keep_idle milliseconds */
-#define TCP_KEEPIDLE \
-	0x03 /* set pcb->keep_idle  - Same as TCP_KEEPALIVE, but use seconds for get/setsockopt */
-#define TCP_KEEPINTVL \
-	0x04 /* set pcb->keep_intvl - Use seconds for get/setsockopt */
-#define TCP_KEEPCNT \
-	0x05 /* set pcb->keep_cnt   - Use number of probes sent for get/setsockopt */
+#define TCP_KEEPALIVE 0x02 /* send KEEPALIVE probes when idle for pcb->keep_idle milliseconds */
+#define TCP_KEEPIDLE 0x03 /* set pcb->keep_idle  - Same as TCP_KEEPALIVE, but use seconds for get/setsockopt */
+#define TCP_KEEPINTVL 0x04 /* set pcb->keep_intvl - Use seconds for get/setsockopt */
+#define TCP_KEEPCNT 0x05 /* set pcb->keep_cnt   - Use number of probes sent for get/setsockopt */
 #endif /* LWIP_TCP */
 
 #if LWIP_IPV6
 /*
  * Options for level IPPROTO_IPV6
  */
-#define IPV6_CHECKSUM \
-	7 /* RFC3542: calculate and insert the ICMPv6 checksum for raw sockets. */
-#define IPV6_V6ONLY \
-	27 /* RFC3493: boolean control to restrict AF_INET6 sockets to IPv6 communications only. */
+#define IPV6_CHECKSUM 7 /* RFC3542: calculate and insert the ICMPv6 checksum for raw sockets. */
+#define IPV6_V6ONLY 27 /* RFC3493: boolean control to restrict AF_INET6 sockets to IPv6 communications only. */
 #endif /* LWIP_IPV6 */
 
 #if LWIP_UDP && LWIP_UDPLITE
@@ -421,14 +406,11 @@ typedef struct ipv6_mreq {
 #define IOC_INOUT (IOC_IN | IOC_OUT)
 /* 0x20000000 distinguishes new &
                                            old ioctl's */
-#define _IO(x, y) ((long)(IOC_VOID | ((x) << 8) | (y)))
+#define _IO(x, y) ((long) (IOC_VOID | ((x) << 8) | (y)))
 
-#define _IOR(x, y, t)                                                       \
-	((long)(IOC_OUT | ((sizeof(t) & IOCPARM_MASK) << 16) | ((x) << 8) | \
-		(y)))
+#define _IOR(x, y, t) ((long) (IOC_OUT | ((sizeof(t) & IOCPARM_MASK) << 16) | ((x) << 8) | (y)))
 
-#define _IOW(x, y, t) \
-	((long)(IOC_IN | ((sizeof(t) & IOCPARM_MASK) << 16) | ((x) << 8) | (y)))
+#define _IOW(x, y, t) ((long) (IOC_IN | ((sizeof(t) & IOCPARM_MASK) << 16) | ((x) << 8) | (y)))
 #endif /* !defined(FIONREAD) || !defined(FIONBIO) */
 
 #ifndef FIONREAD
@@ -485,34 +467,22 @@ typedef struct ipv6_mreq {
 /* Make FD_SETSIZE match NUM_SOCKETS in socket.c */
 #define FD_SETSIZE MEMP_NUM_NETCONN
 #define LWIP_SELECT_MAXNFDS (FD_SETSIZE + LWIP_SOCKET_OFFSET)
-#define FDSETSAFESET(n, code)                                        \
-	do {                                                         \
-		if (((n) - LWIP_SOCKET_OFFSET < MEMP_NUM_NETCONN) && \
-		    (((int)(n) - LWIP_SOCKET_OFFSET) >= 0)) {        \
-			code;                                        \
-		}                                                    \
+#define FDSETSAFESET(n, code)                                                                                   \
+	do {                                                                                                    \
+		if (((n) - LWIP_SOCKET_OFFSET < MEMP_NUM_NETCONN) && (((int) (n) - LWIP_SOCKET_OFFSET) >= 0)) { \
+			code;                                                                                   \
+		}                                                                                               \
 	} while (0)
-#define FDSETSAFEGET(n, code)                                     \
-	(((n) - LWIP_SOCKET_OFFSET < MEMP_NUM_NETCONN) &&         \
-			 (((int)(n) - LWIP_SOCKET_OFFSET) >= 0) ? \
-		 (code) :                                         \
-		 0)
-#define FD_SET(n, p)                                                          \
-	FDSETSAFESET(                                                         \
-		n,                                                            \
-		(p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] =                \
-			(u8_t)((p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] | \
-			       (1 << (((n) - LWIP_SOCKET_OFFSET) & 7))))
-#define FD_CLR(n, p)                                                          \
-	FDSETSAFESET(                                                         \
-		n,                                                            \
-		(p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] =                \
-			(u8_t)((p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] & \
-			       ~(1 << (((n) - LWIP_SOCKET_OFFSET) & 7))))
-#define FD_ISSET(n, p)                                                 \
-	FDSETSAFEGET(n, (p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] & \
-				(1 << (((n) - LWIP_SOCKET_OFFSET) & 7)))
-#define FD_ZERO(p) memset((void *)(p), 0, sizeof(*(p)))
+#define FDSETSAFEGET(n, code) \
+	(((n) - LWIP_SOCKET_OFFSET < MEMP_NUM_NETCONN) && (((int) (n) - LWIP_SOCKET_OFFSET) >= 0) ? (code) : 0)
+#define FD_SET(n, p)                                                                                                          \
+	FDSETSAFESET(n, (p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] = (u8_t) ((p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] | \
+									       (1 << (((n) - LWIP_SOCKET_OFFSET) & 7))))
+#define FD_CLR(n, p)                                                                                                          \
+	FDSETSAFESET(n, (p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] = (u8_t) ((p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] & \
+									       ~(1 << (((n) - LWIP_SOCKET_OFFSET) & 7))))
+#define FD_ISSET(n, p) FDSETSAFEGET(n, (p)->fd_bits[((n) - LWIP_SOCKET_OFFSET) / 8] & (1 << (((n) - LWIP_SOCKET_OFFSET) & 7)))
+#define FD_ZERO(p) memset((void *) (p), 0, sizeof(*(p)))
 
 typedef struct fd_set {
 	unsigned char fd_bits[(FD_SETSIZE + 7) / 8];
@@ -570,10 +540,8 @@ extern "C" {
 #endif
 
 #define lwip_socket_init() /* Compatibility define, no init needed. */
-void lwip_socket_thread_init(
-	void); /* LWIP_NETCONN_SEM_PER_THREAD==1: initialize thread-local semaphore */
-void lwip_socket_thread_cleanup(
-	void); /* LWIP_NETCONN_SEM_PER_THREAD==1: destroy thread-local semaphore */
+void lwip_socket_thread_init(void); /* LWIP_NETCONN_SEM_PER_THREAD==1: initialize thread-local semaphore */
+void lwip_socket_thread_cleanup(void); /* LWIP_NETCONN_SEM_PER_THREAD==1: destroy thread-local semaphore */
 
 #if LWIP_COMPAT_SOCKETS == 2
 /* This helps code parsers/code completion by not having the COMPAT functions as defines */
@@ -624,29 +592,24 @@ int lwip_bind(int s, const struct sockaddr *name, socklen_t namelen);
 int lwip_shutdown(int s, int how);
 int lwip_getpeername(int s, struct sockaddr *name, socklen_t *namelen);
 int lwip_getsockname(int s, struct sockaddr *name, socklen_t *namelen);
-int lwip_getsockopt(int s, int level, int optname, void *optval,
-		    socklen_t *optlen);
-int lwip_setsockopt(int s, int level, int optname, const void *optval,
-		    socklen_t optlen);
+int lwip_getsockopt(int s, int level, int optname, void *optval, socklen_t *optlen);
+int lwip_setsockopt(int s, int level, int optname, const void *optval, socklen_t optlen);
 int lwip_close(int s);
 int lwip_connect(int s, const struct sockaddr *name, socklen_t namelen);
 int lwip_listen(int s, int backlog);
 ssize_t lwip_recv(int s, void *mem, size_t len, int flags);
 ssize_t lwip_read(int s, void *mem, size_t len);
 ssize_t lwip_readv(int s, const struct iovec *iov, int iovcnt);
-ssize_t lwip_recvfrom(int s, void *mem, size_t len, int flags,
-		      struct sockaddr *from, socklen_t *fromlen);
+ssize_t lwip_recvfrom(int s, void *mem, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen);
 ssize_t lwip_recvmsg(int s, struct msghdr *message, int flags);
 ssize_t lwip_send(int s, const void *dataptr, size_t size, int flags);
 ssize_t lwip_sendmsg(int s, const struct msghdr *message, int flags);
-ssize_t lwip_sendto(int s, const void *dataptr, size_t size, int flags,
-		    const struct sockaddr *to, socklen_t tolen);
+ssize_t lwip_sendto(int s, const void *dataptr, size_t size, int flags, const struct sockaddr *to, socklen_t tolen);
 int lwip_socket(int domain, int type, int protocol);
 ssize_t lwip_write(int s, const void *dataptr, size_t size);
 ssize_t lwip_writev(int s, const struct iovec *iov, int iovcnt);
 #if LWIP_SOCKET_SELECT
-int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset,
-		fd_set *exceptset, struct timeval *timeout);
+int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, struct timeval *timeout);
 #endif
 #if LWIP_SOCKET_POLL
 int lwip_poll(struct pollfd *fds, nfds_t nfds, int timeout);
@@ -669,11 +632,9 @@ int lwip_inet_pton(int af, const char *src, void *dst);
 /** @ingroup socket */
 #define getsockname(s, name, namelen) lwip_getsockname(s, name, namelen)
 /** @ingroup socket */
-#define setsockopt(s, level, optname, opval, optlen) \
-	lwip_setsockopt(s, level, optname, opval, optlen)
+#define setsockopt(s, level, optname, opval, optlen) lwip_setsockopt(s, level, optname, opval, optlen)
 /** @ingroup socket */
-#define getsockopt(s, level, optname, opval, optlen) \
-	lwip_getsockopt(s, level, optname, opval, optlen)
+#define getsockopt(s, level, optname, opval, optlen) lwip_getsockopt(s, level, optname, opval, optlen)
 /** @ingroup socket */
 #define closesocket(s) lwip_close(s)
 /** @ingroup socket */
@@ -685,21 +646,18 @@ int lwip_inet_pton(int af, const char *src, void *dst);
 /** @ingroup socket */
 #define recvmsg(s, message, flags) lwip_recvmsg(s, message, flags)
 /** @ingroup socket */
-#define recvfrom(s, mem, len, flags, from, fromlen) \
-	lwip_recvfrom(s, mem, len, flags, from, fromlen)
+#define recvfrom(s, mem, len, flags, from, fromlen) lwip_recvfrom(s, mem, len, flags, from, fromlen)
 /** @ingroup socket */
 #define send(s, dataptr, size, flags) lwip_send(s, dataptr, size, flags)
 /** @ingroup socket */
 #define sendmsg(s, message, flags) lwip_sendmsg(s, message, flags)
 /** @ingroup socket */
-#define sendto(s, dataptr, size, flags, to, tolen) \
-	lwip_sendto(s, dataptr, size, flags, to, tolen)
+#define sendto(s, dataptr, size, flags, to, tolen) lwip_sendto(s, dataptr, size, flags, to, tolen)
 /** @ingroup socket */
 #define socket(domain, type, protocol) lwip_socket(domain, type, protocol)
 #if LWIP_SOCKET_SELECT
 /** @ingroup socket */
-#define select(maxfdp1, readset, writeset, exceptset, timeout) \
-	lwip_select(maxfdp1, readset, writeset, exceptset, timeout)
+#define select(maxfdp1, readset, writeset, exceptset, timeout) lwip_select(maxfdp1, readset, writeset, exceptset, timeout)
 #endif
 #if LWIP_SOCKET_POLL
 /** @ingroup socket */

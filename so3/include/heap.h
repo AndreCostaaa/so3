@@ -63,10 +63,8 @@ typedef struct mem_chunk mem_chunk_t;
 void *malloc(size_t size);
 void *memalign(size_t size, unsigned int alignment);
 #else
-void *malloc_log(size_t size, const char *filename, const char *fname,
-		 const int line);
-void *memalign_log(size_t size, unsigned int alignment, const char *filename,
-		   const char *fname, const int line);
+void *malloc_log(size_t size, const char *filename, const char *fname, const int line);
+void *memalign_log(size_t size, unsigned int alignment, const char *filename, const char *fname, const int line);
 
 #define malloc(x) malloc_log(x, __FILE__, __func__, __LINE__)
 #define memalign(x, y) memalign_log(x, y, __FILE__, __func__, __LINE__)

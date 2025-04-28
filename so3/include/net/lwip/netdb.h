@@ -112,9 +112,7 @@ struct addrinfo {
 };
 #endif /* LWIP_DNS_API_DECLARE_STRUCTS */
 
-#define NETDB_ELEM_SIZE                                              \
-	(sizeof(struct addrinfo) + sizeof(struct sockaddr_storage) + \
-	 DNS_MAX_NAME_LENGTH + 1)
+#define NETDB_ELEM_SIZE (sizeof(struct addrinfo) + sizeof(struct sockaddr_storage) + DNS_MAX_NAME_LENGTH + 1)
 
 #if LWIP_DNS_API_DECLARE_H_ERRNO
 /* application accessible error code set by the DNS API functions */
@@ -122,23 +120,20 @@ extern int h_errno;
 #endif /* LWIP_DNS_API_DECLARE_H_ERRNO*/
 
 struct hostent *lwip_gethostbyname(const char *name);
-int lwip_gethostbyname_r(const char *name, struct hostent *ret, char *buf,
-			 size_t buflen, struct hostent **result, int *h_errnop);
+int lwip_gethostbyname_r(const char *name, struct hostent *ret, char *buf, size_t buflen, struct hostent **result,
+			 int *h_errnop);
 void lwip_freeaddrinfo(struct addrinfo *ai);
-int lwip_getaddrinfo(const char *nodename, const char *servname,
-		     const struct addrinfo *hints, struct addrinfo **res);
+int lwip_getaddrinfo(const char *nodename, const char *servname, const struct addrinfo *hints, struct addrinfo **res);
 
 #if LWIP_COMPAT_SOCKETS
 /** @ingroup netdbapi */
 #define gethostbyname(name) lwip_gethostbyname(name)
 /** @ingroup netdbapi */
-#define gethostbyname_r(name, ret, buf, buflen, result, h_errnop) \
-	lwip_gethostbyname_r(name, ret, buf, buflen, result, h_errnop)
+#define gethostbyname_r(name, ret, buf, buflen, result, h_errnop) lwip_gethostbyname_r(name, ret, buf, buflen, result, h_errnop)
 /** @ingroup netdbapi */
 #define freeaddrinfo(addrinfo) lwip_freeaddrinfo(addrinfo)
 /** @ingroup netdbapi */
-#define getaddrinfo(nodname, servname, hints, res) \
-	lwip_getaddrinfo(nodname, servname, hints, res)
+#define getaddrinfo(nodname, servname, hints, res) lwip_getaddrinfo(nodname, servname, hints, res)
 #endif /* LWIP_COMPAT_SOCKETS */
 
 #ifdef __cplusplus

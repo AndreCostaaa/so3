@@ -25,8 +25,7 @@
 /* New uImage format routines */
 /*****************************************************************************/
 
-static int fit_parse_spec(const char *spec, char sepc, ulong addr_curr,
-			  ulong *addr, const char **name)
+static int fit_parse_spec(const char *spec, char sepc, ulong addr_curr, ulong *addr, const char **name)
 {
 	const char *sep;
 
@@ -66,8 +65,7 @@ static int fit_parse_spec(const char *spec, char sepc, ulong addr_curr,
  *     addr and conf_name are set accordingly
  *     0 otherwise
  */
-int fit_parse_conf(const char *spec, ulong addr_curr, ulong *addr,
-		   const char **conf_name)
+int fit_parse_conf(const char *spec, ulong addr_curr, ulong *addr, const char **conf_name)
 {
 	return fit_parse_spec(spec, '#', addr_curr, addr, conf_name);
 }
@@ -92,18 +90,15 @@ int fit_parse_conf(const char *spec, ulong addr_curr, ulong *addr,
  *     addr and image_name are set accordingly
  *     0 otherwise
  */
-int fit_parse_subimage(const char *spec, ulong addr_curr, ulong *addr,
-		       const char **image_name)
+int fit_parse_subimage(const char *spec, ulong addr_curr, ulong *addr, const char **image_name)
 {
 	return fit_parse_spec(spec, ':', addr_curr, addr, image_name);
 }
 
-static void fit_get_debug(const void *fit, int noffset, char *prop_name,
-			  int err)
+static void fit_get_debug(const void *fit, int noffset, char *prop_name, int err)
 {
-	printk("Can't get '%s' property from FIT 0x%08lx, node: offset %d, name %s (%s)\n",
-	       prop_name, (ulong)fit, noffset, fit_get_name(fit, noffset, NULL),
-	       fdt_strerror(err));
+	printk("Can't get '%s' property from FIT 0x%08lx, node: offset %d, name %s (%s)\n", prop_name, (ulong) fit, noffset,
+	       fit_get_name(fit, noffset, NULL), fdt_strerror(err));
 }
 
 /**
@@ -125,15 +120,13 @@ int fit_image_get_node(const void *fit, const char *image_uname)
 
 	images_noffset = fdt_path_offset(fit, FIT_IMAGES_PATH);
 	if (images_noffset < 0) {
-		printk("Can't find images parent node '%s' (%s)\n",
-		       FIT_IMAGES_PATH, fdt_strerror(images_noffset));
+		printk("Can't find images parent node '%s' (%s)\n", FIT_IMAGES_PATH, fdt_strerror(images_noffset));
 		return images_noffset;
 	}
 
 	noffset = fdt_subnode_offset(fit, images_noffset, image_uname);
 	if (noffset < 0) {
-		printk("Can't get node offset for image unit name: '%s' (%s)\n",
-		       image_uname, fdt_strerror(noffset));
+		printk("Can't get node offset for image unit name: '%s' (%s)\n", image_uname, fdt_strerror(noffset));
 	}
 
 	return noffset;
@@ -275,8 +268,7 @@ int fit_image_get_comp(const void *fit, int noffset, uint8_t *comp)
 	return 0;
 }
 
-static int fit_image_get_address(const void *fit, int noffset, char *name,
-				 ulong *load)
+static int fit_image_get_address(const void *fit, int noffset, char *name, ulong *load)
 {
 	int len, cell_len;
 	const fdt32_t *cell;
@@ -299,7 +291,7 @@ static int fit_image_get_address(const void *fit, int noffset, char *name,
 		load64 = (load64 << 32) | uimage_to_cpu(*cell);
 		cell++;
 	}
-	*load = (ulong)load64;
+	*load = (ulong) load64;
 
 	return 0;
 }
@@ -358,8 +350,7 @@ int fit_image_get_entry(const void *fit, int noffset, ulong *entry)
  *     0, on success
  *     -1, on failure
  */
-int fit_image_get_data(const void *fit, int noffset, const void **data,
-		       size_t *size)
+int fit_image_get_data(const void *fit, int noffset, const void **data, size_t *size)
 {
 	int len;
 
@@ -409,8 +400,7 @@ int fit_image_get_data_offset(const void *fit, int noffset, int *data_offset)
  *     0, on success
  *     -ENOENT if the property could not be found
  */
-int fit_image_get_data_position(const void *fit, int noffset,
-				int *data_position)
+int fit_image_get_data_position(const void *fit, int noffset, int *data_position)
 {
 	const fdt32_t *val;
 
@@ -463,8 +453,7 @@ int fit_image_get_data_size(const void *fit, int noffset, int *data_size)
  *     0, on success
  *     otherwise, on failure
  */
-int fit_image_get_data_and_size(const void *fit, int noffset, const void **data,
-				size_t *size)
+int fit_image_get_data_and_size(const void *fit, int noffset, const void **data, size_t *size)
 {
 	bool external_data = false;
 	int offset;
@@ -512,7 +501,7 @@ int fit_image_hash_get_algo(const void *fit, int noffset, char **algo)
 {
 	int len;
 
-	*algo = (char *)fdt_getprop(fit, noffset, FIT_ALGO_PROP, &len);
+	*algo = (char *) fdt_getprop(fit, noffset, FIT_ALGO_PROP, &len);
 	if (*algo == NULL) {
 		fit_get_debug(fit, noffset, FIT_ALGO_PROP, len);
 		return -1;
@@ -536,12 +525,11 @@ int fit_image_hash_get_algo(const void *fit, int noffset, char **algo)
  *     0, on success
  *     -1, on failure
  */
-int fit_image_hash_get_value(const void *fit, int noffset, uint8_t **value,
-			     int *value_len)
+int fit_image_hash_get_value(const void *fit, int noffset, uint8_t **value, int *value_len)
 {
 	int len;
 
-	*value = (uint8_t *)fdt_getprop(fit, noffset, FIT_VALUE_PROP, &len);
+	*value = (uint8_t *) fdt_getprop(fit, noffset, FIT_VALUE_PROP, &len);
 	if (*value == NULL) {
 		fit_get_debug(fit, noffset, FIT_VALUE_PROP, len);
 		*value_len = 0;

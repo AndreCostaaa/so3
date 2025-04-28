@@ -29,12 +29,10 @@
 #define LOG_2(_x) (((_x) & 0xffff0000) ? (16 + __L16((_x) >> 16)) : __L16(_x))
 
 /* create 64-bit mask with all bits in [last:first] set */
-#define BIT_MASK(last, first) \
-	((0xffffffffffffffffULL >> (64 - ((last) + 1 - (first)))) << (first))
+#define BIT_MASK(last, first) ((0xffffffffffffffffULL >> (64 - ((last) + 1 - (first)))) << (first))
 
 /* extract the field value at [last:first] from an input of up to 64 bits */
-#define GET_FIELD(value, last, first) \
-	(((value) & BIT_MASK((last), (first))) >> (first))
+#define GET_FIELD(value, last, first) (((value) & BIT_MASK((last), (first))) >> (first))
 
 #ifndef __ASSEMBLY__
 
@@ -59,8 +57,7 @@ static inline int test_bit(int nr, const volatile unsigned long *addr)
  *
  * First, the atomic bitops. These use native endian.
  */
-static inline void ____atomic_set_bit(unsigned int bit,
-				      volatile unsigned long *p)
+static inline void ____atomic_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -72,8 +69,7 @@ static inline void ____atomic_set_bit(unsigned int bit,
 	local_irq_restore(flags);
 }
 
-static inline void ____atomic_clear_bit(unsigned int bit,
-					volatile unsigned long *p)
+static inline void ____atomic_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -85,8 +81,7 @@ static inline void ____atomic_clear_bit(unsigned int bit,
 	local_irq_restore(flags);
 }
 
-static inline void ____atomic_change_bit(unsigned int bit,
-					 volatile unsigned long *p)
+static inline void ____atomic_change_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -98,8 +93,7 @@ static inline void ____atomic_change_bit(unsigned int bit,
 	local_irq_restore(flags);
 }
 
-static inline int ____atomic_test_and_set_bit(unsigned int bit,
-					      volatile unsigned long *p)
+static inline int ____atomic_test_and_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned int res;
@@ -115,8 +109,7 @@ static inline int ____atomic_test_and_set_bit(unsigned int bit,
 	return res & mask;
 }
 
-static inline int ____atomic_test_and_clear_bit(unsigned int bit,
-						volatile unsigned long *p)
+static inline int ____atomic_test_and_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned int res;
@@ -132,8 +125,7 @@ static inline int ____atomic_test_and_clear_bit(unsigned int bit,
 	return res & mask;
 }
 
-static inline int ____atomic_test_and_change_bit(unsigned int bit,
-						 volatile unsigned long *p)
+static inline int ____atomic_test_and_change_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned int res;

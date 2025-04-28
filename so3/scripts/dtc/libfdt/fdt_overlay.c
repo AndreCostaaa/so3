@@ -34,8 +34,8 @@ static uint32_t overlay_get_target_phandle(const void *fdto, int fragment)
 	if (!val)
 		return 0;
 
-	if ((len != sizeof(*val)) || (fdt32_to_cpu(*val) == (uint32_t)-1))
-		return (uint32_t)-1;
+	if ((len != sizeof(*val)) || (fdt32_to_cpu(*val) == (uint32_t) -1))
+		return (uint32_t) -1;
 
 	return fdt32_to_cpu(*val);
 }
@@ -55,8 +55,7 @@ static uint32_t overlay_get_target_phandle(const void *fdto, int fragment)
  *      the targeted node offset in the base device tree
  *      Negative error code on error
  */
-static int overlay_get_target(const void *fdt, const void *fdto, int fragment,
-			      char const **pathp)
+static int overlay_get_target(const void *fdt, const void *fdto, int fragment, char const **pathp)
 {
 	uint32_t phandle;
 	const char *path = NULL;
@@ -64,7 +63,7 @@ static int overlay_get_target(const void *fdt, const void *fdto, int fragment,
 
 	/* Try first to do a phandle based lookup */
 	phandle = overlay_get_target_phandle(fdto, fragment);
-	if (phandle == (uint32_t)-1)
+	if (phandle == (uint32_t) -1)
 		return -FDT_ERR_BADPHANDLE;
 
 	/* no phandle, try path */
@@ -113,8 +112,7 @@ static int overlay_get_target(const void *fdt, const void *fdto, int fragment,
  *      0 on success.
  *      Negative error code on error
  */
-static int overlay_phandle_add_offset(void *fdt, int node, const char *name,
-				      uint32_t delta)
+static int overlay_phandle_add_offset(void *fdt, int node, const char *name, uint32_t delta)
 {
 	const fdt32_t *val;
 	uint32_t adj_val;
@@ -132,7 +130,7 @@ static int overlay_phandle_add_offset(void *fdt, int node, const char *name,
 		return -FDT_ERR_NOPHANDLES;
 
 	adj_val += delta;
-	if (adj_val == (uint32_t)-1)
+	if (adj_val == (uint32_t) -1)
 		return -FDT_ERR_NOPHANDLES;
 
 	return fdt_setprop_inplace_u32(fdt, node, name, adj_val);
@@ -216,8 +214,7 @@ static int overlay_adjust_local_phandles(void *fdto, uint32_t delta)
  *      0 on success
  *      Negative error code on failure
  */
-static int overlay_update_local_node_references(void *fdto, int tree_node,
-						int fixup_node, uint32_t delta)
+static int overlay_update_local_node_references(void *fdto, int tree_node, int fixup_node, uint32_t delta)
 {
 	int fixup_prop;
 	int fixup_child;
@@ -231,8 +228,7 @@ static int overlay_update_local_node_references(void *fdto, int tree_node,
 		int tree_len;
 		int i;
 
-		fixup_val = fdt_getprop_by_offset(fdto, fixup_prop, &name,
-						  &fixup_len);
+		fixup_val = fdt_getprop_by_offset(fdto, fixup_prop, &name, &fixup_len);
 		if (!fixup_val)
 			return fixup_len;
 
@@ -263,9 +259,8 @@ static int overlay_update_local_node_references(void *fdto, int tree_node,
 
 			adj_val = cpu_to_fdt32(fdt32_to_cpu(adj_val) + delta);
 
-			ret = fdt_setprop_inplace_namelen_partial(
-				fdto, tree_node, name, strlen(name), poffset,
-				&adj_val, sizeof(adj_val));
+			ret = fdt_setprop_inplace_namelen_partial(fdto, tree_node, name, strlen(name), poffset, &adj_val,
+								  sizeof(adj_val));
 			if (ret == -FDT_ERR_NOSPACE)
 				return -FDT_ERR_BADOVERLAY;
 
@@ -275,19 +270,16 @@ static int overlay_update_local_node_references(void *fdto, int tree_node,
 	}
 
 	fdt_for_each_subnode(fixup_child, fdto, fixup_node) {
-		const char *fixup_child_name =
-			fdt_get_name(fdto, fixup_child, NULL);
+		const char *fixup_child_name = fdt_get_name(fdto, fixup_child, NULL);
 		int tree_child;
 
-		tree_child =
-			fdt_subnode_offset(fdto, tree_node, fixup_child_name);
+		tree_child = fdt_subnode_offset(fdto, tree_node, fixup_child_name);
 		if (tree_child == -FDT_ERR_NOTFOUND)
 			return -FDT_ERR_BADOVERLAY;
 		if (tree_child < 0)
 			return tree_child;
 
-		ret = overlay_update_local_node_references(fdto, tree_child,
-							   fixup_child, delta);
+		ret = overlay_update_local_node_references(fdto, tree_child, fixup_child, delta);
 		if (ret)
 			return ret;
 	}
@@ -354,10 +346,8 @@ static int overlay_update_local_references(void *fdto, uint32_t delta)
  *      0 on success
  *      Negative error code on failure
  */
-static int overlay_fixup_one_phandle(void *fdt, void *fdto, int symbols_off,
-				     const char *path, uint32_t path_len,
-				     const char *name, uint32_t name_len,
-				     int poffset, const char *label)
+static int overlay_fixup_one_phandle(void *fdt, void *fdto, int symbols_off, const char *path, uint32_t path_len,
+				     const char *name, uint32_t name_len, int poffset, const char *label)
 {
 	const char *symbol_path;
 	uint32_t phandle;
@@ -387,9 +377,7 @@ static int overlay_fixup_one_phandle(void *fdt, void *fdto, int symbols_off,
 		return fixup_off;
 
 	phandle_prop = cpu_to_fdt32(phandle);
-	return fdt_setprop_inplace_namelen_partial(fdto, fixup_off, name,
-						   name_len, poffset,
-						   &phandle_prop,
+	return fdt_setprop_inplace_namelen_partial(fdto, fixup_off, name, name_len, poffset, &phandle_prop,
 						   sizeof(phandle_prop));
 };
 
@@ -412,8 +400,7 @@ static int overlay_fixup_one_phandle(void *fdt, void *fdto, int symbols_off,
  *      0 on success
  *      Negative error code on failure
  */
-static int overlay_fixup_phandle(void *fdt, void *fdto, int symbols_off,
-				 int property)
+static int overlay_fixup_phandle(void *fdt, void *fdto, int symbols_off, int property)
 {
 	const char *value;
 	const char *label;
@@ -466,9 +453,7 @@ static int overlay_fixup_phandle(void *fdt, void *fdto, int symbols_off,
 		if ((*endptr != '\0') || (endptr <= (sep + 1)))
 			return -FDT_ERR_BADOVERLAY;
 
-		ret = overlay_fixup_one_phandle(fdt, fdto, symbols_off, path,
-						path_len, name, name_len,
-						poffset, label);
+		ret = overlay_fixup_one_phandle(fdt, fdto, symbols_off, path, path_len, name, name_len, poffset, label);
 		if (ret)
 			return ret;
 	} while (len > 0);
@@ -712,8 +697,7 @@ static int overlay_symbol_update(void *fdt, void *fdto)
 			return path_len;
 
 		/* verify it's a string property (terminated by a single \0) */
-		if (path_len < 1 ||
-		    memchr(path, '\0', path_len) != &path[path_len - 1])
+		if (path_len < 1 || memchr(path, '\0', path_len) != &path[path_len - 1])
 			return -FDT_ERR_BADVALUE;
 
 		/* keep end marker to avoid strlen() */
@@ -741,8 +725,7 @@ static int overlay_symbol_update(void *fdt, void *fdto)
 		rel_path_len = e - rel_path;
 
 		/* find the fragment index in which the symbol lies */
-		ret = fdt_subnode_offset_namelen(fdto, 0, frag_name,
-						 frag_name_len);
+		ret = fdt_subnode_offset_namelen(fdto, 0, frag_name, frag_name_len);
 		/* not found? */
 		if (ret < 0)
 			return -FDT_ERR_BADOVERLAY;
@@ -769,16 +752,13 @@ static int overlay_symbol_update(void *fdt, void *fdto)
 			len = strlen(target_path);
 		}
 
-		ret = fdt_setprop_placeholder(
-			fdt, root_sym, name, len + (len > 1) + rel_path_len + 1,
-			&p);
+		ret = fdt_setprop_placeholder(fdt, root_sym, name, len + (len > 1) + rel_path_len + 1, &p);
 		if (ret < 0)
 			return ret;
 
 		if (!target_path) {
 			/* again in case setprop_placeholder changed it */
-			ret = overlay_get_target(fdt, fdto, fragment,
-						 &target_path);
+			ret = overlay_get_target(fdt, fdto, fragment, &target_path);
 			if (ret < 0)
 				return ret;
 			target = ret;

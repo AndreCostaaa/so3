@@ -41,7 +41,7 @@ ROXML_STATIC ROXML_INT inline void roxml_release_last(void *data)
 	if (PTR_IS_STAR(to_delete)) {
 		int i = 0;
 		for (i = 0; i < to_delete->occ; i++)
-			free(((void **)(to_delete->ptr))[i]);
+			free(((void **) (to_delete->ptr))[i]);
 	}
 	if (to_delete->type != PTR_NONE) {
 		free(to_delete->ptr);
@@ -65,7 +65,7 @@ ROXML_STATIC ROXML_INT inline void roxml_release_all(void *data)
 		if (PTR_IS_STAR(to_delete)) {
 			int i = 0;
 			for (i = 0; i < to_delete->occ; i++)
-				free(((void **)(to_delete->ptr))[i]);
+				free(((void **) (to_delete->ptr))[i]);
 		}
 		free(to_delete->ptr);
 		to_delete->ptr = NULL;
@@ -98,7 +98,7 @@ ROXML_STATIC ROXML_INT inline void roxml_release_pointer(void *data)
 	if (PTR_IS_STAR(to_delete)) {
 		int i = 0;
 		for (i = 0; i < to_delete->occ; i++)
-			free(((void **)(to_delete->ptr))[i]);
+			free(((void **) (to_delete->ptr))[i]);
 	}
 	free(to_delete->ptr);
 	to_delete->type = PTR_NONE;

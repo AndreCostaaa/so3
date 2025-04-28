@@ -99,7 +99,7 @@ void cb_shutdown(void)
 void callbacks_init(void)
 {
 	/* Allocate the shared page. */
-	sh_refso3 = (sh_refso3_t *)get_contig_free_vpages(1);
+	sh_refso3 = (sh_refso3_t *) get_contig_free_vpages(1);
 
 	/* Initialize the shared content page used to exchange information between other MEs */
 	memset(sh_refso3, 0, PAGE_SIZE);

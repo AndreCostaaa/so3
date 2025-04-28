@@ -36,15 +36,7 @@ class ConfigSettings : public QSettings {
 	bool writeSizes(const QString &key, const Q3ValueList<int> &value);
 };
 
-enum colIdx {
-	promptColIdx,
-	nameColIdx,
-	noColIdx,
-	modColIdx,
-	yesColIdx,
-	dataColIdx,
-	colNr
-};
+enum colIdx { promptColIdx, nameColIdx, noColIdx, modColIdx, yesColIdx, dataColIdx, colNr };
 enum listMode { singleMode, menuMode, symbolMode, fullMode, listMode };
 enum optionMode { normalOpt = 0, allOpt, promptOpt };
 
@@ -57,7 +49,7 @@ class ConfigList : public Q3ListView {
 	void reinit(void);
 	ConfigView *parent(void) const
 	{
-		return (ConfigView *)Parent::parent();
+		return (ConfigView *) Parent::parent();
 	}
 	ConfigItem *findConfigItem(struct menu *);
 
@@ -97,7 +89,7 @@ class ConfigList : public Q3ListView {
 	}
 	ConfigItem *firstChild() const
 	{
-		return (ConfigItem *)Parent::firstChild();
+		return (ConfigItem *) Parent::firstChild();
 	}
 	int mapIdx(colIdx idx)
 	{
@@ -146,8 +138,7 @@ class ConfigItem : public Q3ListViewItem {
 	typedef class Q3ListViewItem Parent;
 
     public:
-	ConfigItem(Q3ListView *parent, ConfigItem *after, struct menu *m,
-		   bool v)
+	ConfigItem(Q3ListView *parent, ConfigItem *after, struct menu *m, bool v)
 		: Parent(parent, after)
 		, menu(m)
 		, visible(v)
@@ -155,8 +146,7 @@ class ConfigItem : public Q3ListViewItem {
 	{
 		init();
 	}
-	ConfigItem(ConfigItem *parent, ConfigItem *after, struct menu *m,
-		   bool v)
+	ConfigItem(ConfigItem *parent, ConfigItem *after, struct menu *m, bool v)
 		: Parent(parent, after)
 		, menu(m)
 		, visible(v)
@@ -179,15 +169,15 @@ class ConfigItem : public Q3ListViewItem {
 	void testUpdateMenu(bool v);
 	ConfigList *listView() const
 	{
-		return (ConfigList *)Parent::listView();
+		return (ConfigList *) Parent::listView();
 	}
 	ConfigItem *firstChild() const
 	{
-		return (ConfigItem *)Parent::firstChild();
+		return (ConfigItem *) Parent::firstChild();
 	}
 	ConfigItem *nextSibling() const
 	{
-		return (ConfigItem *)Parent::nextSibling();
+		return (ConfigItem *) Parent::nextSibling();
 	}
 	void setText(colIdx idx, const QString &text)
 	{
@@ -205,8 +195,7 @@ class ConfigItem : public Q3ListViewItem {
 	{
 		return Parent::pixmap(listView()->mapIdx(idx));
 	}
-	void paintCell(QPainter *p, const QColorGroup &cg, int column,
-		       int width, int align);
+	void paintCell(QPainter *p, const QColorGroup &cg, int column, int width, int align);
 
 	ConfigItem *nextItem;
 	struct menu *menu;
@@ -222,7 +211,7 @@ class ConfigLineEdit : public QLineEdit {
 	ConfigLineEdit(ConfigView *parent);
 	ConfigView *parent(void) const
 	{
-		return (ConfigView *)Parent::parent();
+		return (ConfigView *) Parent::parent();
 	}
 	void show(ConfigItem *i);
 	void keyPressEvent(QKeyEvent *e);
@@ -300,8 +289,7 @@ class ConfigInfoView : public Q3TextBrowser {
 	void menuInfo(void);
 	QString debug_info(struct symbol *sym);
 	static QString print_filter(const QString &str);
-	static void expr_print_help(void *data, struct symbol *sym,
-				    const char *str);
+	static void expr_print_help(void *data, struct symbol *sym, const char *str);
 	Q3PopupMenu *createPopupMenu(const QPoint &pos);
 	void contentsContextMenuEvent(QContextMenuEvent *e);
 

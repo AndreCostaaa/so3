@@ -147,8 +147,7 @@ void sched_flip_init(void)
 	/* Initiate a timer to trigger the schedule function */
 	init_timer(&sched_flip.sched_data.s_timer, s_timer_fn, NULL, ME_CPU);
 
-	set_timer(&sched_flip.sched_data.s_timer,
-		  NOW() + MILLISECS(CONFIG_SCHED_FLIP_SCHEDFREQ));
+	set_timer(&sched_flip.sched_data.s_timer, NOW() + MILLISECS(CONFIG_SCHED_FLIP_SCHEDFREQ));
 #endif /* CONFIG_SOO */
 }
 

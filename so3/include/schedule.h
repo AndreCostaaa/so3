@@ -86,10 +86,6 @@ typedef struct queue_thread {
 	struct tcb *tcb;
 } queue_thread_t;
 
-typedef enum {
-	SCHED_POLICY_RR = 0x1,
-	SCHED_POLICY_PRIO = 0x2,
-	SCHED_POLICY_PRIO_DYN = 0x3
-} sched_policy_t;
+typedef enum { SCHED_POLICY_RR = 0x1, SCHED_POLICY_PRIO = 0x2, SCHED_POLICY_PRIO_DYN = 0x3 } sched_policy_t;
 
 #endif /* SCHEDULE_H */

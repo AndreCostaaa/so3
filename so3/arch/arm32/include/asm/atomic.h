@@ -125,8 +125,7 @@ static inline unsigned long wrong_size_cmpxchg(volatile void *ptr)
 	return 0;
 }
 
-static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
-				      unsigned long new, int size)
+static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 {
 	volatile unsigned long *p = ptr;
 
@@ -149,13 +148,11 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 		return wrong_size_cmpxchg(ptr);
 }
 
-#define cmpxchg(ptr, o, n)                                               \
-	({                                                               \
-		__typeof__(*(ptr)) _o_ = (o);                            \
-		__typeof__(*(ptr)) _n_ = (n);                            \
-		(__typeof__(*(ptr)))__cmpxchg((ptr), (unsigned long)_o_, \
-					      (unsigned long)_n_,        \
-					      sizeof(*(ptr)));           \
+#define cmpxchg(ptr, o, n)                                                                                       \
+	({                                                                                                       \
+		__typeof__(*(ptr)) _o_ = (o);                                                                    \
+		__typeof__(*(ptr)) _n_ = (n);                                                                    \
+		(__typeof__(*(ptr))) __cmpxchg((ptr), (unsigned long) _o_, (unsigned long) _n_, sizeof(*(ptr))); \
 	})
 
 static void __bad_xchg(volatile void *ptr, int size)
@@ -165,8 +162,7 @@ static void __bad_xchg(volatile void *ptr, int size)
 		;
 }
 
-static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
-				   int size)
+static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size)
 {
 	unsigned long ret;
 	unsigned int tmp;
@@ -202,8 +198,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
 	return ret;
 }
 
-#define xchg(ptr, x) \
-	((__typeof__(*(ptr)))__xchg((unsigned long)(x), (ptr), sizeof(*(ptr))))
+#define xchg(ptr, x) ((__typeof__(*(ptr))) __xchg((unsigned long) (x), (ptr), sizeof(*(ptr))))
 
 #define atomic_xchg(v, new) (xchg(&((v)->counter), new))
 
@@ -218,10 +213,10 @@ static inline int atomic_add_unless(atomic_t *v, int a, int u)
 }
 #define atomic_inc_not_zero(v) atomic_add_unless((v), 1, 0)
 
-#define atomic_add(i, v) (void)atomic_add_return(i, v)
-#define atomic_inc(v) (void)atomic_add_return(1, v)
-#define atomic_sub(i, v) (void)atomic_sub_return(i, v)
-#define atomic_dec(v) (void)atomic_sub_return(1, v)
+#define atomic_add(i, v) (void) atomic_add_return(i, v)
+#define atomic_inc(v) (void) atomic_add_return(1, v)
+#define atomic_sub(i, v) (void) atomic_sub_return(i, v)
+#define atomic_dec(v) (void) atomic_sub_return(1, v)
 
 #define atomic_inc_and_test(v) (atomic_add_return(1, v) == 0)
 #define atomic_dec_and_test(v) (atomic_sub_return(1, v) == 0)
@@ -233,7 +228,6 @@ static inline int atomic_add_unless(atomic_t *v, int a, int u)
 
 #include <asm/atomic-generic.h>
 
-#define atomic_compareandswap(old, new, v) \
-	((atomic_t){ atomic_cmpxchg(v, atomic_read(&old), atomic_read(&new)) })
+#define atomic_compareandswap(old, new, v) ((atomic_t) { atomic_cmpxchg(v, atomic_read(&old), atomic_read(&new)) })
 
 #endif /* ASM_ATOMIC_H */

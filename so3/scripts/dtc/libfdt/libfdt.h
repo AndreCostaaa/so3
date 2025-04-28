@@ -112,7 +112,7 @@ const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int checklen);
 #endif
 static inline void *fdt_offset_ptr_w(void *fdt, int offset, int checklen)
 {
-	return (void *)(uintptr_t)fdt_offset_ptr(fdt, offset, checklen);
+	return (void *) (uintptr_t) fdt_offset_ptr(fdt, offset, checklen);
 }
 
 uint32_t fdt_next_tag(const void *fdt, int offset, int *nextoffset);
@@ -126,10 +126,9 @@ uint32_t fdt_next_tag(const void *fdt, int offset, int *nextoffset);
 
 static inline uint32_t fdt32_ld(const fdt32_t *p)
 {
-	const uint8_t *bp = (const uint8_t *)p;
+	const uint8_t *bp = (const uint8_t *) p;
 
-	return ((uint32_t)bp[0] << 24) | ((uint32_t)bp[1] << 16) |
-	       ((uint32_t)bp[2] << 8) | bp[3];
+	return ((uint32_t) bp[0] << 24) | ((uint32_t) bp[1] << 16) | ((uint32_t) bp[2] << 8) | bp[3];
 }
 
 static inline void fdt32_st(void *property, uint32_t value)
@@ -144,12 +143,10 @@ static inline void fdt32_st(void *property, uint32_t value)
 
 static inline uint64_t fdt64_ld(const fdt64_t *p)
 {
-	const uint8_t *bp = (const uint8_t *)p;
+	const uint8_t *bp = (const uint8_t *) p;
 
-	return ((uint64_t)bp[0] << 56) | ((uint64_t)bp[1] << 48) |
-	       ((uint64_t)bp[2] << 40) | ((uint64_t)bp[3] << 32) |
-	       ((uint64_t)bp[4] << 24) | ((uint64_t)bp[5] << 16) |
-	       ((uint64_t)bp[6] << 8) | bp[7];
+	return ((uint64_t) bp[0] << 56) | ((uint64_t) bp[1] << 48) | ((uint64_t) bp[2] << 40) | ((uint64_t) bp[3] << 32) |
+	       ((uint64_t) bp[4] << 24) | ((uint64_t) bp[5] << 16) | ((uint64_t) bp[6] << 8) | bp[7];
 }
 
 static inline void fdt64_st(void *property, uint64_t value)
@@ -217,15 +214,13 @@ int fdt_next_subnode(const void *fdt, int offset);
  * literal.
  *
  */
-#define fdt_for_each_subnode(node, fdt, parent)                \
-	for (node = fdt_first_subnode(fdt, parent); node >= 0; \
-	     node = fdt_next_subnode(fdt, node))
+#define fdt_for_each_subnode(node, fdt, parent) \
+	for (node = fdt_first_subnode(fdt, parent); node >= 0; node = fdt_next_subnode(fdt, node))
 
 /**********************************************************************/
 /* General functions                                                  */
 /**********************************************************************/
-#define fdt_get_header(fdt, field) \
-	(fdt32_ld(&((const struct fdt_header *)(fdt))->field))
+#define fdt_get_header(fdt, field) (fdt32_ld(&((const struct fdt_header *) (fdt))->field))
 #define fdt_magic(fdt) (fdt_get_header(fdt, magic))
 #define fdt_totalsize(fdt) (fdt_get_header(fdt, totalsize))
 #define fdt_off_dt_struct(fdt) (fdt_get_header(fdt, off_dt_struct))
@@ -237,11 +232,11 @@ int fdt_next_subnode(const void *fdt, int offset);
 #define fdt_size_dt_strings(fdt) (fdt_get_header(fdt, size_dt_strings))
 #define fdt_size_dt_struct(fdt) (fdt_get_header(fdt, size_dt_struct))
 
-#define fdt_set_hdr_(name)                                          \
-	static inline void fdt_set_##name(void *fdt, uint32_t val)  \
-	{                                                           \
-		struct fdt_header *fdth = (struct fdt_header *)fdt; \
-		fdth->name = cpu_to_fdt32(val);                     \
+#define fdt_set_hdr_(name)                                           \
+	static inline void fdt_set_##name(void *fdt, uint32_t val)   \
+	{                                                            \
+		struct fdt_header *fdth = (struct fdt_header *) fdt; \
+		fdth->name = cpu_to_fdt32(val);                      \
 	}
 fdt_set_hdr_(magic);
 fdt_set_hdr_(totalsize);
@@ -377,7 +372,7 @@ static inline uint32_t fdt_get_max_phandle(const void *fdt)
 
 	err = fdt_find_max_phandle(fdt, &phandle);
 	if (err < 0)
-		return (uint32_t)-1;
+		return (uint32_t) -1;
 
 	return phandle;
 }
@@ -440,8 +435,7 @@ int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size);
  * such as a full path.
  */
 #ifndef SWIG /* Not available in Python */
-int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
-			       const char *name, int namelen);
+int fdt_subnode_offset_namelen(const void *fdt, int parentoffset, const char *name, int namelen);
 #endif
 /**
  * fdt_subnode_offset - find a subnode of a given node
@@ -595,9 +589,8 @@ int fdt_next_property_offset(const void *fdt, int offset);
  * iterator in the loop. The node variable can be constant or even a
  * literal.
  */
-#define fdt_for_each_property_offset(property, fdt, node)                    \
-	for (property = fdt_first_property_offset(fdt, node); property >= 0; \
-	     property = fdt_next_property_offset(fdt, property))
+#define fdt_for_each_property_offset(property, fdt, node) \
+	for (property = fdt_first_property_offset(fdt, node); property >= 0; property = fdt_next_property_offset(fdt, property))
 
 /**
  * fdt_get_property_by_offset - retrieve the property at a given offset
@@ -626,8 +619,7 @@ int fdt_next_property_offset(const void *fdt, int offset);
  *		-FDT_ERR_BADSTRUCTURE,
  *		-FDT_ERR_TRUNCATED, standard meanings
  */
-const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
-						      int offset, int *lenp);
+const struct fdt_property *fdt_get_property_by_offset(const void *fdt, int offset, int *lenp);
 
 /**
  * fdt_get_property_namelen - find a property based on substring
@@ -641,10 +633,7 @@ const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
  * characters of name for matching the property name.
  */
 #ifndef SWIG /* Not available in Python */
-const struct fdt_property *fdt_get_property_namelen(const void *fdt,
-						    int nodeoffset,
-						    const char *name,
-						    int namelen, int *lenp);
+const struct fdt_property *fdt_get_property_namelen(const void *fdt, int nodeoffset, const char *name, int namelen, int *lenp);
 #endif
 
 /**
@@ -675,13 +664,10 @@ const struct fdt_property *fdt_get_property_namelen(const void *fdt,
  *		-FDT_ERR_BADSTRUCTURE,
  *		-FDT_ERR_TRUNCATED, standard meanings
  */
-const struct fdt_property *fdt_get_property(const void *fdt, int nodeoffset,
-					    const char *name, int *lenp);
-static inline struct fdt_property *
-fdt_get_property_w(void *fdt, int nodeoffset, const char *name, int *lenp)
+const struct fdt_property *fdt_get_property(const void *fdt, int nodeoffset, const char *name, int *lenp);
+static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset, const char *name, int *lenp)
 {
-	return (struct fdt_property *)(uintptr_t)fdt_get_property(
-		fdt, nodeoffset, name, lenp);
+	return (struct fdt_property *) (uintptr_t) fdt_get_property(fdt, nodeoffset, name, lenp);
 }
 
 /**
@@ -716,8 +702,7 @@ fdt_get_property_w(void *fdt, int nodeoffset, const char *name, int *lenp)
  *		-FDT_ERR_TRUNCATED, standard meanings
  */
 #ifndef SWIG /* This function is not useful in Python */
-const void *fdt_getprop_by_offset(const void *fdt, int offset,
-				  const char **namep, int *lenp);
+const void *fdt_getprop_by_offset(const void *fdt, int offset, const char **namep, int *lenp);
 #endif
 
 /**
@@ -732,14 +717,10 @@ const void *fdt_getprop_by_offset(const void *fdt, int offset,
  * characters of name for matching the property name.
  */
 #ifndef SWIG /* Not available in Python */
-const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
-				const char *name, int namelen, int *lenp);
-static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset,
-					  const char *name, int namelen,
-					  int *lenp)
+const void *fdt_getprop_namelen(const void *fdt, int nodeoffset, const char *name, int namelen, int *lenp);
+static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset, const char *name, int namelen, int *lenp)
 {
-	return (void *)(uintptr_t)fdt_getprop_namelen(fdt, nodeoffset, name,
-						      namelen, lenp);
+	return (void *) (uintptr_t) fdt_getprop_namelen(fdt, nodeoffset, name, namelen, lenp);
 }
 #endif
 
@@ -771,12 +752,10 @@ static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset,
  *		-FDT_ERR_BADSTRUCTURE,
  *		-FDT_ERR_TRUNCATED, standard meanings
  */
-const void *fdt_getprop(const void *fdt, int nodeoffset, const char *name,
-			int *lenp);
-static inline void *fdt_getprop_w(void *fdt, int nodeoffset, const char *name,
-				  int *lenp)
+const void *fdt_getprop(const void *fdt, int nodeoffset, const char *name, int *lenp);
+static inline void *fdt_getprop_w(void *fdt, int nodeoffset, const char *name, int *lenp)
 {
-	return (void *)(uintptr_t)fdt_getprop(fdt, nodeoffset, name, lenp);
+	return (void *) (uintptr_t) fdt_getprop(fdt, nodeoffset, name, lenp);
 }
 
 /**
@@ -803,8 +782,7 @@ uint32_t fdt_get_phandle(const void *fdt, int nodeoffset);
  * characters of name for matching the alias name.
  */
 #ifndef SWIG /* Not available in Python */
-const char *fdt_get_alias_namelen(const void *fdt, const char *name,
-				  int namelen);
+const char *fdt_get_alias_namelen(const void *fdt, const char *name, int namelen);
 #endif
 
 /**
@@ -878,8 +856,7 @@ int fdt_get_path(const void *fdt, int nodeoffset, char *buf, int buflen);
  *	-FDT_ERR_BADSTATE,
  *	-FDT_ERR_BADSTRUCTURE, standard meanings
  */
-int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
-				 int supernodedepth, int *nodedepth);
+int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset, int supernodedepth, int *nodedepth);
 
 /**
  * fdt_node_depth - find the depth of a given node
@@ -963,9 +940,7 @@ int fdt_parent_offset(const void *fdt, int nodeoffset);
  *	-FDT_ERR_BADSTATE,
  *	-FDT_ERR_BADSTRUCTURE, standard meanings
  */
-int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
-				  const char *propname, const void *propval,
-				  int proplen);
+int fdt_node_offset_by_prop_value(const void *fdt, int startoffset, const char *propname, const void *propval, int proplen);
 
 /**
  * fdt_node_offset_by_phandle - find the node with a given phandle
@@ -1010,8 +985,7 @@ int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
  *	-FDT_ERR_BADSTATE,
  *	-FDT_ERR_BADSTRUCTURE, standard meanings
  */
-int fdt_node_check_compatible(const void *fdt, int nodeoffset,
-			      const char *compatible);
+int fdt_node_check_compatible(const void *fdt, int nodeoffset, const char *compatible);
 
 /**
  * fdt_node_offset_by_compatible - find nodes with a given 'compatible' value
@@ -1047,8 +1021,7 @@ int fdt_node_check_compatible(const void *fdt, int nodeoffset,
  *	-FDT_ERR_BADSTATE,
  *	-FDT_ERR_BADSTRUCTURE, standard meanings
  */
-int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
-				  const char *compatible);
+int fdt_node_offset_by_compatible(const void *fdt, int startoffset, const char *compatible);
 
 /**
  * fdt_stringlist_contains - check a string list property for a string
@@ -1095,8 +1068,7 @@ int fdt_stringlist_count(const void *fdt, int nodeoffset, const char *property);
  *   -FDT_ERR_NOTFOUND if the property does not exist or does not contain
  *                     the given string
  */
-int fdt_stringlist_search(const void *fdt, int nodeoffset, const char *property,
-			  const char *string);
+int fdt_stringlist_search(const void *fdt, int nodeoffset, const char *property, const char *string);
 
 /**
  * fdt_stringlist_get() - obtain the string at a given index in a string list
@@ -1122,8 +1094,7 @@ int fdt_stringlist_search(const void *fdt, int nodeoffset, const char *property,
  *     -FDT_ERR_BADVALUE if the property value is not NUL-terminated
  *     -FDT_ERR_NOTFOUND if the property does not exist
  */
-const char *fdt_stringlist_get(const void *fdt, int nodeoffset,
-			       const char *property, int index, int *lenp);
+const char *fdt_stringlist_get(const void *fdt, int nodeoffset, const char *property, int index, int *lenp);
 
 /**********************************************************************/
 /* Read-only functions (addressing related)                           */
@@ -1202,9 +1173,8 @@ int fdt_size_cells(const void *fdt, int nodeoffset);
  * an array and you have a string that doesn't end with \0.
  */
 #ifndef SWIG /* Not available in Python */
-int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
-					const char *name, int namelen,
-					uint32_t idx, const void *val, int len);
+int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset, const char *name, int namelen, uint32_t idx, const void *val,
+					int len);
 #endif
 
 /**
@@ -1236,8 +1206,7 @@ int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
 #ifndef SWIG /* Not available in Python */
-int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
-			const void *val, int len);
+int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name, const void *val, int len);
 #endif
 
 /**
@@ -1268,8 +1237,7 @@ int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
  *	-FDT_ERR_BADSTRUCTURE,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset,
-					  const char *name, uint32_t val)
+static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset, const char *name, uint32_t val)
 {
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
@@ -1303,8 +1271,7 @@ static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset,
  *	-FDT_ERR_BADSTRUCTURE,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset,
-					  const char *name, uint64_t val)
+static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset, const char *name, uint64_t val)
 {
 	fdt64_t tmp = cpu_to_fdt64(val);
 	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
@@ -1315,8 +1282,7 @@ static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset,
  *
  * This is an alternative name for fdt_setprop_inplace_u32()
  */
-static inline int fdt_setprop_inplace_cell(void *fdt, int nodeoffset,
-					   const char *name, uint32_t val)
+static inline int fdt_setprop_inplace_cell(void *fdt, int nodeoffset, const char *name, uint32_t val)
 {
 	return fdt_setprop_inplace_u32(fdt, nodeoffset, name, val);
 }
@@ -1452,8 +1418,7 @@ static inline int fdt_property_cell(void *fdt, const char *name, uint32_t val)
  */
 int fdt_property_placeholder(void *fdt, const char *name, int len, void **valp);
 
-#define fdt_property_string(fdt, name, str) \
-	fdt_property(fdt, name, str, strlen(str) + 1)
+#define fdt_property_string(fdt, name, str) fdt_property(fdt, name, str, strlen(str) + 1)
 int fdt_end_node(void *fdt);
 int fdt_finish(void *fdt);
 
@@ -1567,8 +1532,7 @@ int fdt_set_name(void *fdt, int nodeoffset, const char *name);
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-int fdt_setprop(void *fdt, int nodeoffset, const char *name, const void *val,
-		int len);
+int fdt_setprop(void *fdt, int nodeoffset, const char *name, const void *val, int len);
 
 /**
  * fdt_setprop_placeholder - allocate space for a property
@@ -1598,8 +1562,7 @@ int fdt_setprop(void *fdt, int nodeoffset, const char *name, const void *val,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-int fdt_setprop_placeholder(void *fdt, int nodeoffset, const char *name,
-			    int len, void **prop_data);
+int fdt_setprop_placeholder(void *fdt, int nodeoffset, const char *name, int len, void **prop_data);
 
 /**
  * fdt_setprop_u32 - set a property to a 32-bit integer
@@ -1629,8 +1592,7 @@ int fdt_setprop_placeholder(void *fdt, int nodeoffset, const char *name,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name,
-				  uint32_t val)
+static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name, uint32_t val)
 {
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
@@ -1664,8 +1626,7 @@ static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name,
-				  uint64_t val)
+static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name, uint64_t val)
 {
 	fdt64_t tmp = cpu_to_fdt64(val);
 	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
@@ -1676,8 +1637,7 @@ static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name,
  *
  * This is an alternative name for fdt_setprop_u32()
  */
-static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
-				   uint32_t val)
+static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name, uint32_t val)
 {
 	return fdt_setprop_u32(fdt, nodeoffset, name, val);
 }
@@ -1710,8 +1670,7 @@ static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-#define fdt_setprop_string(fdt, nodeoffset, name, str) \
-	fdt_setprop((fdt), (nodeoffset), (name), (str), strlen(str) + 1)
+#define fdt_setprop_string(fdt, nodeoffset, name, str) fdt_setprop((fdt), (nodeoffset), (name), (str), strlen(str) + 1)
 
 /**
  * fdt_setprop_empty - set a property to an empty value
@@ -1739,8 +1698,7 @@ static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-#define fdt_setprop_empty(fdt, nodeoffset, name) \
-	fdt_setprop((fdt), (nodeoffset), (name), NULL, 0)
+#define fdt_setprop_empty(fdt, nodeoffset, name) fdt_setprop((fdt), (nodeoffset), (name), NULL, 0)
 
 /**
  * fdt_appendprop - append to or create a property
@@ -1769,8 +1727,7 @@ static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-int fdt_appendprop(void *fdt, int nodeoffset, const char *name, const void *val,
-		   int len);
+int fdt_appendprop(void *fdt, int nodeoffset, const char *name, const void *val, int len);
 
 /**
  * fdt_appendprop_u32 - append a 32-bit integer value to a property
@@ -1800,8 +1757,7 @@ int fdt_appendprop(void *fdt, int nodeoffset, const char *name, const void *val,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-static inline int fdt_appendprop_u32(void *fdt, int nodeoffset,
-				     const char *name, uint32_t val)
+static inline int fdt_appendprop_u32(void *fdt, int nodeoffset, const char *name, uint32_t val)
 {
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
@@ -1835,8 +1791,7 @@ static inline int fdt_appendprop_u32(void *fdt, int nodeoffset,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-static inline int fdt_appendprop_u64(void *fdt, int nodeoffset,
-				     const char *name, uint64_t val)
+static inline int fdt_appendprop_u64(void *fdt, int nodeoffset, const char *name, uint64_t val)
 {
 	fdt64_t tmp = cpu_to_fdt64(val);
 	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
@@ -1847,8 +1802,7 @@ static inline int fdt_appendprop_u64(void *fdt, int nodeoffset,
  *
  * This is an alternative name for fdt_appendprop_u32()
  */
-static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
-				      const char *name, uint32_t val)
+static inline int fdt_appendprop_cell(void *fdt, int nodeoffset, const char *name, uint32_t val)
 {
 	return fdt_appendprop_u32(fdt, nodeoffset, name, val);
 }
@@ -1880,8 +1834,7 @@ static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-#define fdt_appendprop_string(fdt, nodeoffset, name, str) \
-	fdt_appendprop((fdt), (nodeoffset), (name), (str), strlen(str) + 1)
+#define fdt_appendprop_string(fdt, nodeoffset, name, str) fdt_appendprop((fdt), (nodeoffset), (name), (str), strlen(str) + 1)
 
 /**
  * fdt_appendprop_addrrange - append a address range property
@@ -1917,8 +1870,7 @@ static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
  *		contain a new property
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset,
-			     const char *name, uint64_t addr, uint64_t size);
+int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset, const char *name, uint64_t addr, uint64_t size);
 
 /**
  * fdt_delprop - delete a property
@@ -1957,8 +1909,7 @@ int fdt_delprop(void *fdt, int nodeoffset, const char *name);
  * full path.
  */
 #ifndef SWIG /* Not available in Python */
-int fdt_add_subnode_namelen(void *fdt, int parentoffset, const char *name,
-			    int namelen);
+int fdt_add_subnode_namelen(void *fdt, int parentoffset, const char *name, int namelen);
 #endif
 
 /**

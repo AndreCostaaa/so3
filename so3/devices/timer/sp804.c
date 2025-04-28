@@ -46,7 +46,7 @@ typedef struct {
 
 static irq_return_t timer_isr(int irq, void *dev)
 {
-	sp804_t *sp804 = (sp804_t *)dev_get_drvdata((dev_t *)dev);
+	sp804_t *sp804 = (sp804_t *) dev_get_drvdata((dev_t *) dev);
 
 	/* Clear the interrupt */
 	iowrite32(&sp804->base->timerintclr, 1);
@@ -73,16 +73,14 @@ static void periodic_timer_start(void)
 {
 	uint32_t ctrl = TIMER_CTRL_32BIT | TIMER_CTRL_IE;
 	uint32_t reload;
-	sp804_t *sp804 =
-		(sp804_t *)dev_get_drvdata((dev_t *)periodic_timer.dev);
+	sp804_t *sp804 = (sp804_t *) dev_get_drvdata((dev_t *) periodic_timer.dev);
 
 	/* Number of clock cycles to wait */
-	reload = (uint32_t)(periodic_timer.period / (NSECS / TIMER_RATE));
+	reload = (uint32_t) (periodic_timer.period / (NSECS / TIMER_RATE));
 
 	iowrite32(&sp804->base->timercontrol, ctrl);
 
-	printk("%s: setting up system timer periodic freq at %x\n", __func__,
-	       reload);
+	printk("%s: setting up system timer periodic freq at %x\n", __func__, reload);
 
 	iowrite32(&sp804->base->timerload, reload);
 	ctrl |= TIMER_CTRL_PERIODIC | TIMER_CTRL_ENABLE;
@@ -96,8 +94,7 @@ static void periodic_timer_start(void)
 static void periodic_timer_stop(void)
 {
 	uint32_t ctrl = ~TIMER_CTRL_ENABLE;
-	sp804_t *sp804 =
-		(sp804_t *)dev_get_drvdata((dev_t *)periodic_timer.dev);
+	sp804_t *sp804 = (sp804_t *) dev_get_drvdata((dev_t *) periodic_timer.dev);
 
 	iowrite32(&sp804->base->timercontrol, ctrl);
 }
@@ -107,10 +104,9 @@ static void periodic_timer_stop(void)
 /* Read the clocksource timer value */
 u64 clocksource_read(void)
 {
-	sp804_t *sp804 =
-		(sp804_t *)dev_get_drvdata((dev_t *)clocksource_timer.dev);
+	sp804_t *sp804 = (sp804_t *) dev_get_drvdata((dev_t *) clocksource_timer.dev);
 
-	return (u64)~ioread32(&sp804->base->timervalue);
+	return (u64) ~ioread32(&sp804->base->timervalue);
 }
 
 /*
@@ -135,9 +131,8 @@ static int periodic_timer_init(dev_t *dev, int fdt_offset)
 
 	BUG_ON(prop_len != 2 * sizeof(unsigned long));
 
-	sp804->base = (struct sp804_timer *)io_map(
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	sp804->base = (struct sp804_timer *) io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]),
+						    fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 
 	fdt_interrupt_node(fdt_offset, &sp804->irq_def);
 
@@ -195,9 +190,8 @@ static int clocksource_timer_init(dev_t *dev, int fdt_offset)
 
 	BUG_ON(prop_len != 2 * sizeof(unsigned long));
 
-	sp804->base = (struct sp804_timer *)io_map(
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	sp804->base = (struct sp804_timer *) io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]),
+						    fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 
 	clocksource_timer.cycle_last = 0;
 
@@ -213,13 +207,10 @@ static int clocksource_timer_init(dev_t *dev, int fdt_offset)
 	iowrite32(&sp804->base->timerload, 0xffffffff);
 	iowrite32(&sp804->base->timervalue, 0xffffffff);
 
-	iowrite32(&sp804->base->timercontrol,
-		  TIMER_CTRL_32BIT | TIMER_CTRL_ENABLE | TIMER_CTRL_PERIODIC);
+	iowrite32(&sp804->base->timercontrol, TIMER_CTRL_32BIT | TIMER_CTRL_ENABLE | TIMER_CTRL_PERIODIC);
 
 	/* Calculate the mult/shift to convert counter ticks to ns. */
-	clocks_calc_mult_shift(&clocksource_timer.mult,
-			       &clocksource_timer.shift, clocksource_timer.rate,
-			       NSECS, 3600);
+	clocks_calc_mult_shift(&clocksource_timer.mult, &clocksource_timer.shift, clocksource_timer.rate, NSECS, 3600);
 
 	dev_set_drvdata(dev, sp804);
 

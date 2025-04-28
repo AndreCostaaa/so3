@@ -61,8 +61,7 @@ void vsenseled_set(int lednr, bool ledstate)
 	if (!vsenseled_dev)
 		return;
 
-	vsenseled_priv =
-		(vsenseled_priv_t *)dev_get_drvdata(vsenseled_dev->dev);
+	vsenseled_priv = (vsenseled_priv_t *) dev_get_drvdata(vsenseled_dev->dev);
 
 	vdevfront_processing_begin(vsenseled_dev);
 
@@ -103,15 +102,13 @@ static void vsenseled_probe(struct vbus_device *vdev)
 	/* Allocate an event channel associated to the ring */
 	vbus_alloc_evtchn(vdev, &evtchn);
 
-	vsenseled_priv->vsenseled.irq =
-		bind_evtchn_to_irq_handler(evtchn, NULL, NULL, vdev);
+	vsenseled_priv->vsenseled.irq = bind_evtchn_to_irq_handler(evtchn, NULL, NULL, vdev);
 	vsenseled_priv->vsenseled.evtchn = evtchn;
 
 	/* Allocate a shared page for the ring */
-	sring = (vsenseled_sring_t *)get_free_vpage();
+	sring = (vsenseled_sring_t *) get_free_vpage();
 	if (!sring) {
-		lprintk("%s - line %d: Allocating shared ring failed for device %s\n",
-			__func__, __LINE__, vdev->nodename);
+		lprintk("%s - line %d: Allocating shared ring failed for device %s\n", __func__, __LINE__, vdev->nodename);
 		BUG();
 	}
 
@@ -120,16 +117,13 @@ static void vsenseled_probe(struct vbus_device *vdev)
 
 	/* Prepare the shared to page to be visible on the other end */
 
-	vsenseled_priv->vsenseled.ring_ref = vbus_grant_ring(
-		vdev, phys_to_pfn(virt_to_phys_pt(
-			      (addr_t)vsenseled_priv->vsenseled.ring.sring)));
+	vsenseled_priv->vsenseled.ring_ref =
+		vbus_grant_ring(vdev, phys_to_pfn(virt_to_phys_pt((addr_t) vsenseled_priv->vsenseled.ring.sring)));
 
 	vbus_transaction_start(&vbt);
 
-	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u",
-		    vsenseled_priv->vsenseled.ring_ref);
-	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u",
-		    vsenseled_priv->vsenseled.evtchn);
+	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u", vsenseled_priv->vsenseled.ring_ref);
+	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u", vsenseled_priv->vsenseled.evtchn);
 
 	vbus_transaction_end(vbt);
 }
@@ -154,14 +148,11 @@ static void vsenseled_reconfiguring(struct vbus_device *vdev)
 	vsenseled_priv->vsenseled.ring_ref = GRANT_INVALID_REF;
 
 	SHARED_RING_INIT(vsenseled_priv->vsenseled.ring.sring);
-	FRONT_RING_INIT(&vsenseled_priv->vsenseled.ring,
-			vsenseled_priv->vsenseled.ring.sring, PAGE_SIZE);
+	FRONT_RING_INIT(&vsenseled_priv->vsenseled.ring, vsenseled_priv->vsenseled.ring.sring, PAGE_SIZE);
 
 	/* Prepare the shared to page to be visible on the other end */
 
-	res = vbus_grant_ring(
-		vdev, phys_to_pfn(virt_to_phys_pt(
-			      (addr_t)vsenseled_priv->vsenseled.ring.sring)));
+	res = vbus_grant_ring(vdev, phys_to_pfn(virt_to_phys_pt((addr_t) vsenseled_priv->vsenseled.ring.sring)));
 	if (res < 0)
 		BUG();
 
@@ -169,10 +160,8 @@ static void vsenseled_reconfiguring(struct vbus_device *vdev)
 
 	vbus_transaction_start(&vbt);
 
-	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u",
-		    vsenseled_priv->vsenseled.ring_ref);
-	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u",
-		    vsenseled_priv->vsenseled.evtchn);
+	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u", vsenseled_priv->vsenseled.ring_ref);
+	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u", vsenseled_priv->vsenseled.evtchn);
 
 	vbus_transaction_end(vbt);
 }
@@ -195,7 +184,7 @@ static void vsenseled_closed(struct vbus_device *vdev)
 	/* Free resources associated with old device channel. */
 	if (vsenseled_priv->vsenseled.ring_ref != GRANT_INVALID_REF) {
 		gnttab_end_foreign_access(vsenseled_priv->vsenseled.ring_ref);
-		free_vpage((addr_t)vsenseled_priv->vsenseled.ring.sring);
+		free_vpage((addr_t) vsenseled_priv->vsenseled.ring.sring);
 
 		vsenseled_priv->vsenseled.ring_ref = GRANT_INVALID_REF;
 		vsenseled_priv->vsenseled.ring.sring = NULL;

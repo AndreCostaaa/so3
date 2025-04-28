@@ -74,8 +74,7 @@ extern "C" {
 
 /* DNS field CLASS used for "Resource Records" */
 #define DNS_RRCLASS_IN 1 /* the Internet */
-#define DNS_RRCLASS_CS \
-	2 /* the CSNET class (Obsolete - used only for examples in some obsolete RFCs) */
+#define DNS_RRCLASS_CS 2 /* the CSNET class (Obsolete - used only for examples in some obsolete RFCs) */
 #define DNS_RRCLASS_CH 3 /* the CHAOS class */
 #define DNS_RRCLASS_HS 4 /* Hesiod [Dyer 87] */
 #define DNS_RRCLASS_ANY 255 /* any class */

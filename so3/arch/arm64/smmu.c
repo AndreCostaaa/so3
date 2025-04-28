@@ -23,7 +23,7 @@
 /* Offset of addr from start of the page. */
 #define PAGE_OFFSET(addr) ((addr) & PAGE_OFFS_MASK)
 
-#define LOWER_32_BITS(n) ((u32)(n))
+#define LOWER_32_BITS(n) ((u32) (n))
 #define UPPER_32_BITS(n) ((n) >> 32)
 
 /* MMIO registers */
@@ -131,12 +131,10 @@
 #define Q_WRP(reg, shift) ((reg) & (1 << (shift)))
 #define Q_OVERFLOW_FLAG (1 << 31)
 #define Q_OVF(reg) ((reg) & Q_OVERFLOW_FLAG)
-#define Q_EMPTY(prod, cons, shift)                           \
-	(Q_IDX((prod), (shift)) == Q_IDX((cons), (shift)) && \
-	 Q_WRP((prod), (shift)) == Q_WRP((cons), (shift)))
-#define Q_FULL(prod, cons, shift)                            \
-	(Q_IDX((prod), (shift)) == Q_IDX((cons), (shift)) && \
-	 Q_WRP((prod), (shift)) != Q_WRP((cons), (shift)))
+#define Q_EMPTY(prod, cons, shift) \
+	(Q_IDX((prod), (shift)) == Q_IDX((cons), (shift)) && Q_WRP((prod), (shift)) == Q_WRP((cons), (shift)))
+#define Q_FULL(prod, cons, shift) \
+	(Q_IDX((prod), (shift)) == Q_IDX((cons), (shift)) && Q_WRP((prod), (shift)) != Q_WRP((cons), (shift)))
 
 #define Q_BASE_RWA (1UL << 62)
 #define Q_BASE_ADDR_MASK BIT_MASK(51, 5)
@@ -243,8 +241,7 @@
 
 #define ARM_SMMU_SYNC_TIMEOUT 1000000
 
-#define FIELD_PREP(mask, val) \
-	(((u64)(val) << (__builtin_ffsl((mask)) - 1)) & (mask))
+#define FIELD_PREP(mask, val) (((u64) (val) << (__builtin_ffsl((mask)) - 1)) & (mask))
 #define FIELD_GET(mask, reg) (((reg) & (mask)) >> (__builtin_ffsl((mask)) - 1))
 #define FIELD_CLEAR(mask, reg) ((reg) & (~(mask)))
 
@@ -445,15 +442,12 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
 		break;
 	case CMDQ_OP_CMD_SYNC:
 		if (ent->sync.msiaddr)
-			cmd[0] |=
-				FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
+			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
 		else
-			cmd[0] |=
-				FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
-		cmd[0] |=
-			FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH) |
-			FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB) |
-			FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
+			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH) |
+			  FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB) |
+			  FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
 		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
 		break;
 	default:
@@ -503,8 +497,7 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
 	}
 }
 
-static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
-				    struct arm_smmu_cmdq_ent *ent)
+static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu, struct arm_smmu_cmdq_ent *ent)
 {
 	u64 cmd[CMDQ_ENT_DWORDS];
 
@@ -530,8 +523,7 @@ static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
 }
 
 /* Stream table manipulation functions */
-static void arm_smmu_write_strtab_l1_desc(u64 *dst,
-					  struct arm_smmu_strtab_l1_desc *desc)
+static void arm_smmu_write_strtab_l1_desc(u64 *dst, struct arm_smmu_strtab_l1_desc *desc)
 {
 	u64 val = 0;
 
@@ -557,9 +549,7 @@ static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu, u32 sid)
 	arm_smmu_cmdq_issue_sync(smmu);
 }
 
-static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
-				      u64 *guest_ste, u64 *dst, bool bypass,
-				      u32 vmid)
+static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid, u64 *guest_ste, u64 *dst, bool bypass, u32 vmid)
 {
 	struct paging_structures *pg_structs = &this_cell()->arch.mm;
 	u64 val, vttbr;
@@ -570,8 +560,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
 	if (bypass) {
 		val = STRTAB_STE_0_V;
 		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BYPASS);
-		dst[1] = FIELD_PREP(STRTAB_STE_1_SHCFG,
-				    STRTAB_STE_1_SHCFG_INCOMING);
+		dst[1] = FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING);
 		dst[2] = FIELD_PREP(STRTAB_STE_2_S2VMID, vmid);
 		dst[0] = val;
 		dsb(ishst);
@@ -580,8 +569,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
 		return;
 	}
 
-	dst[2] = FIELD_PREP(STRTAB_STE_2_S2VMID, vmid) |
-		 FIELD_PREP(STRTAB_STE_2_VTCR, VTCR_CELL) | STRTAB_STE_2_S2PTW |
+	dst[2] = FIELD_PREP(STRTAB_STE_2_S2VMID, vmid) | FIELD_PREP(STRTAB_STE_2_VTCR, VTCR_CELL) | STRTAB_STE_2_S2PTW |
 		 STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2R;
 
 	vttbr = paging_hvirt2phys(pg_structs->root_table);
@@ -601,8 +589,7 @@ static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
 	unsigned int n;
 
 	for (n = 0; n < nent; ++n) {
-		arm_smmu_write_strtab_ent(NULL, -1, NULL, strtab, true,
-					  (u32)this_cell()->config->id);
+		arm_smmu_write_strtab_ent(NULL, -1, NULL, strtab, true, (u32) this_cell()->config->id);
 		strtab += STRTAB_STE_DWORDS;
 	}
 }
@@ -671,8 +658,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
 	 * that is specified by hardware.
 	 */
 	if (size < smmu->sid_bits) {
-		printk("WARN: SMMU 2-level strtab only covers %u/%u bits of SID\n",
-		       size, smmu->sid_bits);
+		printk("WARN: SMMU 2-level strtab only covers %u/%u bits of SID\n", size, smmu->sid_bits);
 		smmu->sid_bits = size;
 	}
 
@@ -718,11 +704,8 @@ static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
 	return 0;
 }
 
-static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
-				   struct arm_smmu_queue *q,
-				   unsigned long prod_off,
-				   unsigned long cons_off, unsigned long dwords,
-				   unsigned int gerr_mask)
+static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu, struct arm_smmu_queue *q, unsigned long prod_off,
+				   unsigned long cons_off, unsigned long dwords, unsigned int gerr_mask)
 {
 	/* Queue size is capped to 4K. So allocate 1 page */
 	q->base = page_alloc(&mem_pool, 1);
@@ -750,15 +733,13 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
 	int ret;
 
 	/* cmdq */
-	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
-				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS,
+	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS,
 				      GERROR_CMDQ_ERR);
 	if (ret)
 		return ret;
 
 	/* evtq */
-	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
-				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS,
+	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD, ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS,
 				      GERROR_EVTQ_ABT_ERR);
 	if (ret)
 		return ret;
@@ -777,8 +758,7 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
 	return arm_smmu_init_strtab(smmu);
 }
 
-static int arm_smmu_write_reg_sync(struct arm_smmu_device *smmu, u32 val,
-				   unsigned int reg_off, unsigned int ack_off)
+static int arm_smmu_write_reg_sync(struct arm_smmu_device *smmu, u32 val, unsigned int reg_off, unsigned int ack_off)
 {
 	u32 n, timeout = ARM_SMMU_SYNC_TIMEOUT;
 
@@ -803,19 +783,14 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
 		return ret;
 
 	/* CR1 (table and queue memory attributes) */
-	reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) |
-	      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
-	      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) |
-	      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
-	      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) |
-	      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
+	reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) | FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
+	      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) | FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
+	      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) | FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
 	mmio_write32(smmu->base + ARM_SMMU_CR1, reg);
 
 	/* Stream table */
-	mmio_write64(smmu->base + ARM_SMMU_STRTAB_BASE,
-		     smmu->strtab_cfg.strtab_base);
-	mmio_write32(smmu->base + ARM_SMMU_STRTAB_BASE_CFG,
-		     smmu->strtab_cfg.strtab_base_cfg);
+	mmio_write64(smmu->base + ARM_SMMU_STRTAB_BASE, smmu->strtab_cfg.strtab_base);
+	mmio_write32(smmu->base + ARM_SMMU_STRTAB_BASE_CFG, smmu->strtab_cfg.strtab_base_cfg);
 
 	/* Command queue */
 	mmio_write64(smmu->base + ARM_SMMU_CMDQ_BASE, smmu->cmdq.q.q_base);
@@ -823,8 +798,7 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
 	mmio_write32(smmu->base + ARM_SMMU_CMDQ_CONS, smmu->cmdq.q.cons);
 
 	enables = CR0_CMDQEN;
-	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-				      ARM_SMMU_CR0ACK);
+	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
 	if (ret)
 		return ret;
 
@@ -847,16 +821,14 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
 	mmio_write32(smmu->base + ARM_SMMU_EVTQ_CONS, smmu->evtq.q.cons);
 
 	enables |= CR0_EVTQEN;
-	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-				      ARM_SMMU_CR0ACK);
+	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
 	if (ret)
 		return ret;
 
 	/* ToDo: Add support for PRI queue and IRQs  */
 
 	enables |= CR0_SMMUEN;
-	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-				      ARM_SMMU_CR0ACK);
+	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
 
 	return ret;
 }
@@ -888,13 +860,11 @@ static int arm_smmu_device_init_features(struct arm_smmu_device *smmu)
 		return trace_error(-ENODEV);
 
 	/* Queue sizes, capped at 4k */
-	smmu->cmdq.q.max_n_shift =
-		MIN(CMDQ_MAX_SZ_SHIFT, FIELD_GET(IDR1_CMDQS, reg));
+	smmu->cmdq.q.max_n_shift = MIN(CMDQ_MAX_SZ_SHIFT, FIELD_GET(IDR1_CMDQS, reg));
 	if (!smmu->cmdq.q.max_n_shift)
 		return trace_error(-ENODEV);
 
-	smmu->evtq.q.max_n_shift =
-		MIN(EVTQ_MAX_SZ_SHIFT, FIELD_GET(IDR1_EVTQS, reg));
+	smmu->evtq.q.max_n_shift = MIN(EVTQ_MAX_SZ_SHIFT, FIELD_GET(IDR1_EVTQS, reg));
 
 	/* SID sizes */
 	smmu->sid_bits = FIELD_GET(IDR1_SIDSIZE, reg);
@@ -1099,7 +1069,7 @@ void arm_smmu_init(struct domain *d)
 
 	smmu = &smmu_device[num_smmu_devices];
 
-	smmu->base = (void *)iommu.base;
+	smmu->base = (void *) iommu.base;
 	smmu->cb_base = smmu->base + iommu.size / 2;
 
 	/* ToDo: irq allocation*/

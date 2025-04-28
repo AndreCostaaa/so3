@@ -65,8 +65,7 @@ void mutex_lock(struct mutex *lock)
 		 * We only attempt the xchg if the count is non-negative in order
 		 * to avoid unnecessary xchg operations.
 		 */
-		if ((atomic_read(&lock->count) >= 0) &&
-		    (atomic_xchg(&lock->count, -1) == 1))
+		if ((atomic_read(&lock->count) >= 0) && (atomic_xchg(&lock->count, -1) == 1))
 			break;
 
 		/* Add waiting tasks to the end of the waitqueue (FIFO) */

@@ -26,11 +26,7 @@
 
 #include <device/input/ps2.h>
 
-const struct ps2_mouse EMPTY_STATE = { .x = 0,
-				       .y = 0,
-				       .left = 0,
-				       .right = 0,
-				       .middle = 0 };
+const struct ps2_mouse EMPTY_STATE = { .x = 0, .y = 0, .left = 0, .right = 0, .middle = 0 };
 
 #define GET_STATE 0
 #define SET_SIZE 1
@@ -39,7 +35,7 @@ static int ioctl_mouse(int fd, unsigned long cmd, unsigned long args)
 {
 	switch (cmd) {
 	case GET_STATE:
-		*((struct ps2_mouse *)args) = EMPTY_STATE;
+		*((struct ps2_mouse *) args) = EMPTY_STATE;
 		break;
 	case SET_SIZE:
 		break;

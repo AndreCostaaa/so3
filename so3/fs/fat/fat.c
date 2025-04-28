@@ -142,8 +142,7 @@ static void last_delim_remove(char *path)
 }
 
 /* This function was in part taken from linux */
-static void time_fat_fat2so3(unsigned short date, unsigned short time,
-			     struct timespec *ts)
+static void time_fat_fat2so3(unsigned short date, unsigned short time, struct timespec *ts)
 {
 	time_t second, day, leap_day, month, year;
 
@@ -160,9 +159,7 @@ static void time_fat_fat2so3(unsigned short date, unsigned short time,
 	second = (time & 0x1f) << 1;
 	second += ((time >> 5) & 0x3f) * SECS_PER_MIN;
 	second += (time >> 11) * SECS_PER_HOUR;
-	second += (year * 365 + leap_day + days_in_year[month] + day +
-		   DAYS_DELTA) *
-		  SECS_PER_DAY;
+	second += (year * 365 + leap_day + days_in_year[month] + day + DAYS_DELTA) * SECS_PER_DAY;
 
 #if 0
 	if (!sbi->options.tz_set)
@@ -177,7 +174,7 @@ static void time_fat_fat2so3(unsigned short date, unsigned short time,
 
 int fat_read(int fd, void *buffer, int count)
 {
-	struct fat_entry *ptrent = (struct fat_entry *)vfs_get_priv(fd);
+	struct fat_entry *ptrent = (struct fat_entry *) vfs_get_priv(fd);
 	int rc = 0;
 	int bread = 0;
 
@@ -190,8 +187,7 @@ int fat_read(int fd, void *buffer, int count)
 		return -EINVAL;
 	}
 
-	if ((rc = f_read(&ptrent->entry.file, buffer, count,
-			 (unsigned *)&bread))) {
+	if ((rc = f_read(&ptrent->entry.file, buffer, count, (unsigned *) &bread))) {
 		return -rc;
 	}
 
@@ -200,7 +196,7 @@ int fat_read(int fd, void *buffer, int count)
 
 int fat_write(int fd, const void *buffer, int count)
 {
-	struct fat_entry *ptrent = (struct fat_entry *)vfs_get_priv(fd);
+	struct fat_entry *ptrent = (struct fat_entry *) vfs_get_priv(fd);
 	int rc = 0;
 	int bwritten = 0;
 
@@ -213,8 +209,7 @@ int fat_write(int fd, const void *buffer, int count)
 		return -EINVAL;
 	}
 
-	if ((rc = f_write(&ptrent->entry.file, buffer, count,
-			  (unsigned *)&bwritten))) {
+	if ((rc = f_write(&ptrent->entry.file, buffer, count, (unsigned *) &bwritten))) {
 		return -rc;
 	}
 
@@ -233,7 +228,7 @@ int fat_open(int fd, const char *path)
 	int rc;
 	uint32_t open_flags = vfs_get_open_mode(fd);
 
-	ptrent = (struct fat_entry *)malloc(sizeof(struct fat_entry));
+	ptrent = (struct fat_entry *) malloc(sizeof(struct fat_entry));
 	if (!ptrent) {
 		printk("%s: heap overflow...\n", __func__);
 		kernel_panic();
@@ -242,7 +237,7 @@ int fat_open(int fd, const char *path)
 	switch (open_flags & O_DIRECTORY) {
 	case O_DIRECTORY:
 		/* This is a directory */
-		last_delim_remove((char *)path);
+		last_delim_remove((char *) path);
 		if ((rc = f_opendir(&ptrent->entry.dir.dir_ctx, path))) {
 			goto open_fail;
 		}
@@ -259,7 +254,7 @@ int fat_open(int fd, const char *path)
 		break;
 	}
 
-	vfs_set_priv(fd, (void *)ptrent);
+	vfs_set_priv(fd, (void *) ptrent);
 	return 0;
 
 open_fail:
@@ -270,7 +265,7 @@ open_fail:
 int fat_close(int fd)
 {
 	int rc;
-	struct fat_entry *ptrent = (struct fat_entry *)vfs_get_priv(fd);
+	struct fat_entry *ptrent = (struct fat_entry *) vfs_get_priv(fd);
 
 	switch (ptrent->tentry) {
 	case TYPE_FILE:
@@ -298,10 +293,8 @@ int fat_mount(const char *mount_point)
 
 	for (i = 0; i < ARRAY_SIZE(volumes); i++) {
 		if (!volumes[i].mounted) {
-			if ((rc = f_mount(&volumes[i].mp, mount_point,
-					  MOUNT_NOW))) {
-				DBG("Error %d while mounting volume %s\n", rc,
-				    mount_point);
+			if ((rc = f_mount(&volumes[i].mp, mount_point, MOUNT_NOW))) {
+				DBG("Error %d while mounting volume %s\n", rc, mount_point);
 				return -rc;
 			}
 
@@ -320,7 +313,7 @@ int fat_unmount(const char *mount_point)
 
 struct dirent *fat_readdir(int fd)
 {
-	struct fat_entry *ptrent = (struct fat_entry *)vfs_get_priv(fd);
+	struct fat_entry *ptrent = (struct fat_entry *) vfs_get_priv(fd);
 	struct dirent *dent;
 	DIR *tmp_dir;
 	FILINFO fno;
@@ -355,7 +348,7 @@ struct dirent *fat_readdir(int fd)
 
 	strcpy(dent->d_name, fn);
 
-	return (void *)dent;
+	return (void *) dent;
 }
 
 int fat_unlink(int fd, const char *path)
@@ -395,7 +388,7 @@ static int fat_ioctl(int fd, unsigned long cmd, unsigned long args)
 
 	switch (cmd) {
 	case TIOCGWINSZ:
-		rc = serial_gwinsize((struct winsize *)args);
+		rc = serial_gwinsize((struct winsize *) args);
 		break;
 	default:
 		rc = -1;
@@ -421,7 +414,7 @@ static int fat_ioctl(int fd, unsigned long cmd, unsigned long args)
  */
 static off_t fat_lseek(int fd, off_t off, int whence)
 {
-	struct fat_entry *ptrent = (struct fat_entry *)vfs_get_priv(fd);
+	struct fat_entry *ptrent = (struct fat_entry *) vfs_get_priv(fd);
 	off_t ret;
 	uint32_t eof, cur;
 
@@ -472,7 +465,7 @@ static off_t fat_lseek(int fd, off_t off, int whence)
 	ret = f_lseek(&ptrent->entry.file, off);
 	if (ret) {
 		set_errno(EINVAL);
-		return (off_t)-1;
+		return (off_t) -1;
 	}
 
 	return off;

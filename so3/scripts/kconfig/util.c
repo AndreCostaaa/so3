@@ -16,7 +16,7 @@ struct file *file_lookup(const char *name)
 
 	for (file = file_list; file; file = file->next) {
 		if (!strcmp(name, file->name)) {
-			free((void *)file_name);
+			free((void *) file_name);
 			return file;
 		}
 	}

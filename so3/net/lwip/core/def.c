@@ -234,7 +234,7 @@ void lwip_itoa(char *result, size_t bufsize, int number)
      and ensure output string is zero terminated */
 	*tmp = 0;
 	while ((n != 0) && (tmp > res)) {
-		char val = (char)('0' + (n % 10));
+		char val = (char) ('0' + (n % 10));
 		tmp--;
 		*tmp = val;
 		n = n / 10;
@@ -251,6 +251,6 @@ void lwip_itoa(char *result, size_t bufsize, int number)
 		return;
 	}
 	/* move from temporary buffer to output buffer (sign is not moved) */
-	memmove(res, tmp, (size_t)((result + bufsize) - tmp));
+	memmove(res, tmp, (size_t) ((result + bufsize) - tmp));
 }
 #endif

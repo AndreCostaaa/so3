@@ -53,17 +53,14 @@ static void vbs_me_write(const char *dir, const char *node, const char *string)
  *
  * <realtime> tells if the device is realtime.
  */
-static void vbstore_dev_init(unsigned int domID, const char *devname,
-			     bool realtime, const char *compat)
+static void vbstore_dev_init(unsigned int domID, const char *devname, bool realtime, const char *compat)
 {
 	char rootname[VBS_KEY_LENGTH]; /* Root name depending on domID */
 	char propname[VBS_KEY_LENGTH]; /* Property name depending on domID */
 	char devrootname[VBS_KEY_LENGTH];
-	unsigned int dir_exists =
-		0; /* Data used to check if a directory exists */
+	unsigned int dir_exists = 0; /* Data used to check if a directory exists */
 
-	DBG("%s: creating vbstore entries for domain %d and dev %s\n", __func__,
-	    domID, devname);
+	DBG("%s: creating vbstore entries for domain %d and dev %s\n", __func__, domID, devname);
 
 	/*
 	 * We must check here if the /backend/% entry exists.
@@ -171,8 +168,7 @@ static void vbstore_dev_remove(unsigned int domID, const char *devname)
 {
 	char propname[VBS_KEY_LENGTH]; /* Property name depending on domID */
 	char devrootname[VBS_KEY_LENGTH];
-	unsigned int dir_exists =
-		0; /* Data used to check if a directory exists */
+	unsigned int dir_exists = 0; /* Data used to check if a directory exists */
 
 	DBG("%s: removing vbstore entries for domain %d\n", __func__, domID);
 
@@ -265,15 +261,13 @@ void vbstore_devices_populate(void)
 	fdt_node = fdt_find_compatible_node(__fdt_addr, "vdummy,frontend");
 	if (fdt_device_is_available(__fdt_addr, fdt_node)) {
 		DBG("%s: init vdummy...\n", __func__);
-		vbstore_dev_init(ME_domID(), "vdummy", false,
-				 "vdummy,frontend");
+		vbstore_dev_init(ME_domID(), "vdummy", false, "vdummy,frontend");
 	}
 
 	fdt_node = fdt_find_compatible_node(__fdt_addr, "vuihandler,frontend");
 	if (fdt_device_is_available(__fdt_addr, fdt_node)) {
 		DBG("%s: Init vUIHandler...\n", __func__);
-		vbstore_dev_init(ME_domID(), "vuihandler", false,
-				 "vuihandler,frontend");
+		vbstore_dev_init(ME_domID(), "vuihandler", false, "vuihandler,frontend");
 	}
 
 	fdt_node = fdt_find_compatible_node(__fdt_addr, "vuart,frontend");
@@ -285,15 +279,13 @@ void vbstore_devices_populate(void)
 	fdt_node = fdt_find_compatible_node(__fdt_addr, "vsenseled,frontend");
 	if (fdt_device_is_available(__fdt_addr, fdt_node)) {
 		DBG("%s: init vsenseled...\n", __func__);
-		vbstore_dev_init(ME_domID(), "vsenseled", false,
-				 "vsenseled,frontend");
+		vbstore_dev_init(ME_domID(), "vsenseled", false, "vsenseled,frontend");
 	}
 
 	fdt_node = fdt_find_compatible_node(__fdt_addr, "vsensej,frontend");
 	if (fdt_device_is_available(__fdt_addr, fdt_node)) {
 		DBG("%s: init vsensej...\n", __func__);
-		vbstore_dev_init(ME_domID(), "vsensej", false,
-				 "vsensej,frontend");
+		vbstore_dev_init(ME_domID(), "vsensej", false, "vsensej,frontend");
 	}
 }
 

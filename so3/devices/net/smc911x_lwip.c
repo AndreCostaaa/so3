@@ -89,11 +89,9 @@
 
 #include <device/arch/smc911x.h>
 
-u32 pkt_data_pull(eth_dev_t *dev, u32 addr)
-	__attribute__((weak, alias("smc911x_reg_read")));
+u32 pkt_data_pull(eth_dev_t *dev, u32 addr) __attribute__((weak, alias("smc911x_reg_read")));
 
-void pkt_data_push(eth_dev_t *dev, u32 addr, u32 val)
-	__attribute__((weak, alias("smc911x_reg_write")));
+void pkt_data_push(eth_dev_t *dev, u32 addr, u32 val) __attribute__((weak, alias("smc911x_reg_write")));
 
 static void smc911x_handle_mac_address(eth_dev_t *dev)
 {
@@ -111,8 +109,7 @@ static int smc911x_eth_phy_read(eth_dev_t *dev, u8 phy, u8 reg, u16 *val)
 	while (smc911x_get_mac_csr(dev, MII_ACC) & MII_ACC_MII_BUSY)
 		;
 
-	smc911x_set_mac_csr(dev, MII_ACC,
-			    phy << 11 | reg << 6 | MII_ACC_MII_BUSY);
+	smc911x_set_mac_csr(dev, MII_ACC, phy << 11 | reg << 6 | MII_ACC_MII_BUSY);
 
 	while (smc911x_get_mac_csr(dev, MII_ACC) & MII_ACC_MII_BUSY)
 		;
@@ -128,9 +125,7 @@ static int smc911x_eth_phy_write(eth_dev_t *dev, u8 phy, u8 reg, u16 val)
 		;
 
 	smc911x_set_mac_csr(dev, MII_DATA, val);
-	smc911x_set_mac_csr(dev, MII_ACC,
-			    phy << 11 | reg << 6 | MII_ACC_MII_BUSY |
-				    MII_ACC_MII_WRITE);
+	smc911x_set_mac_csr(dev, MII_ACC, phy << 11 | reg << 6 | MII_ACC_MII_BUSY | MII_ACC_MII_WRITE);
 
 	while (smc911x_get_mac_csr(dev, MII_ACC) & MII_ACC_MII_BUSY)
 		;
@@ -195,8 +190,7 @@ static void smc911x_enable(eth_dev_t *dev)
 	/* no padding to start of packets */
 	smc911x_reg_write(dev, RX_CFG, 0);
 
-	smc911x_set_mac_csr(dev, MAC_CR,
-			    MAC_CR_TXEN | MAC_CR_RXEN | MAC_CR_HBDIS);
+	smc911x_set_mac_csr(dev, MAC_CR, MAC_CR_TXEN | MAC_CR_RXEN | MAC_CR_HBDIS);
 }
 
 #if 0 /* Currently not used */
@@ -219,8 +213,7 @@ static int smc911x_rx(struct netif *netif)
 	struct pbuf *buf;
 
 	/* Loop while there are incoming eth frames */
-	while ((smc911x_reg_read(dev, RX_FIFO_INF) & RX_FIFO_INF_RXSUSED) >>
-	       16) {
+	while ((smc911x_reg_read(dev, RX_FIFO_INF) & RX_FIFO_INF_RXSUSED) >> 16) {
 		status = smc911x_reg_read(dev, RX_STATUS_FIFO);
 		pktlen = (status & RX_STS_PKT_LEN) >> 16;
 
@@ -247,7 +240,7 @@ static int smc911x_rx(struct netif *netif)
 		}
 
 		if (buf != NULL)
-			data = (u32 *)buf->payload;
+			data = (u32 *) buf->payload;
 
 		while (tmplen--) {
 			pulled_data = pkt_data_pull(dev, RX_DATA_FIFO);
@@ -266,15 +259,14 @@ static int smc911x_rx(struct netif *netif)
 
 static irq_return_t smc911x_so3_interrupt_top(int irq, void *dummy)
 {
-	struct netif *netif = (struct netif *)dummy;
+	struct netif *netif = (struct netif *) dummy;
 	eth_dev_t *dev = netif->state;
 	u32 mask;
 
 	if (!sem_timeddown(&dev->sem_read, 10000)) {
 		/* Disable frame interrupts */
 		mask = smc911x_reg_read(dev, INT_EN);
-		smc911x_reg_write(dev, INT_EN,
-				  mask & ~(INT_EN_RSFL_EN | INT_EN_RSFF_EN));
+		smc911x_reg_write(dev, INT_EN, mask & ~(INT_EN_RSFL_EN | INT_EN_RSFF_EN));
 
 		/* Process incoming frames */
 		smc911x_rx(netif);
@@ -289,7 +281,7 @@ static irq_return_t smc911x_so3_interrupt_top(int irq, void *dummy)
 
 static irq_return_t smc911x_so3_interrupt(int irq, void *dummy)
 {
-	struct netif *netif = (struct netif *)dummy;
+	struct netif *netif = (struct netif *) dummy;
 	eth_dev_t *dev = netif->state;
 
 	irq_return_t irq_return = IRQ_COMPLETED;
@@ -346,8 +338,7 @@ static irq_return_t smc911x_so3_interrupt(int irq, void *dummy)
 
 		if (status & (INT_STS_TSFL | INT_STS_GPT_INT)) {
 			DBG("STS_TSFL\n", status);
-			smc911x_reg_write(dev, INT_STS,
-					  INT_STS_TSFL | INT_STS_GPT_INT);
+			smc911x_reg_write(dev, INT_STS, INT_STS_TSFL | INT_STS_GPT_INT);
 		}
 
 		if (status & INT_STS_PHY_INT) {
@@ -376,12 +367,10 @@ static err_t smc911x_lwip_send(struct netif *netif, struct pbuf *p)
 
 	sem_down(&dev->sem_write);
 
-	smc911x_reg_write(dev, TX_DATA_FIFO,
-			  TX_CMD_A_INT_FIRST_SEG | TX_CMD_A_INT_LAST_SEG |
-				  p->tot_len);
+	smc911x_reg_write(dev, TX_DATA_FIFO, TX_CMD_A_INT_FIRST_SEG | TX_CMD_A_INT_LAST_SEG | p->tot_len);
 	smc911x_reg_write(dev, TX_DATA_FIFO, p->tot_len);
 
-	data = (u32 *)pbuf_get_contiguous(p, buff, sizeof(buff), p->tot_len, 0);
+	data = (u32 *) pbuf_get_contiguous(p, buff, sizeof(buff), p->tot_len, 0);
 
 	tmplen = (p->tot_len + 3) / 4;
 
@@ -390,28 +379,23 @@ static err_t smc911x_lwip_send(struct netif *netif, struct pbuf *p)
 	}
 
 	/* wait for transmission */
-	while (!((smc911x_reg_read(dev, TX_FIFO_INF) & TX_FIFO_INF_TSUSED) >>
-		 16)) {
+	while (!((smc911x_reg_read(dev, TX_FIFO_INF) & TX_FIFO_INF_TSUSED) >> 16)) {
 	}
 
 	/* get status. Ignore 'no carrier' error, it has no meaning for
          * full duplex operation
          */
 	status = smc911x_reg_read(dev, TX_STATUS_FIFO) &
-		 (TX_STS_LOC | TX_STS_LATE_COLL | TX_STS_MANY_COLL |
-		  TX_STS_MANY_DEFER | TX_STS_UNDERRUN);
+		 (TX_STS_LOC | TX_STS_LATE_COLL | TX_STS_MANY_COLL | TX_STS_MANY_DEFER | TX_STS_UNDERRUN);
 
 	if (!status) {
 		sem_up(&dev->sem_write);
 		return ERR_OK;
 	}
 
-	DBG(DRIVERNAME ": failed to send packet: %s%s%s%s%s\n",
-	    status & TX_STS_LOC ? "TX_STS_LOC " : "",
-	    status & TX_STS_LATE_COLL ? "TX_STS_LATE_COLL " : "",
-	    status & TX_STS_MANY_COLL ? "TX_STS_MANY_COLL " : "",
-	    status & TX_STS_MANY_DEFER ? "TX_STS_MANY_DEFER " : "",
-	    status & TX_STS_UNDERRUN ? "TX_STS_UNDERRUN" : "");
+	DBG(DRIVERNAME ": failed to send packet: %s%s%s%s%s\n", status & TX_STS_LOC ? "TX_STS_LOC " : "",
+	    status & TX_STS_LATE_COLL ? "TX_STS_LATE_COLL " : "", status & TX_STS_MANY_COLL ? "TX_STS_MANY_COLL " : "",
+	    status & TX_STS_MANY_DEFER ? "TX_STS_MANY_DEFER " : "", status & TX_STS_UNDERRUN ? "TX_STS_UNDERRUN" : "");
 
 	sem_up(&dev->sem_write);
 	return ERR_IF;
@@ -437,8 +421,7 @@ err_t smc911x_lwip_init(struct netif *netif)
 	netif->hwaddr_len = ARP_HLEN;
 
 	netif->mtu = 1500;
-	netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP |
-		       NETIF_FLAG_LINK_UP;
+	netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP;
 
 #if LWIP_IPV4
 	netif->output = etharp_output;
@@ -473,8 +456,7 @@ err_t smc911x_lwip_init(struct netif *netif)
 	/* Turn on relevant interrupts */
 	smc911x_reg_write(eth_dev, INT_EN, INT_EN_RSFL_EN | INT_EN_RSFF_EN);
 
-	irq_bind(eth_dev->irq_def.irqnr, smc911x_so3_interrupt,
-		 smc911x_so3_interrupt_top, netif);
+	irq_bind(eth_dev->irq_def.irqnr, smc911x_so3_interrupt, smc911x_so3_interrupt_top, netif);
 
 #warning automatic dhcp - remove ?
 	dhcp_start(netif);
@@ -510,8 +492,7 @@ int smc911x_init(eth_dev_t *eth_dev)
 	}
 
 	netif = malloc(sizeof(struct netif));
-	netif_add(netif, NULL, NULL, NULL, eth_dev, smc911x_lwip_init,
-		  tcpip_input);
+	netif_add(netif, NULL, NULL, NULL, eth_dev, smc911x_lwip_init, tcpip_input);
 
 	return 1;
 }
@@ -531,12 +512,10 @@ static int smc911x_register(dev_t *dev, int fdt_offset)
 
 #ifdef CONFIG_ARCH_ARM32
 	eth_dev->iobase =
-		io_map(fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-		       fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+		io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]), fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 #else
 	eth_dev->iobase =
-		io_map(fdt64_to_cpu(((const fdt64_t *)prop->data)[0]),
-		       fdt64_to_cpu(((const fdt64_t *)prop->data)[1]));
+		io_map(fdt64_to_cpu(((const fdt64_t *) prop->data)[0]), fdt64_to_cpu(((const fdt64_t *) prop->data)[1]));
 #endif
 
 	fdt_interrupt_node(fdt_offset, &eth_dev->irq_def);

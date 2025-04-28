@@ -84,10 +84,8 @@ int get_mem_info(const void *fdt, mem_info_t *info)
 
 	if (prop) {
 		if (prop_len == 8) {
-			info->phys_base =
-				fdt32_to_cpu(((const fdt32_t *)prop->data)[0]);
-			info->size =
-				fdt32_to_cpu(((const fdt32_t *)prop->data)[1]);
+			info->phys_base = fdt32_to_cpu(((const fdt32_t *) prop->data)[0]);
+			info->size = fdt32_to_cpu(((const fdt32_t *) prop->data)[1]);
 		} else {
 			BUG_ON(prop_len != 16);
 
@@ -95,10 +93,8 @@ int get_mem_info(const void *fdt, mem_info_t *info)
 			 * on 64-bit for aarch32 platforms.
 			 */
 #ifdef CONFIG_ARCH_ARM32
-			info->phys_base =
-				fdt32_to_cpu(((const fdt32_t *)prop->data)[0]);
-			info->size =
-				fdt32_to_cpu(((const fdt32_t *)prop->data)[1]);
+			info->phys_base = fdt32_to_cpu(((const fdt32_t *) prop->data)[0]);
+			info->size = fdt32_to_cpu(((const fdt32_t *) prop->data)[1]);
 #else
 
 			/* We avoid to make a memory access beyond the byte,
@@ -106,15 +102,15 @@ int get_mem_info(const void *fdt, mem_info_t *info)
 			 * and memory access must be 8-byte aligned.
 			 */
 
-			ptr = (char *)prop->data;
+			ptr = (char *) prop->data;
 
 			for (i = 0; i < 8; i++)
-				*(((char *)&val) + i) = *ptr++;
+				*(((char *) &val) + i) = *ptr++;
 
 			info->phys_base = fdt64_to_cpu(val);
 
 			for (i = 0; i < 8; i++)
-				*(((char *)&val) + i) = *ptr++;
+				*(((char *) &val) + i) = *ptr++;
 
 			info->size = fdt64_to_cpu(val);
 
@@ -130,21 +126,19 @@ int fdt_get_int(void *fdt_addr, void *dev, const char *name)
 	const struct fdt_property *prop;
 	int prop_len;
 	fdt32_t *p;
-	dev_t *__dev = (dev_t *)dev;
+	dev_t *__dev = (dev_t *) dev;
 
-	prop = fdt_get_property((void *)fdt_addr, __dev->offset_dts, name,
-				&prop_len);
+	prop = fdt_get_property((void *) fdt_addr, __dev->offset_dts, name, &prop_len);
 
 	if (prop) {
-		p = (fdt32_t *)prop->data;
+		p = (fdt32_t *) prop->data;
 
 		return fdt32_to_cpu(p[0]);
 	} else
 		return -1;
 }
 
-const struct fdt_property *fdt_find_property(void *fdt_addr, int offset,
-					     const char *propname)
+const struct fdt_property *fdt_find_property(void *fdt_addr, int offset, const char *propname)
 {
 	const struct fdt_property *prop;
 
@@ -155,8 +149,7 @@ const struct fdt_property *fdt_find_property(void *fdt_addr, int offset,
 		return NULL;
 }
 
-int fdt_property_read_string(void *fdt_addr, int offset, const char *propname,
-			     const char **out_string)
+int fdt_property_read_string(void *fdt_addr, int offset, const char *propname, const char **out_string)
 {
 	const struct fdt_property *prop;
 
@@ -169,8 +162,7 @@ int fdt_property_read_string(void *fdt_addr, int offset, const char *propname,
 	return -1;
 }
 
-int fdt_property_read_u32(void *fdt_addr, int offset, const char *propname,
-			  u32 *out_value)
+int fdt_property_read_u32(void *fdt_addr, int offset, const char *propname, u32 *out_value)
 {
 	const fdt32_t *val;
 
@@ -184,8 +176,7 @@ int fdt_property_read_u32(void *fdt_addr, int offset, const char *propname,
 	return -1;
 }
 
-int fdt_property_read_u64(void *fdt_addr, int offset, const char *propname,
-			  u64 *out_value)
+int fdt_property_read_u64(void *fdt_addr, int offset, const char *propname, u64 *out_value)
 {
 	const fdt64_t *val;
 
@@ -211,8 +202,7 @@ int fdt_find_node_by_name(void *fdt_addr, int parent, const char *nodename)
 		node_name = kbasename(__nodename);
 		len = strchrnul(node_name, '@') - node_name;
 
-		if ((strlen(nodename) == len) &&
-		    (strncmp(node_name, nodename, len) == 0))
+		if ((strlen(nodename) == len) && (strncmp(node_name, nodename, len) == 0))
 			return node;
 	}
 
@@ -242,20 +232,20 @@ int fdt_pack_reg(const void *fdt, void *buf, addr_t *address, size_t *size)
 	char *p = buf;
 
 	if (address_cells == 2)
-		*(fdt64_t *)p = cpu_to_fdt64(*address);
+		*(fdt64_t *) p = cpu_to_fdt64(*address);
 	else
-		*(fdt32_t *)p = cpu_to_fdt32(*address);
+		*(fdt32_t *) p = cpu_to_fdt32(*address);
 
 	p += 4 * address_cells;
 
 	if (size_cells == 2)
-		*(fdt64_t *)p = cpu_to_fdt64(*size);
+		*(fdt64_t *) p = cpu_to_fdt64(*size);
 	else
-		*(fdt32_t *)p = cpu_to_fdt32(*size);
+		*(fdt32_t *) p = cpu_to_fdt32(*size);
 
 	p += 4 * size_cells;
 
-	return p - (char *)buf;
+	return p - (char *) buf;
 }
 
 /**
@@ -284,15 +274,14 @@ int fdt_find_or_add_subnode(void *fdt, int parentoffset, const char *name)
 }
 
 /* Get device informations/parameters from a device tree */
-int get_dev_info(const void *fdt_addr, int offset, const char *compat,
-		 void *info)
+int get_dev_info(const void *fdt_addr, int offset, const char *compat, void *info)
 {
 	int new_offset;
 	const struct fdt_property *prop;
 	int prop_len;
 	const char *compat_str, *node_str;
 	static int depth = 0;
-	dev_t *__info = (dev_t *)info;
+	dev_t *__info = (dev_t *) info;
 
 	/* Need to reset the depth? */
 	if (offset == 0)
@@ -305,8 +294,7 @@ int get_dev_info(const void *fdt_addr, int offset, const char *compat,
 	if (strcmp(compat, "*") == 0)
 		new_offset = fdt_next_node(fdt_addr, offset, &depth);
 	else
-		new_offset =
-			fdt_node_offset_by_compatible(fdt_addr, offset, compat);
+		new_offset = fdt_node_offset_by_compatible(fdt_addr, offset, compat);
 
 	if (new_offset < 0)
 		/* No node found */
@@ -326,13 +314,11 @@ int get_dev_info(const void *fdt_addr, int offset, const char *compat,
 	} else if (depth < fdt_cur_status.fdt_cur_lvl) {
 		fdt_cur_status.fdt_cur_lvl--;
 	} else {
-		__info->parent =
-			fdt_cur_status
-				.fdt_parent[fdt_cur_status.fdt_cur_lvl - 1];
+		__info->parent = fdt_cur_status.fdt_parent[fdt_cur_status.fdt_cur_lvl - 1];
 	}
 
 	__info->offset_dts = new_offset;
-	__info->fdt = (void *)fdt_addr;
+	__info->fdt = (void *) fdt_addr;
 
 	compat_str = fdt_getprop(fdt_addr, new_offset, "compatible", &prop_len);
 
@@ -341,8 +327,7 @@ int get_dev_info(const void *fdt_addr, int offset, const char *compat,
 	}
 
 	if (prop_len > MAX_COMPAT_SIZE) {
-		DBG("Length of Compatible string > %d chars\n",
-		    MAX_COMPAT_SIZE);
+		DBG("Length of Compatible string > %d chars\n", MAX_COMPAT_SIZE);
 		return new_offset;
 	}
 

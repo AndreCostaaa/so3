@@ -89,9 +89,7 @@ do_resize:
 		case TAB:
 		case KEY_LEFT:
 		case KEY_RIGHT:
-			button = ((key == KEY_LEFT ? --button : ++button) < 0) ?
-					 1 :
-					 (button > 1 ? 0 : button);
+			button = ((key == KEY_LEFT ? --button : ++button) < 0) ? 1 : (button > 1 ? 0 : button);
 
 			print_buttons(dialog, height, width, button);
 			wrefresh(dialog);

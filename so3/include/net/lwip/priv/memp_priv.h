@@ -50,11 +50,8 @@ extern "C" {
 #if MEMP_OVERFLOW_CHECK
 
 /* MEMP_SIZE: save space for struct memp and for sanity check */
-#define MEMP_SIZE                                   \
-	(LWIP_MEM_ALIGN_SIZE(sizeof(struct memp)) + \
-	 MEM_SANITY_REGION_BEFORE_ALIGNED)
-#define MEMP_ALIGN_SIZE(x) \
-	(LWIP_MEM_ALIGN_SIZE(x) + MEM_SANITY_REGION_AFTER_ALIGNED)
+#define MEMP_SIZE (LWIP_MEM_ALIGN_SIZE(sizeof(struct memp)) + MEM_SANITY_REGION_BEFORE_ALIGNED)
+#define MEMP_ALIGN_SIZE(x) (LWIP_MEM_ALIGN_SIZE(x) + MEM_SANITY_REGION_AFTER_ALIGNED)
 
 #else /* MEMP_OVERFLOW_CHECK */
 
@@ -102,8 +99,8 @@ typedef enum {
 
 /* The actual start and stop values are here (cast them over)
    We use this helper type and these defines so we can avoid using const memp_t values */
-#define MEMP_POOL_FIRST ((memp_t)MEMP_POOL_HELPER_FIRST)
-#define MEMP_POOL_LAST ((memp_t)MEMP_POOL_HELPER_LAST)
+#define MEMP_POOL_FIRST ((memp_t) MEMP_POOL_HELPER_FIRST)
+#define MEMP_POOL_LAST ((memp_t) MEMP_POOL_HELPER_LAST)
 #endif /* MEM_USE_POOLS && MEMP_USE_CUSTOM_POOLS */
 
 /** Memory pool descriptor */
@@ -149,8 +146,7 @@ struct memp_desc {
 void memp_init_pool(const struct memp_desc *desc);
 
 #if MEMP_OVERFLOW_CHECK
-void *memp_malloc_pool_fn(const struct memp_desc *desc, const char *file,
-			  const int line);
+void *memp_malloc_pool_fn(const struct memp_desc *desc, const char *file, const int line);
 #define memp_malloc_pool(d) memp_malloc_pool_fn((d), __FILE__, __LINE__)
 #else
 void *memp_malloc_pool(const struct memp_desc *desc);

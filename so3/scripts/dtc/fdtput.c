@@ -39,8 +39,7 @@ static void report_error(const char *name, int namelen, int err)
 {
 	if (namelen == -1)
 		namelen = strlen(name);
-	fprintf(stderr, "Error at '%1.*s': %s\n", namelen, name,
-		fdt_strerror(err));
+	fprintf(stderr, "Error at '%1.*s': %s\n", namelen, name, fdt_strerror(err));
 }
 
 /**
@@ -52,8 +51,7 @@ static void report_error(const char *name, int namelen, int err)
  * @param valuep	Returns buffer containing value
  * @param *value_len	Returns length of value encoded
  */
-static int encode_value(struct display_info *disp, char **arg, int arg_count,
-			char **valuep, int *value_len)
+static int encode_value(struct display_info *disp, char **arg, int arg_count, char **valuep, int *value_len)
 {
 	char *value = NULL; /* holding area for value */
 	int value_size = 0; /* size of holding area */
@@ -97,12 +95,12 @@ static int encode_value(struct display_info *disp, char **arg, int arg_count,
 			if (disp->verbose)
 				fprintf(stderr, "\tstring: '%s'\n", ptr);
 		} else {
-			int *iptr = (int *)ptr;
+			int *iptr = (int *) ptr;
 			sscanf(*arg, fmt, &ival);
 			if (len == 4)
 				*iptr = cpu_to_fdt32(ival);
 			else
-				*ptr = (uint8_t)ival;
+				*ptr = (uint8_t) ival;
 			if (disp->verbose) {
 				fprintf(stderr, "\t%s: %d\n",
 					disp->size == 1 ? "byte" :
@@ -119,8 +117,7 @@ static int encode_value(struct display_info *disp, char **arg, int arg_count,
 	return 0;
 }
 
-static int store_key_value(void *blob, const char *node_name,
-			   const char *property, const char *buf, int len)
+static int store_key_value(void *blob, const char *node_name, const char *property, const char *buf, int len)
 {
 	int node;
 	int err;
@@ -165,11 +162,9 @@ static int create_paths(void *blob, const char *in_path)
 		if (!sep)
 			sep = path + strlen(path);
 
-		node = fdt_subnode_offset_namelen(blob, offset, path,
-						  sep - path);
+		node = fdt_subnode_offset_namelen(blob, offset, path, sep - path);
 		if (node == -FDT_ERR_NOTFOUND) {
-			node = fdt_add_subnode_namelen(blob, offset, path,
-						       sep - path);
+			node = fdt_add_subnode_namelen(blob, offset, path, sep - path);
 		}
 		if (node < 0) {
 			report_error(path, sep - path, node);
@@ -220,8 +215,7 @@ static int create_node(void *blob, const char *node_name)
 	return 0;
 }
 
-static int do_fdtput(struct display_info *disp, const char *filename,
-		     char **arg, int arg_count)
+static int do_fdtput(struct display_info *disp, const char *filename, char **arg, int arg_count)
 {
 	char *value;
 	char *blob;
@@ -240,8 +234,7 @@ static int do_fdtput(struct display_info *disp, const char *filename,
 		assert(arg_count >= 2);
 		if (disp->auto_path && create_paths(blob, *arg))
 			return -1;
-		if (encode_value(disp, arg + 2, arg_count - 2, &value, &len) ||
-		    store_key_value(blob, *arg, arg[1], value, len))
+		if (encode_value(disp, arg + 2, arg_count - 2, &value, &len) || store_key_value(blob, *arg, arg[1], value, len))
 			ret = -1;
 		break;
 	case OPER_CREATE_NODE:
@@ -260,20 +253,19 @@ static int do_fdtput(struct display_info *disp, const char *filename,
 	return ret;
 }
 
-static const char *usage_msg =
-	"fdtput - write a property value to a device tree\n"
-	"\n"
-	"The command line arguments are joined together into a single value.\n"
-	"\n"
-	"Usage:\n"
-	"	fdtput <options> <dt file> <node> <property> [<value>...]\n"
-	"	fdtput -c <options> <dt file> [<node>...]\n"
-	"Options:\n"
-	"\t-c\t\tCreate nodes if they don't already exist\n"
-	"\t-p\t\tAutomatically create nodes as needed for the node path\n"
-	"\t-t <type>\tType of data\n"
-	"\t-v\t\tVerbose: display each value decoded from command line\n"
-	"\t-h\t\tPrint this help\n\n" USAGE_TYPE_MSG;
+static const char *usage_msg = "fdtput - write a property value to a device tree\n"
+			       "\n"
+			       "The command line arguments are joined together into a single value.\n"
+			       "\n"
+			       "Usage:\n"
+			       "	fdtput <options> <dt file> <node> <property> [<value>...]\n"
+			       "	fdtput -c <options> <dt file> [<node>...]\n"
+			       "Options:\n"
+			       "\t-c\t\tCreate nodes if they don't already exist\n"
+			       "\t-p\t\tAutomatically create nodes as needed for the node path\n"
+			       "\t-t <type>\tType of data\n"
+			       "\t-v\t\tVerbose: display each value decoded from command line\n"
+			       "\t-h\t\tPrint this help\n\n" USAGE_TYPE_MSG;
 
 static void usage(const char *msg)
 {

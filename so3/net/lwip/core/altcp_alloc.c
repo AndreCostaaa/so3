@@ -77,7 +77,7 @@ struct altcp_pcb *altcp_tls_new(struct altcp_tls_config *config, u8_t ip_type)
  * TLS over TCP */
 struct altcp_pcb *altcp_tls_alloc(void *arg, u8_t ip_type)
 {
-	return altcp_tls_new((struct altcp_tls_config *)arg, ip_type);
+	return altcp_tls_new((struct altcp_tls_config *) arg, ip_type);
 }
 
 #endif /* LWIP_ALTCP_TLS */

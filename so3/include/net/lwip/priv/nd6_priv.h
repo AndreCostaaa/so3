@@ -109,14 +109,7 @@ struct nd6_router_list_entry {
 	u8_t flags;
 };
 
-enum nd6_neighbor_cache_entry_state {
-	ND6_NO_ENTRY = 0,
-	ND6_INCOMPLETE,
-	ND6_REACHABLE,
-	ND6_STALE,
-	ND6_DELAY,
-	ND6_PROBE
-};
+enum nd6_neighbor_cache_entry_state { ND6_NO_ENTRY = 0, ND6_INCOMPLETE, ND6_REACHABLE, ND6_STALE, ND6_DELAY, ND6_PROBE };
 
 #define ND6_HOPLIM 255 /* maximum hop limit, required in all ND packets */
 

@@ -68,16 +68,14 @@ PACK_STRUCT_END
  * 16-bit-aligned if the port is correctly configured (so a port could define
  * this to copying 2 u16_t's) - no NULL-pointer-checking needed. */
 #ifndef IPADDR_WORDALIGNED_COPY_TO_IP4_ADDR_T
-#define IPADDR_WORDALIGNED_COPY_TO_IP4_ADDR_T(dest, src) \
-	SMEMCPY(dest, src, sizeof(ip4_addr_t))
+#define IPADDR_WORDALIGNED_COPY_TO_IP4_ADDR_T(dest, src) SMEMCPY(dest, src, sizeof(ip4_addr_t))
 #endif
 
 /** MEMCPY-like copying of IP addresses where addresses are known to be
  * 16-bit-aligned if the port is correctly configured (so a port could define
  * this to copying 2 u16_t's) - no NULL-pointer-checking needed. */
 #ifndef IPADDR_WORDALIGNED_COPY_FROM_IP4_ADDR_T
-#define IPADDR_WORDALIGNED_COPY_FROM_IP4_ADDR_T(dest, src) \
-	SMEMCPY(dest, src, sizeof(ip4_addr_t))
+#define IPADDR_WORDALIGNED_COPY_FROM_IP4_ADDR_T(dest, src) SMEMCPY(dest, src, sizeof(ip4_addr_t))
 #endif
 
 #ifdef PACK_STRUCT_USE_INCLUDES

@@ -38,8 +38,7 @@ static int mydev_read(int fd, void *buffer, int count)
 	return strlen(internal_buffer) + 1;
 }
 
-struct file_operations mydev_fops = { .write = mydev_write,
-				      .read = mydev_read };
+struct file_operations mydev_fops = { .write = mydev_write, .read = mydev_read };
 
 struct devclass mydev_dev = {
 	.class = "mydev",

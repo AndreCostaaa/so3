@@ -143,8 +143,7 @@ bool kernel_stack_slot[THREAD_MAX];
  */
 addr_t get_kernel_stack_top(uint32_t slotID)
 {
-	return (addr_t)((void *)&__stack_top - THREAD_STACK_SIZE -
-			slotID * THREAD_STACK_SIZE);
+	return (addr_t) ((void *) &__stack_top - THREAD_STACK_SIZE - slotID * THREAD_STACK_SIZE);
 }
 
 /*
@@ -181,7 +180,7 @@ void free_kernel_stack_slot(int slotID)
 /* Get the kernel stack (top), full descending */
 addr_t get_user_stack_top(pcb_t *pcb, uint32_t slotID)
 {
-	return (addr_t)((void *)pcb->stack_top - slotID * THREAD_STACK_SIZE);
+	return (addr_t) ((void *) pcb->stack_top - slotID * THREAD_STACK_SIZE);
 }
 
 /*
@@ -250,8 +249,7 @@ void thread_exit(int *exit_status)
 	 */
 	pcb = current()->pcb;
 
-	if (pcb && (current() == pcb->main_thread) &&
-	    (pcb->state != PROC_STATE_ZOMBIE)) {
+	if (pcb && (current() == pcb->main_thread) && (pcb->state != PROC_STATE_ZOMBIE)) {
 		while (active_threads(pcb) > 0) {
 			local_irq_enable();
 			wait_for_completion(&pcb->threads_active);
@@ -287,9 +285,7 @@ void thread_exit(int *exit_status)
 			 * have to release the completion.
 			 */
 
-			if (pcb &&
-			    (active_threads(pcb) ==
-			     1)) /* We are the last one, and we will be put in zombie state... */
+			if (pcb && (active_threads(pcb) == 1)) /* We are the last one, and we will be put in zombie state... */
 				complete(&pcb->threads_active);
 		}
 
@@ -377,8 +373,7 @@ void set_thread_registers(tcb_t *thread, cpu_regs_t *regs)
  * @pcb: NULL means it is a pure kernel thread, otherwise is is a user thread.
  * @prio: 0 means the default priority, otherwise set to the thread to the corresponding priority
  */
-tcb_t *thread_create(th_fn_t start_routine, const char *name, void *arg,
-		     pcb_t *pcb, uint32_t prio)
+tcb_t *thread_create(th_fn_t start_routine, const char *name, void *arg, pcb_t *pcb, uint32_t prio)
 {
 	tcb_t *tcb;
 	unsigned long flags;
@@ -387,7 +382,7 @@ tcb_t *thread_create(th_fn_t start_routine, const char *name, void *arg,
 
 	flags = local_irq_save();
 
-	tcb = (tcb_t *)malloc(sizeof(tcb_t));
+	tcb = (tcb_t *) malloc(sizeof(tcb_t));
 
 	if (tcb == NULL) {
 		printk("%s: failed to alloc memory.\n", __func__);
@@ -435,9 +430,9 @@ tcb_t *thread_create(th_fn_t start_routine, const char *name, void *arg,
 	tcb->cpu_regs.sp = get_kernel_stack_top(tcb->stack_slotID);
 
 	if (tcb->pcb)
-		tcb->cpu_regs.lr = (unsigned long)__thread_prologue_user;
+		tcb->cpu_regs.lr = (unsigned long) __thread_prologue_user;
 	else
-		tcb->cpu_regs.lr = (unsigned long)__thread_prologue_kernel;
+		tcb->cpu_regs.lr = (unsigned long) __thread_prologue_kernel;
 
 	/* Initialize the join queue associated to this thread */
 	INIT_LIST_HEAD(&tcb->joinQueue);
@@ -451,8 +446,7 @@ tcb_t *thread_create(th_fn_t start_routine, const char *name, void *arg,
 	return tcb;
 }
 
-tcb_t *kernel_thread(th_fn_t start_routine, const char *name, void *arg,
-		     uint32_t prio)
+tcb_t *kernel_thread(th_fn_t start_routine, const char *name, void *arg, uint32_t prio)
 {
 	return thread_create(start_routine, name, arg, NULL, prio);
 }
@@ -467,11 +461,9 @@ tcb_t *kernel_thread(th_fn_t start_routine, const char *name, void *arg,
  * @param pcb		PCB which the thread belongs to
  * @return		Address of the corresponding TCB
  */
-tcb_t *user_thread(th_fn_t start_routine, const char *name, void *arg,
-		   pcb_t *pcb)
+tcb_t *user_thread(th_fn_t start_routine, const char *name, void *arg, pcb_t *pcb)
 {
-	return thread_create(start_routine, name, arg, pcb,
-			     (pcb->main_thread ? pcb->main_thread->prio : 0));
+	return thread_create(start_routine, name, arg, pcb, (pcb->main_thread ? pcb->main_thread->prio : 0));
 }
 
 /*
@@ -518,10 +510,9 @@ int *thread_join(tcb_t *tcb)
 	if (tcb->state != THREAD_STATE_ZOMBIE) {
 		/* Register us in the join queue attached to the target thread */
 
-		cur = (queue_thread_t *)malloc(sizeof(queue_thread_t));
+		cur = (queue_thread_t *) malloc(sizeof(queue_thread_t));
 		if (cur == NULL) {
-			printk("%s: cannot allocate memory to register in join queue.\n",
-			       __func__);
+			printk("%s: cannot allocate memory to register in join queue.\n", __func__);
 			BUG();
 		}
 
@@ -540,8 +531,7 @@ int *thread_join(tcb_t *tcb)
 		 * performed in the child.
 		 */
 		if (is_main_thread)
-			tcb = __child_pcb
-				      ->main_thread; /* Proceed with substitution; the other thread does not exist anymore. */
+			tcb = __child_pcb->main_thread; /* Proceed with substitution; the other thread does not exist anymore. */
 
 		/*
 		 * At this point, we are awake; the target thread is over in *zombie* state.
@@ -561,8 +551,7 @@ int *thread_join(tcb_t *tcb)
 	}
 
 	/* Check if the child is a tracee (and therefore we have a tracer on it) */
-	if ((tcb != NULL) &&
-	    (tcb->pcb->ptrace_pending_req != PTRACE_NO_REQUEST)) {
+	if ((tcb != NULL) && (tcb->pcb->ptrace_pending_req != PTRACE_NO_REQUEST)) {
 		exit_status = NULL;
 
 	} else {
@@ -570,8 +559,7 @@ int *thread_join(tcb_t *tcb)
 		ASSERT(tcb->state == THREAD_STATE_ZOMBIE);
 
 		if (is_main_thread)
-			exit_status =
-				(void *)((unsigned long)tcb->pcb->exit_status);
+			exit_status = (void *) ((unsigned long) tcb->pcb->exit_status);
 		else
 			exit_status = tcb->exit_status;
 
@@ -607,8 +595,7 @@ int *thread_join(tcb_t *tcb)
  * The function returns 0 if successful.
  */
 
-int do_thread_create(uint32_t *pthread_id, addr_t attr_p, addr_t thread_fn,
-		     addr_t arg_p)
+int do_thread_create(uint32_t *pthread_id, addr_t attr_p, addr_t thread_fn, addr_t arg_p)
 {
 	unsigned long flags;
 	tcb_t *tcb;
@@ -619,15 +606,14 @@ int do_thread_create(uint32_t *pthread_id, addr_t attr_p, addr_t thread_fn,
 	/* Create a child thread for the running process */
 
 	/* Temporary name for this thread */
-	name = (char *)malloc(THREAD_NAME_LEN);
+	name = (char *) malloc(THREAD_NAME_LEN);
 	if (!name) {
 		printk("%s: heap overflow...\n", __func__);
 		kernel_panic();
 	}
 	snprintf(name, THREAD_NAME_LEN, "thread_p%d", current()->pcb->pid);
 
-	tcb = user_thread((th_fn_t)thread_fn, name, (void *)arg_p,
-			  current()->pcb);
+	tcb = user_thread((th_fn_t) thread_fn, name, (void *) arg_p, current()->pcb);
 
 	/* The name has been copied in thread creation */
 	free(name);
@@ -677,8 +663,7 @@ void do_thread_exit(int *exit_status)
 {
 	/* Unallocate the user space stack slot if it is not the main thread */
 	if (current() != current()->pcb->main_thread)
-		free_user_stack_slot(current()->pcb,
-				     current()->pcb_stack_slotID);
+		free_user_stack_slot(current()->pcb, current()->pcb_stack_slotID);
 
 	thread_exit(exit_status);
 }

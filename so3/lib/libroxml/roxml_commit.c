@@ -34,8 +34,7 @@ ROXML_STATIC ROXML_INT void roxml_realloc_buf(char **buf, int *len, int min_len)
  * \param lvl the level in the tree
  * \return
  */
-ROXML_STATIC ROXML_INT void roxml_print_spaces(FILE *f, char **buf, int *offset,
-					       int *len, int lvl)
+ROXML_STATIC ROXML_INT void roxml_print_spaces(FILE *f, char **buf, int *offset, int *len, int lvl)
 {
 	int i;
 
@@ -65,8 +64,7 @@ ROXML_STATIC ROXML_INT void roxml_print_spaces(FILE *f, char **buf, int *offset,
  * \param len the total len of buffer if any
  * \return
  */
-ROXML_STATIC ROXML_INT void roxml_write_string(FILE *f, char **buf, int *offset,
-					       int *len, char *str, ...)
+ROXML_STATIC ROXML_INT void roxml_write_string(FILE *f, char **buf, int *offset, int *len, char *str, ...)
 {
 	va_list args;
 	int min_len;
@@ -88,9 +86,7 @@ ROXML_STATIC ROXML_INT void roxml_write_string(FILE *f, char **buf, int *offset,
 	va_end(args);
 }
 
-ROXML_STATIC ROXML_INT void roxml_write_other_node(node_t *n, FILE *f,
-						   char **buf, int *offset,
-						   int *len, char *name)
+ROXML_STATIC ROXML_INT void roxml_write_other_node(node_t *n, FILE *f, char **buf, int *offset, int *len, char *name)
 {
 	char *value;
 	int status;
@@ -121,17 +117,14 @@ ROXML_STATIC ROXML_INT void roxml_write_other_node(node_t *n, FILE *f,
 		strcpy(cdata_tail, "]]>");
 	}
 
-	roxml_write_string(f, buf, offset, len, "%s%s%s%s%s%s%s", head,
-			   name[0] ? name : "", name[0] ? " " : "", cdata_head,
+	roxml_write_string(f, buf, offset, len, "%s%s%s%s%s%s%s", head, name[0] ? name : "", name[0] ? " " : "", cdata_head,
 			   value, cdata_tail, tail);
 	roxml_release(value);
 
 	ROXML_PUT_BASE_BUFFER(val);
 }
 
-ROXML_STATIC ROXML_INT void roxml_write_elm_name_open(node_t *n, FILE *f,
-						      char **buf, int *offset,
-						      int *len, char *name,
+ROXML_STATIC ROXML_INT void roxml_write_elm_name_open(node_t *n, FILE *f, char **buf, int *offset, int *len, char *name,
 						      char *ns)
 {
 	if (!n->prnt)
@@ -142,13 +135,10 @@ ROXML_STATIC ROXML_INT void roxml_write_elm_name_open(node_t *n, FILE *f,
 	else
 		ns[0] = '\0';
 
-	roxml_write_string(f, buf, offset, len, "<%s%s%s", ns[0] ? ns : "",
-			   ns[0] ? ":" : "", name);
+	roxml_write_string(f, buf, offset, len, "<%s%s%s", ns[0] ? ns : "", ns[0] ? ":" : "", name);
 }
 
-ROXML_STATIC ROXML_INT void roxml_write_elm_name_close(node_t *n, FILE *f,
-						       char **buf, int *offset,
-						       int *len, char *name,
+ROXML_STATIC ROXML_INT void roxml_write_elm_name_close(node_t *n, FILE *f, char **buf, int *offset, int *len, char *name,
 						       char *ns)
 {
 	char head[8] = "\0";
@@ -159,14 +149,11 @@ ROXML_STATIC ROXML_INT void roxml_write_elm_name_close(node_t *n, FILE *f,
 		strcpy(tail, ">");
 	}
 
-	roxml_write_string(f, buf, offset, len, "%s%s%s%s%s", head,
-			   n->chld && ns[0] ? ns : "",
-			   n->chld && ns[0] ? ":" : "", n->chld ? name : "",
-			   tail);
+	roxml_write_string(f, buf, offset, len, "%s%s%s%s%s", head, n->chld && ns[0] ? ns : "", n->chld && ns[0] ? ":" : "",
+			   n->chld ? name : "", tail);
 }
 
-ROXML_STATIC ROXML_INT void roxml_write_elm_attr(node_t *n, FILE *f, char **buf,
-						 int *offset, int *len)
+ROXML_STATIC ROXML_INT void roxml_write_elm_attr(node_t *n, FILE *f, char **buf, int *offset, int *len)
 {
 	node_t *attr = n->attr;
 
@@ -188,11 +175,8 @@ ROXML_STATIC ROXML_INT void roxml_write_elm_attr(node_t *n, FILE *f, char **buf,
 		if (attr->ns)
 			roxml_get_name(attr->ns, ns, ROXML_BASE_LEN);
 
-		roxml_write_string(f, buf, offset, len, " %s%s%s%s%s=\"%s\"",
-				   ns_node_attr ? "xmlns" : "",
-				   ns_node_attr && arg[0] ? ":" : "",
-				   attr->ns ? ns : "", attr->ns ? ":" : "", arg,
-				   value);
+		roxml_write_string(f, buf, offset, len, " %s%s%s%s%s=\"%s\"", ns_node_attr ? "xmlns" : "",
+				   ns_node_attr && arg[0] ? ":" : "", attr->ns ? ns : "", attr->ns ? ":" : "", arg, value);
 
 		attr = attr->sibl;
 		roxml_release(value);
@@ -214,9 +198,7 @@ ROXML_STATIC ROXML_INT void roxml_write_elm_attr(node_t *n, FILE *f, char **buf,
  * \param len the total len of buffer if any
  * \return
  */
-ROXML_STATIC ROXML_INT void roxml_write_node(node_t *n, FILE *f, char **buf,
-					     int human, int lvl, int *offset,
-					     int *len)
+ROXML_STATIC ROXML_INT void roxml_write_node(node_t *n, FILE *f, char **buf, int human, int lvl, int *offset, int *len)
 {
 	ROXML_GET_BASE_BUFFER(name);
 	roxml_get_name(n, name, ROXML_BASE_LEN);
@@ -241,8 +223,7 @@ ROXML_STATIC ROXML_INT void roxml_write_node(node_t *n, FILE *f, char **buf,
 				if ((chld->type | prev->type) & ROXML_TXT_NODE)
 					keep_human = 0;
 
-				roxml_write_node(chld, f, buf, keep_human,
-						 lvl + 1, offset, len);
+				roxml_write_node(chld, f, buf, keep_human, lvl + 1, offset, len);
 
 				prev = chld;
 				chld = chld->sibl;
@@ -262,8 +243,7 @@ ROXML_STATIC ROXML_INT void roxml_write_node(node_t *n, FILE *f, char **buf,
 	ROXML_PUT_BASE_BUFFER(name);
 }
 
-ROXML_STATIC ROXML_INT void roxml_commit_nodes(node_t *n, FILE *f, char **buf,
-					       int human, int *size, int *len)
+ROXML_STATIC ROXML_INT void roxml_commit_nodes(node_t *n, FILE *f, char **buf, int human, int *size, int *len)
 {
 	node_t fakeroot;
 
@@ -371,8 +351,7 @@ ROXML_API int roxml_commit_fd(node_t *n, int fd, int human)
 	return size;
 }
 
-ROXML_API int roxml_commit_changes(node_t *n, char *dest, char **buffer,
-				   int human)
+ROXML_API int roxml_commit_changes(node_t *n, char *dest, char **buffer, int human)
 {
 	if (dest)
 		return roxml_commit_file(n, dest, human);

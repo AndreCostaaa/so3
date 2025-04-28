@@ -89,8 +89,7 @@ struct message {
 
 static struct message *message__list;
 
-static struct message *message__new(const char *msg, char *option,
-				    const char *file, int lineno)
+static struct message *message__new(const char *msg, char *option, const char *file, int lineno)
 {
 	struct message *self = malloc(sizeof(*self));
 
@@ -130,8 +129,7 @@ static struct message *mesage__find(const char *msg)
 	return m;
 }
 
-static int message__add_file_line(struct message *self, const char *file,
-				  int lineno)
+static int message__add_file_line(struct message *self, const char *file, int lineno)
 {
 	int rc = -1;
 	struct file_line *fl = file_line__new(file, lineno);
@@ -146,8 +144,7 @@ out:
 	return rc;
 }
 
-static int message__add(const char *msg, char *option, const char *file,
-			int lineno)
+static int message__add(const char *msg, char *option, const char *file, int lineno)
 {
 	int rc = 0;
 	char bf[16384];
@@ -172,14 +169,10 @@ static void menu_build_message_list(struct menu *menu)
 {
 	struct menu *child;
 
-	message__add(menu_get_prompt(menu), NULL,
-		     menu->file == NULL ? "Root Menu" : menu->file->name,
-		     menu->lineno);
+	message__add(menu_get_prompt(menu), NULL, menu->file == NULL ? "Root Menu" : menu->file->name, menu->lineno);
 
 	if (menu->sym != NULL && menu_has_help(menu))
-		message__add(menu_get_help(menu), menu->sym->name,
-			     menu->file == NULL ? "Root Menu" :
-						  menu->file->name,
+		message__add(menu_get_help(menu), menu->sym->name, menu->file == NULL ? "Root Menu" : menu->file->name,
 			     menu->lineno);
 
 	for (child = menu->list; child != NULL; child = child->next)

@@ -62,8 +62,8 @@ void inject_capsule(avz_hyp_t *args)
 	void *itb_vaddr;
 	mem_info_t guest_mem_info;
 
-	DBG("%s: Preparing ME injection, source image vaddr = %lx\n", __func__, 
-		ipa_to_va(MEMSLOT_AGENCY, args->uavz_inject_capsule_args.itb_paddr));
+	DBG("%s: Preparing ME injection, source image vaddr = %lx\n", __func__,
+	    ipa_to_va(MEMSLOT_AGENCY, args->uavz_inject_capsule_args.itb_paddr));
 
 	BUG_ON(local_irq_is_enabled());
 
@@ -72,7 +72,7 @@ void inject_capsule(avz_hyp_t *args)
 	DBG("%s: ITB vaddr: %lx\n", __func__, itb_vaddr);
 
 	/* Retrieve the domain size of this ME through its device tree. */
-	fit_image_get_data_and_size(itb_vaddr, fit_image_get_node(itb_vaddr, "fdt"), (const void **)&fdt_vaddr, &fdt_size);
+	fit_image_get_data_and_size(itb_vaddr, fit_image_get_node(itb_vaddr, "fdt"), (const void **) &fdt_vaddr, &fdt_size);
 	if (!fdt_vaddr) {
 		printk("### %s: wrong device tree.\n", __func__);
 		BUG();
@@ -96,7 +96,7 @@ void inject_capsule(avz_hyp_t *args)
 	__current = current_domain;
 
 	/* Clear the RAM allocated to this capsule */
-	memset((void *)__xva(slotID, memslot[slotID].base_paddr), 0, memslot[slotID].size);
+	memset((void *) __xva(slotID, memslot[slotID].base_paddr), 0, memslot[slotID].size);
 
 	loadME(slotID, itb_vaddr);
 
@@ -174,11 +174,11 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me, stru
 	domctxt->vcpu = me->vcpu;
 
 	/* Store the stack frame of this domain */
-	memcpy(&domctxt->stack_frame, (void *)(me->domain_stack + DOMAIN_STACK_SIZE - sizeof(struct cpu_regs)),
+	memcpy(&domctxt->stack_frame, (void *) (me->domain_stack + DOMAIN_STACK_SIZE - sizeof(struct cpu_regs)),
 	       sizeof(struct cpu_regs));
 }
 
- /**
+/**
   * @brief Take a memory snapshot of a capsule. This will lead to a capsule with HIBERNATE state
   * 	   while the resident capsule will end up in resuming state.
   * 
@@ -215,7 +215,7 @@ void read_ME_snapshot(avz_hyp_t *args)
 	memcpy(snapshot_buffer + sizeof(uint32_t), &domain_context, sizeof(domain_context));
 
 	/* Finally copy the ME */
-	memcpy(snapshot_buffer + sizeof(uint32_t) + sizeof(domain_context), (void *)__xva(slotID, memslot[slotID].base_paddr),
+	memcpy(snapshot_buffer + sizeof(uint32_t) + sizeof(domain_context), (void *) __xva(slotID, memslot[slotID].base_paddr),
 	       memslot[slotID].size);
 
 	if (domME->avz_shared->dom_desc.u.ME.state == ME_state_suspended) {
@@ -306,17 +306,17 @@ void write_ME_snapshot(avz_hyp_t *args)
 		return;
 	}
 
-	snapshot_buffer = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
+	snapshot_buffer = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	domME = domains[slotID];
-	domctxt = (struct dom_context *)(snapshot_buffer + sizeof(uint32_t));
+	domctxt = (struct dom_context *) (snapshot_buffer + sizeof(uint32_t));
 
 	restore_domain_context(slotID, domME, domctxt);
 
 	__setup_dom_pgtable(domME, memslot[slotID].base_paddr, memslot[slotID].size);
 
 	/* Copy the ME content */
-	memcpy((void *)__xva(slotID, memslot[slotID].base_paddr),
+	memcpy((void *) __xva(slotID, memslot[slotID].base_paddr),
 	       snapshot_buffer + sizeof(uint32_t) + sizeof(struct dom_context), memslot[slotID].size);
 
 	/* Create a stack devoted to this restored domain */
@@ -339,10 +339,10 @@ void write_ME_snapshot(avz_hyp_t *args)
 	/* As we will be resumed from the schedule function, we need to update the
 	* CPU registers from the VCPU regs.
 	*/
-	domME->vcpu.regs.sp = (unsigned long)frame;
-	domME->vcpu.regs.x21 = (unsigned long)domME->avz_shared->dom_desc.u.ME.resume_fn;
+	domME->vcpu.regs.sp = (unsigned long) frame;
+	domME->vcpu.regs.x21 = (unsigned long) domME->avz_shared->dom_desc.u.ME.resume_fn;
 
-	domME->vcpu.regs.lr = (unsigned long)resume_to_guest;
+	domME->vcpu.regs.lr = (unsigned long) resume_to_guest;
 
 	/* Now restoring event channel configuration */
 	evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.vbstore_levtchn,

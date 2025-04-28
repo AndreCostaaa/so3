@@ -39,8 +39,7 @@
 
 #include "lwip/opt.h"
 
-#if LWIP_NETCONN || \
-	LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
+#if LWIP_NETCONN || LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
 /* Note: Netconn API is always available when sockets are enabled -
  * sockets are implemented on top of them */
 
@@ -83,8 +82,7 @@ err_t netbuf_data(struct netbuf *buf, void **dataptr, u16_t *len);
 s8_t netbuf_next(struct netbuf *buf);
 void netbuf_first(struct netbuf *buf);
 
-#define netbuf_copy_partial(buf, dataptr, len, offset) \
-	pbuf_copy_partial((buf)->p, (dataptr), (len), (offset))
+#define netbuf_copy_partial(buf, dataptr, len, offset) pbuf_copy_partial((buf)->p, (dataptr), (len), (offset))
 #define netbuf_copy(buf, dataptr, len) netbuf_copy_partial(buf, dataptr, len, 0)
 #define netbuf_take(buf, dataptr, len) pbuf_take((buf)->p, dataptr, len)
 #define netbuf_len(buf) ((buf)->p->tot_len)
@@ -93,11 +91,9 @@ void netbuf_first(struct netbuf *buf);
 #define netbuf_fromport(buf) ((buf)->port)
 #if LWIP_NETBUF_RECVINFO
 #define netbuf_destaddr(buf) (&((buf)->toaddr))
-#define netbuf_set_destaddr(buf, destaddr) \
-	ip_addr_set(&((buf)->toaddr), destaddr)
+#define netbuf_set_destaddr(buf, destaddr) ip_addr_set(&((buf)->toaddr), destaddr)
 #if LWIP_CHECKSUM_ON_COPY
-#define netbuf_destport(buf) \
-	(((buf)->flags & NETBUF_FLAG_DESTADDR) ? (buf)->toport_chksum : 0)
+#define netbuf_destport(buf) (((buf)->flags & NETBUF_FLAG_DESTADDR) ? (buf)->toport_chksum : 0)
 #else /* LWIP_CHECKSUM_ON_COPY */
 #define netbuf_destport(buf) ((buf)->toport_chksum)
 #endif /* LWIP_CHECKSUM_ON_COPY */

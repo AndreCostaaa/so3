@@ -43,7 +43,7 @@ typedef struct {
 
 #define DEFINE_SPINLOCK(l) spinlock_t l = { 0 };
 
-#define spin_lock_init(l) (*(l) = (spinlock_t){ 0 })
+#define spin_lock_init(l) (*(l) = (spinlock_t) { 0 })
 
 void spin_lock(spinlock_t *lock);
 void spin_lock_irq(spinlock_t *lock);

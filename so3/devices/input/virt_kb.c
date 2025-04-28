@@ -43,7 +43,7 @@ int ioctl_keyboard(int fd, unsigned long cmd, unsigned long args)
 {
 	switch (cmd) {
 	case GET_KEY:
-		*((struct ps2_key *)args) = NO_KEY;
+		*((struct ps2_key *) args) = NO_KEY;
 		break;
 
 	default:

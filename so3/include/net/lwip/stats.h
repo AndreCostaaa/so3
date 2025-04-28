@@ -308,12 +308,12 @@ void stats_init(void);
 
 #define STATS_INC(x) ++lwip_stats.x
 #define STATS_DEC(x) --lwip_stats.x
-#define STATS_INC_USED(x, y, type)                                 \
-	do {                                                       \
-		lwip_stats.x.used = (type)(lwip_stats.x.used + y); \
-		if (lwip_stats.x.max < lwip_stats.x.used) {        \
-			lwip_stats.x.max = lwip_stats.x.used;      \
-		}                                                  \
+#define STATS_INC_USED(x, y, type)                                  \
+	do {                                                        \
+		lwip_stats.x.used = (type) (lwip_stats.x.used + y); \
+		if (lwip_stats.x.max < lwip_stats.x.used) {         \
+			lwip_stats.x.max = lwip_stats.x.used;       \
+		}                                                   \
 	} while (0)
 #define STATS_GET(x) lwip_stats.x
 #else /* LWIP_STATS */
@@ -365,8 +365,7 @@ void stats_init(void);
 
 #if IPFRAG_STATS
 #define IPFRAG_STATS_INC(x) STATS_INC(x)
-#define IPFRAG_STATS_DISPLAY() \
-	stats_display_proto(&lwip_stats.ip_frag, "IP_FRAG")
+#define IPFRAG_STATS_DISPLAY() stats_display_proto(&lwip_stats.ip_frag, "IP_FRAG")
 #else
 #define IPFRAG_STATS_INC(x)
 #define IPFRAG_STATS_DISPLAY()
@@ -392,8 +391,7 @@ void stats_init(void);
 #define MEM_STATS_AVAIL(x, y) lwip_stats.mem.x = y
 #define MEM_STATS_INC(x) STATS_INC(mem.x)
 #define MEM_STATS_INC_USED(x, y) STATS_INC_USED(mem, y, mem_size_t)
-#define MEM_STATS_DEC_USED(x, y) \
-	lwip_stats.mem.x = (mem_size_t)((lwip_stats.mem.x) - (y))
+#define MEM_STATS_DEC_USED(x, y) lwip_stats.mem.x = (mem_size_t) ((lwip_stats.mem.x) - (y))
 #define MEM_STATS_DISPLAY() stats_display_mem(&lwip_stats.mem, "HEAP")
 #else
 #define MEM_STATS_AVAIL(x, y)
@@ -443,8 +441,7 @@ void stats_init(void);
 
 #if IP6_FRAG_STATS
 #define IP6_FRAG_STATS_INC(x) STATS_INC(x)
-#define IP6_FRAG_STATS_DISPLAY() \
-	stats_display_proto(&lwip_stats.ip6_frag, "IPv6 FRAG")
+#define IP6_FRAG_STATS_DISPLAY() stats_display_proto(&lwip_stats.ip6_frag, "IPv6 FRAG")
 #else
 #define IP6_FRAG_STATS_INC(x)
 #define IP6_FRAG_STATS_DISPLAY()

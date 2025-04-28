@@ -66,8 +66,7 @@ void vbus_drivers_for_each(void *data, int (*fn)(struct vbus_driver *, void *))
 	}
 }
 
-static int __vbus_switch_state(struct vbus_device *vdev, enum vbus_state state,
-			       bool force)
+static int __vbus_switch_state(struct vbus_device *vdev, enum vbus_state state, bool force)
 {
 	/*
 	 * We check whether the state is currently set to the given value, and if not, then the state is set.  We don't want to unconditionally
@@ -110,8 +109,7 @@ static int __vbus_switch_state(struct vbus_device *vdev, enum vbus_state state,
  */
 static int vbus_switch_state(struct vbus_device *vdev, enum vbus_state state)
 {
-	DBG("--> changing state of %s from %d to %d\n", vdev->nodename,
-	    vdev->state, state);
+	DBG("--> changing state of %s from %d to %d\n", vdev->nodename, vdev->state, state);
 
 	return __vbus_switch_state(vdev, state, false);
 }
@@ -125,8 +123,7 @@ void free_otherend_watch(struct vbus_device *vdev, bool with_vbus)
 		if (with_vbus)
 			unregister_vbus_watch(&vdev->otherend_watch);
 		else
-			unregister_vbus_watch_without_vbus(
-				&vdev->otherend_watch);
+			unregister_vbus_watch_without_vbus(&vdev->otherend_watch);
 
 		free(vdev->otherend_watch.node);
 		vdev->otherend_watch.node = NULL;
@@ -141,9 +138,7 @@ void free_otherend_watch(struct vbus_device *vdev, bool with_vbus)
  */
 void watch_otherend(struct vbus_device *vdev)
 {
-	vbus_watch_pathfmt(vdev, &vdev->otherend_watch,
-			   vdev->vbus->otherend_changed, "%s/%s",
-			   vdev->otherend, "state");
+	vbus_watch_pathfmt(vdev, &vdev->otherend_watch, vdev->vbus->otherend_changed, "%s/%s", vdev->otherend, "state");
 }
 
 /*
@@ -162,11 +157,9 @@ static void talk_to_otherend(struct vbus_device *vdev)
 	watch_otherend(vdev);
 }
 
-void vbus_read_otherend_details(struct vbus_device *vdev, char *id_node,
-				char *path_node)
+void vbus_read_otherend_details(struct vbus_device *vdev, char *id_node, char *path_node)
 {
-	vbus_gather(VBT_NIL, vdev->nodename, id_node, "%i", &vdev->otherend_id,
-		    path_node, "%s", vdev->otherend, NULL);
+	vbus_gather(VBT_NIL, vdev->nodename, id_node, "%i", &vdev->otherend_id, path_node, "%s", vdev->otherend, NULL);
 }
 /*
  * The following function is called either in the backend OR the frontend.
@@ -174,16 +167,15 @@ void vbus_read_otherend_details(struct vbus_device *vdev, char *id_node,
  */
 void vbus_otherend_changed(struct vbus_watch *watch)
 {
-	struct vbus_device *vdev =
-		container_of(watch, struct vbus_device, otherend_watch);
+	struct vbus_device *vdev = container_of(watch, struct vbus_device, otherend_watch);
 	struct vbus_driver *vdrv = vdev->vdrv;
 
 	enum vbus_state state;
 
 	state = vbus_read_driver_state(vdev->otherend);
 
-	DBG("On domID: %d, otherend changed / device: %s  state: %d, CPU %d\n",
-	    ME_domID(), vdev->nodename, state, smp_processor_id());
+	DBG("On domID: %d, otherend changed / device: %s  state: %d, CPU %d\n", ME_domID(), vdev->nodename, state,
+	    smp_processor_id());
 
 	/*
          * Set immediately the frontend as connected if the backend announces to be connected.
@@ -213,8 +205,8 @@ void vbus_otherend_changed(struct vbus_watch *watch)
 			 * state Initialised, which will trigger rather quickly a Connected state event from the backend.
 			 * We have to be ready to process it.
 			 */
-			DBG("%s: Backend probed device: %s, now the frontend will be probing on its side.\n",
-			    __func__, vdev->nodename);
+			DBG("%s: Backend probed device: %s, now the frontend will be probing on its side.\n", __func__,
+			    vdev->nodename);
 
 			vdrv->probe(vdev);
 
@@ -283,8 +275,7 @@ int vbus_dev_remove(struct vbus_device *vdev)
 	 * some frontend related entries may not have been created. We must check here if the entry matching the dev
 	 * to remove exists.
 	 */
-	dir_exists =
-		vbus_directory_exists(VBT_NIL, vdev->otherend_watch.node, "");
+	dir_exists = vbus_directory_exists(VBT_NIL, vdev->otherend_watch.node, "");
 	if (dir_exists) {
 		DBG("%s", vdev->nodename);
 
@@ -308,12 +299,10 @@ void vbus_dev_shutdown(struct vbus_device *vdev)
 
 	DBG("%s", vdev->nodename);
 
-	dir_exists =
-		vbus_directory_exists(VBT_NIL, vdev->otherend_watch.node, "");
+	dir_exists = vbus_directory_exists(VBT_NIL, vdev->otherend_watch.node, "");
 	if (dir_exists) {
 		if (vdev->state != VbusStateConnected) {
-			printk("%s: %s: %s != Connected, skipping\n", __func__,
-			       vdev->nodename, vbus_strstate(vdev->state));
+			printk("%s: %s: %s != Connected, skipping\n", __func__, vdev->nodename, vbus_strstate(vdev->state));
 			BUG();
 		}
 
@@ -355,7 +344,7 @@ struct vbus_device *vbus_device_find(const char *nodename)
 
 int vbus_match(struct vbus_driver *vdrv, void *data)
 {
-	struct vbus_device *vdev = (struct vbus_device *)data;
+	struct vbus_device *vdev = (struct vbus_device *) data;
 
 	if (!strcmp(vdrv->devicetype, vdev->devicetype)) {
 		vdev->vdrv = vdrv;
@@ -369,10 +358,7 @@ int vbus_match(struct vbus_driver *vdrv, void *data)
 /*
  * Create a new node and initialize basic structure (vdev)
  */
-static struct vbus_device *vbus_probe_node(struct vbus_type *bus,
-					   const char *type,
-					   const char *nodename,
-					   char const *compat)
+static struct vbus_device *vbus_probe_node(struct vbus_type *bus, const char *type, const char *nodename, char const *compat)
 {
 	char devname[VBUS_ID_SIZE];
 	int err;
@@ -439,8 +425,7 @@ int vbus_register_driver_common(struct vbus_driver *vdrv)
 
 /******************/
 
-void vbus_dev_changed(const char *node, char *type, struct vbus_type *bus,
-		      const char *compat)
+void vbus_dev_changed(const char *node, char *type, struct vbus_type *bus, const char *compat)
 {
 	struct vbus_device *vdev;
 
@@ -481,7 +466,7 @@ static irq_return_t directcomm_isr_thread(int irq, void *data)
 	dc_event = atomic_read(&avz_shared->dc_event);
 
 	/* Reset the dc_event now so that the domain can send another dc_event */
-	atomic_set((atomic_t *)&avz_shared->dc_event, DC_NO_EVENT);
+	atomic_set((atomic_t *) &avz_shared->dc_event, DC_NO_EVENT);
 
 	perform_task(dc_event);
 
@@ -498,14 +483,12 @@ static irq_return_t directcomm_isr(int irq, void *data)
 
 	dc_event = atomic_read(&avz_shared->dc_event);
 
-	DBG("(ME domid %d): Received directcomm interrupt for event: %d\n",
-	    ME_domID(), avz_shared->dc_event);
+	DBG("(ME domid %d): Received directcomm interrupt for event: %d\n", ME_domID(), avz_shared->dc_event);
 
 	/* We should not receive twice a same dc_event, before it has been fully processed. */
 	BUG_ON(atomic_read(&dc_incoming_domID[dc_event]) != -1);
 
-	atomic_set(&dc_incoming_domID[dc_event],
-		   DOMID_AGENCY); /* At the moment, only from the agency */
+	atomic_set(&dc_incoming_domID[dc_event], DOMID_AGENCY); /* At the moment, only from the agency */
 
 	/* Work to be done in ME */
 
@@ -534,7 +517,7 @@ static irq_return_t directcomm_isr(int irq, void *data)
 	}
 
 	/* Reset the dc_event now so that the domain can send another dc_event */
-	atomic_set((atomic_t *)&avz_shared->dc_event, DC_NO_EVENT);
+	atomic_set((atomic_t *) &avz_shared->dc_event, DC_NO_EVENT);
 
 	return IRQ_COMPLETED;
 }
@@ -560,23 +543,19 @@ void vbus_init(void)
 
 	sprintf(buf, "soo/directcomm/%d", ME_domID());
 
-	res = vbus_scanf(vbt, buf, "event-channel", "%d",
-			 &avz_shared->dom_desc.u.ME.dc_evtchn);
+	res = vbus_scanf(vbt, buf, "event-channel", "%d", &avz_shared->dom_desc.u.ME.dc_evtchn);
 
 	if (res != 1) {
-		printk("%s: reading soo/directcomm failed. Error code: %d\n",
-		       __func__, res);
+		printk("%s: reading soo/directcomm failed. Error code: %d\n", __func__, res);
 		BUG();
 	}
 
 	vbus_transaction_end(vbt);
 
 	/* Binding the irqhandler to the eventchannel */
-	DBG("%s: setting up the direct comm event channel (%d) ...\n", __func__,
-	    avz_shared->dom_desc.u.ME.dc_evtchn);
-	res = bind_interdomain_evtchn_to_irqhandler(
-		DOMID_AGENCY, avz_shared->dom_desc.u.ME.dc_evtchn,
-		directcomm_isr, directcomm_isr_thread, NULL);
+	DBG("%s: setting up the direct comm event channel (%d) ...\n", __func__, avz_shared->dom_desc.u.ME.dc_evtchn);
+	res = bind_interdomain_evtchn_to_irqhandler(DOMID_AGENCY, avz_shared->dom_desc.u.ME.dc_evtchn, directcomm_isr,
+						    directcomm_isr_thread, NULL);
 
 	if (res <= 0) {
 		printk("Error: bind_evtchn_to_irqhandler failed");
@@ -584,8 +563,8 @@ void vbus_init(void)
 	}
 
 	avz_shared->dom_desc.u.ME.dc_evtchn = evtchn_from_irq(res);
-	DBG("%s: local event channel bound to directcomm towards non-RT Agency : %d\n",
-	    __func__, avz_shared->dom_desc.u.ME.dc_evtchn);
+	DBG("%s: local event channel bound to directcomm towards non-RT Agency : %d\n", __func__,
+	    avz_shared->dom_desc.u.ME.dc_evtchn);
 
 	DBG("vbus_init OK!\n");
 }

@@ -51,8 +51,7 @@
 
 #define NETIFAPI_VAR_REF(name) API_VAR_REF(name)
 #define NETIFAPI_VAR_DECLARE(name) API_VAR_DECLARE(struct netifapi_msg, name)
-#define NETIFAPI_VAR_ALLOC(name) \
-	API_VAR_ALLOC(struct netifapi_msg, MEMP_NETIFAPI_MSG, name, ERR_MEM)
+#define NETIFAPI_VAR_ALLOC(name) API_VAR_ALLOC(struct netifapi_msg, MEMP_NETIFAPI_MSG, name, ERR_MEM)
 #define NETIFAPI_VAR_FREE(name) API_VAR_FREE(MEMP_NETIFAPI_MSG, name)
 
 /**
@@ -62,16 +61,13 @@ static err_t netifapi_do_netif_add(struct tcpip_api_call_data *m)
 {
 	/* cast through void* to silence alignment warnings.
    * We know it works because the structs have been instantiated as struct netifapi_msg */
-	struct netifapi_msg *msg = (struct netifapi_msg *)(void *)m;
+	struct netifapi_msg *msg = (struct netifapi_msg *) (void *) m;
 
 	if (!netif_add(msg->netif,
 #if LWIP_IPV4
-		       API_EXPR_REF(msg->msg.add.ipaddr),
-		       API_EXPR_REF(msg->msg.add.netmask),
-		       API_EXPR_REF(msg->msg.add.gw),
+		       API_EXPR_REF(msg->msg.add.ipaddr), API_EXPR_REF(msg->msg.add.netmask), API_EXPR_REF(msg->msg.add.gw),
 #endif /* LWIP_IPV4 */
-		       msg->msg.add.state, msg->msg.add.init,
-		       msg->msg.add.input)) {
+		       msg->msg.add.state, msg->msg.add.init, msg->msg.add.input)) {
 		return ERR_IF;
 	} else {
 		return ERR_OK;
@@ -86,10 +82,9 @@ static err_t netifapi_do_netif_set_addr(struct tcpip_api_call_data *m)
 {
 	/* cast through void* to silence alignment warnings.
    * We know it works because the structs have been instantiated as struct netifapi_msg */
-	struct netifapi_msg *msg = (struct netifapi_msg *)(void *)m;
+	struct netifapi_msg *msg = (struct netifapi_msg *) (void *) m;
 
-	netif_set_addr(msg->netif, API_EXPR_REF(msg->msg.add.ipaddr),
-		       API_EXPR_REF(msg->msg.add.netmask),
+	netif_set_addr(msg->netif, API_EXPR_REF(msg->msg.add.ipaddr), API_EXPR_REF(msg->msg.add.netmask),
 		       API_EXPR_REF(msg->msg.add.gw));
 	return ERR_OK;
 }
@@ -102,7 +97,7 @@ static err_t netifapi_do_name_to_index(struct tcpip_api_call_data *m)
 {
 	/* cast through void* to silence alignment warnings.
    * We know it works because the structs have been instantiated as struct netifapi_msg */
-	struct netifapi_msg *msg = (struct netifapi_msg *)(void *)m;
+	struct netifapi_msg *msg = (struct netifapi_msg *) (void *) m;
 
 	msg->msg.ifs.index = netif_name_to_index(msg->msg.ifs.name);
 	return ERR_OK;
@@ -115,7 +110,7 @@ static err_t netifapi_do_index_to_name(struct tcpip_api_call_data *m)
 {
 	/* cast through void* to silence alignment warnings.
    * We know it works because the structs have been instantiated as struct netifapi_msg */
-	struct netifapi_msg *msg = (struct netifapi_msg *)(void *)m;
+	struct netifapi_msg *msg = (struct netifapi_msg *) (void *) m;
 
 	if (!netif_index_to_name(msg->msg.ifs.index, msg->msg.ifs.name)) {
 		/* return failure via empty name */
@@ -132,7 +127,7 @@ static err_t netifapi_do_netif_common(struct tcpip_api_call_data *m)
 {
 	/* cast through void* to silence alignment warnings.
    * We know it works because the structs have been instantiated as struct netifapi_msg */
-	struct netifapi_msg *msg = (struct netifapi_msg *)(void *)m;
+	struct netifapi_msg *msg = (struct netifapi_msg *) (void *) m;
 
 	if (msg->msg.common.errtfunc != NULL) {
 		return msg->msg.common.errtfunc(msg->netif);
@@ -153,8 +148,7 @@ static err_t netifapi_do_netif_common(struct tcpip_api_call_data *m)
  * @param type type of ARP cache entry
  * @return ERR_OK: entry added/updated, else error from err_t
  */
-err_t netifapi_arp_add(const ip4_addr_t *ipaddr, struct eth_addr *ethaddr,
-		       enum netifapi_arp_entry type)
+err_t netifapi_arp_add(const ip4_addr_t *ipaddr, struct eth_addr *ethaddr, enum netifapi_arp_entry type)
 {
 	err_t err;
 
@@ -183,8 +177,7 @@ err_t netifapi_arp_add(const ip4_addr_t *ipaddr, struct eth_addr *ethaddr,
  * @param type type of ARP cache entry
  * @return ERR_OK: entry removed, else error from err_t
  */
-err_t netifapi_arp_remove(const ip4_addr_t *ipaddr,
-			  enum netifapi_arp_entry type)
+err_t netifapi_arp_remove(const ip4_addr_t *ipaddr, enum netifapi_arp_entry type)
 {
 	err_t err;
 
@@ -214,8 +207,7 @@ err_t netifapi_arp_remove(const ip4_addr_t *ipaddr,
  */
 err_t netifapi_netif_add(struct netif *netif,
 #if LWIP_IPV4
-			 const ip4_addr_t *ipaddr, const ip4_addr_t *netmask,
-			 const ip4_addr_t *gw,
+			 const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw,
 #endif /* LWIP_IPV4 */
 			 void *state, netif_init_fn init, netif_input_fn input)
 {
@@ -257,8 +249,7 @@ err_t netifapi_netif_add(struct netif *netif,
  *
  * @note for params @see netif_set_addr()
  */
-err_t netifapi_netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr,
-			      const ip4_addr_t *netmask, const ip4_addr_t *gw)
+err_t netifapi_netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw)
 {
 	err_t err;
 	NETIFAPI_VAR_DECLARE(msg);
@@ -278,8 +269,7 @@ err_t netifapi_netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr,
 	NETIFAPI_VAR_REF(msg).msg.add.ipaddr = NETIFAPI_VAR_REF(ipaddr);
 	NETIFAPI_VAR_REF(msg).msg.add.netmask = NETIFAPI_VAR_REF(netmask);
 	NETIFAPI_VAR_REF(msg).msg.add.gw = NETIFAPI_VAR_REF(gw);
-	err = tcpip_api_call(netifapi_do_netif_set_addr,
-			     &API_VAR_REF(msg).call);
+	err = tcpip_api_call(netifapi_do_netif_set_addr, &API_VAR_REF(msg).call);
 	NETIFAPI_VAR_FREE(msg);
 	return err;
 }
@@ -291,8 +281,7 @@ err_t netifapi_netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr,
  *
  * @note use only for functions where there is only "netif" parameter.
  */
-err_t netifapi_netif_common(struct netif *netif, netifapi_void_fn voidfunc,
-			    netifapi_errt_fn errtfunc)
+err_t netifapi_netif_common(struct netif *netif, netifapi_void_fn voidfunc, netifapi_errt_fn errtfunc)
 {
 	err_t err;
 	NETIFAPI_VAR_DECLARE(msg);
@@ -358,8 +347,7 @@ err_t netifapi_netif_index_to_name(u8_t idx, char *name)
 	err = tcpip_api_call(netifapi_do_index_to_name, &API_VAR_REF(msg).call);
 #if LWIP_MPU_COMPATIBLE
 	if (!err) {
-		strncpy(name, NETIFAPI_VAR_REF(msg).msg.ifs.name,
-			NETIF_NAMESIZE - 1);
+		strncpy(name, NETIFAPI_VAR_REF(msg).msg.ifs.name, NETIF_NAMESIZE - 1);
 		name[NETIF_NAMESIZE - 1] = '\0';
 	}
 #endif /* LWIP_MPU_COMPATIBLE */

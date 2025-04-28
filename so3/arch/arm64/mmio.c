@@ -81,7 +81,7 @@ void mmio_perform_access(void *base, struct mmio_access *mmio)
 enum mmio_result mmio_handle_access(struct mmio_access *mmio)
 {
 	/* Currently, only GIC access is handled via a data abort exception */
-	mmio->address -= (addr_t)gic->gicd_paddr;
+	mmio->address -= (addr_t) gic->gicd_paddr;
 
 	return gic_handle_dist_access(mmio);
 }
@@ -101,7 +101,7 @@ int mmio_dabt_decode(cpu_regs_t *regs, unsigned long esr)
 	struct mmio_access mmio;
 	unsigned long hpfar;
 	unsigned long hdfar;
-	u64 *__regs = (u64 *)regs;
+	u64 *__regs = (u64 *) regs;
 
 	/* Decode the syndrome fields */
 	u32 iss = ESR_ISS(esr);
@@ -167,8 +167,7 @@ int mmio_dabt_decode(cpu_regs_t *regs, unsigned long esr)
 	return TRAP_HANDLED;
 
 error_unhandled:
-	panic("Unhandled data %s at 0x%lx(%d)\n", (is_write ? "write" : "read"),
-	      mmio.address, size);
+	panic("Unhandled data %s at 0x%lx(%d)\n", (is_write ? "write" : "read"), mmio.address, size);
 
 	return TRAP_UNHANDLED;
 }

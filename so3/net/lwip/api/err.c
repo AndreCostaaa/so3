@@ -67,7 +67,7 @@ static const int err_to_errno_table[] = {
 
 int err_to_errno(err_t err)
 {
-	if ((err > 0) || (-err >= (err_t)LWIP_ARRAYSIZE(err_to_errno_table))) {
+	if ((err > 0) || (-err >= (err_t) LWIP_ARRAYSIZE(err_to_errno_table))) {
 		return EIO;
 	}
 	return err_to_errno_table[-err];
@@ -104,7 +104,7 @@ static const char *err_strerr[] = {
  */
 const char *lwip_strerr(err_t err)
 {
-	if ((err > 0) || (-err >= (err_t)LWIP_ARRAYSIZE(err_strerr))) {
+	if ((err > 0) || (-err >= (err_t) LWIP_ARRAYSIZE(err_strerr))) {
 		return "Unknown error.";
 	}
 	return err_strerr[-err];

@@ -9,8 +9,7 @@
 #define LKC_DIRECT_LINK
 #include "lkc.h"
 
-static const char nohelp_text[] =
-	N_("There is no help available for this option.\n");
+static const char nohelp_text[] = N_("There is no help available for this option.\n");
 
 struct menu rootmenu;
 static struct menu **last_entry_ptr;
@@ -96,8 +95,7 @@ static struct expr *menu_check_dep(struct expr *e)
 	case E_SYMBOL:
 		/* change 'm' into 'm' && MODULES */
 		if (e->left.sym == &symbol_mod)
-			return expr_alloc_and(e,
-					      expr_alloc_symbol(modules_sym));
+			return expr_alloc_and(e, expr_alloc_symbol(modules_sym));
 		break;
 	default:
 		break;
@@ -107,8 +105,7 @@ static struct expr *menu_check_dep(struct expr *e)
 
 void menu_add_dep(struct expr *dep)
 {
-	current_entry->dep =
-		expr_alloc_and(current_entry->dep, menu_check_dep(dep));
+	current_entry->dep = expr_alloc_and(current_entry->dep, menu_check_dep(dep));
 }
 
 void menu_set_type(int type)
@@ -121,13 +118,11 @@ void menu_set_type(int type)
 		sym->type = type;
 		return;
 	}
-	menu_warn(current_entry, "type of '%s' redefined from '%s' to '%s'",
-		  sym->name ? sym->name : "<choice>", sym_type_name(sym->type),
-		  sym_type_name(type));
+	menu_warn(current_entry, "type of '%s' redefined from '%s' to '%s'", sym->name ? sym->name : "<choice>",
+		  sym_type_name(sym->type), sym_type_name(type));
 }
 
-struct property *menu_add_prop(enum prop_type type, char *prompt,
-			       struct expr *expr, struct expr *dep)
+struct property *menu_add_prop(enum prop_type type, char *prompt, struct expr *expr, struct expr *dep)
 {
 	struct property *prop = prop_alloc(type, current_entry->sym);
 
@@ -151,8 +146,7 @@ struct property *menu_add_prop(enum prop_type type, char *prompt,
 			while ((menu = menu->parent) != NULL) {
 				if (!menu->visibility)
 					continue;
-				prop->visible.expr = expr_alloc_and(
-					prop->visible.expr, menu->visibility);
+				prop->visible.expr = expr_alloc_and(prop->visible.expr, menu->visibility);
 			}
 		}
 
@@ -163,16 +157,14 @@ struct property *menu_add_prop(enum prop_type type, char *prompt,
 	return prop;
 }
 
-struct property *menu_add_prompt(enum prop_type type, char *prompt,
-				 struct expr *dep)
+struct property *menu_add_prompt(enum prop_type type, char *prompt, struct expr *dep)
 {
 	return menu_add_prop(type, prompt, NULL, dep);
 }
 
 void menu_add_visibility(struct expr *expr)
 {
-	current_entry->visibility =
-		expr_alloc_and(current_entry->visibility, expr);
+	current_entry->visibility = expr_alloc_and(current_entry->visibility, expr);
 }
 
 void menu_add_expr(enum prop_type type, struct expr *expr, struct expr *dep)
@@ -208,8 +200,7 @@ void menu_add_option(int token, char *arg)
 
 static int menu_validate_number(struct symbol *sym, struct symbol *sym2)
 {
-	return sym2->type == S_INT || sym2->type == S_HEX ||
-	       (sym2->type == S_UNKNOWN && sym_string_valid(sym, sym2->name));
+	return sym2->type == S_INT || sym2->type == S_HEX || (sym2->type == S_UNKNOWN && sym_string_valid(sym, sym2->name));
 }
 
 static void sym_check_prop(struct symbol *sym)
@@ -219,9 +210,7 @@ static void sym_check_prop(struct symbol *sym)
 	for (prop = sym->prop; prop; prop = prop->next) {
 		switch (prop->type) {
 		case P_DEFAULT:
-			if ((sym->type == S_STRING || sym->type == S_INT ||
-			     sym->type == S_HEX) &&
-			    prop->expr->type != E_SYMBOL)
+			if ((sym->type == S_STRING || sym->type == S_INT || sym->type == S_HEX) && prop->expr->type != E_SYMBOL)
 				prop_warn(prop,
 					  "default for config symbol '%s'"
 					  " must be a single symbol",
@@ -231,22 +220,17 @@ static void sym_check_prop(struct symbol *sym)
 			sym2 = prop_get_symbol(prop);
 			if (sym->type == S_HEX || sym->type == S_INT) {
 				if (!menu_validate_number(sym, sym2))
-					prop_warn(prop,
-						  "'%s': number is invalid",
-						  sym->name);
+					prop_warn(prop, "'%s': number is invalid", sym->name);
 			}
 			break;
 		case P_SELECT:
 			sym2 = prop_get_symbol(prop);
 			if (sym->type != S_BOOLEAN && sym->type != S_TRISTATE)
-				prop_warn(
-					prop,
-					"config symbol '%s' uses select, but is "
-					"not boolean or tristate",
-					sym->name);
-			else if (sym2->type != S_UNKNOWN &&
-				 sym2->type != S_BOOLEAN &&
-				 sym2->type != S_TRISTATE)
+				prop_warn(prop,
+					  "config symbol '%s' uses select, but is "
+					  "not boolean or tristate",
+					  sym->name);
+			else if (sym2->type != S_UNKNOWN && sym2->type != S_BOOLEAN && sym2->type != S_TRISTATE)
 				prop_warn(prop,
 					  "'%s' has wrong type. 'select' only "
 					  "accept arguments of boolean and "
@@ -279,10 +263,8 @@ void menu_finalize(struct menu *parent)
 			if (sym->type == S_UNKNOWN) {
 				/* find the first choice value to find out choice type */
 				current_entry = parent;
-				for (menu = parent->list; menu;
-				     menu = menu->next) {
-					if (menu->sym &&
-					    menu->sym->type != S_UNKNOWN) {
+				for (menu = parent->list; menu; menu = menu->next) {
+					if (menu->sym && menu->sym->type != S_UNKNOWN) {
 						menu_set_type(menu->sym->type);
 						break;
 					}
@@ -319,14 +301,9 @@ void menu_finalize(struct menu *parent)
 					dep = expr_trans_bool(dep);
 				prop->visible.expr = dep;
 				if (prop->type == P_SELECT) {
-					struct symbol *es =
-						prop_get_symbol(prop);
+					struct symbol *es = prop_get_symbol(prop);
 					es->rev_dep.expr = expr_alloc_or(
-						es->rev_dep.expr,
-						expr_alloc_and(
-							expr_alloc_symbol(
-								menu->sym),
-							expr_copy(dep)));
+						es->rev_dep.expr, expr_alloc_and(expr_alloc_symbol(menu->sym), expr_copy(dep)));
 				}
 			}
 		}
@@ -338,8 +315,7 @@ void menu_finalize(struct menu *parent)
 		basedep = expr_eliminate_dups(expr_transform(basedep));
 		last_menu = NULL;
 		for (menu = parent->next; menu; menu = menu->next) {
-			dep = menu->prompt ? menu->prompt->visible.expr :
-					     menu->dep;
+			dep = menu->prompt ? menu->prompt->visible.expr : menu->dep;
 			if (!expr_contains_symbol(dep, sym))
 				break;
 			if (expr_depends_symbol(dep, sym))
@@ -368,24 +344,19 @@ next:
 		sym->dir_dep.expr = parent->dep;
 	}
 	for (menu = parent->list; menu; menu = menu->next) {
-		if (sym && sym_is_choice(sym) && menu->sym &&
-		    !sym_is_choice_value(menu->sym)) {
+		if (sym && sym_is_choice(sym) && menu->sym && !sym_is_choice_value(menu->sym)) {
 			current_entry = menu;
 			menu->sym->flags |= SYMBOL_CHOICEVAL;
 			if (!menu->prompt)
-				menu_warn(menu,
-					  "choice value must have a prompt");
+				menu_warn(menu, "choice value must have a prompt");
 			for (prop = menu->sym->prop; prop; prop = prop->next) {
 				if (prop->type == P_DEFAULT)
 					prop_warn(prop, "defaults for choice "
 							"values not supported");
 				if (prop->menu == menu)
 					continue;
-				if (prop->type == P_PROMPT &&
-				    prop->menu->parent->sym != sym)
-					prop_warn(
-						prop,
-						"choice value used outside its choice group");
+				if (prop->type == P_PROMPT && prop->menu->parent->sym != sym)
+					prop_warn(prop, "choice value used outside its choice group");
 			}
 			/* Non-tristate choice values of tristate choices must
 			 * depend on the choice being set to Y. The choice
@@ -393,18 +364,13 @@ next:
 			 * properties above, so the change here must be re-
 			 * propagated.
 			 */
-			if (sym->type == S_TRISTATE &&
-			    menu->sym->type != S_TRISTATE) {
-				basedep = expr_alloc_comp(E_EQUAL, sym,
-							  &symbol_yes);
+			if (sym->type == S_TRISTATE && menu->sym->type != S_TRISTATE) {
+				basedep = expr_alloc_comp(E_EQUAL, sym, &symbol_yes);
 				menu->dep = expr_alloc_and(basedep, menu->dep);
-				for (prop = menu->sym->prop; prop;
-				     prop = prop->next) {
+				for (prop = menu->sym->prop; prop; prop = prop->next) {
 					if (prop->menu != menu)
 						continue;
-					prop->visible.expr = expr_alloc_and(
-						expr_copy(basedep),
-						prop->visible.expr);
+					prop->visible.expr = expr_alloc_and(expr_copy(basedep), prop->visible.expr);
 				}
 			}
 			menu_add_symbol(P_CHOICE, sym, NULL);
@@ -415,8 +381,7 @@ next:
 			(*ep)->right.sym = menu->sym;
 		}
 		if (menu->list && (!menu->prompt || !menu->prompt->text)) {
-			for (last_menu = menu->list;;
-			     last_menu = last_menu->next) {
+			for (last_menu = menu->list;; last_menu = last_menu->next) {
 				last_menu->parent = parent;
 				if (!last_menu->next)
 					break;
@@ -440,10 +405,8 @@ next:
 	}
 
 	if (sym && !sym_is_optional(sym) && parent->prompt) {
-		sym->rev_dep.expr = expr_alloc_or(
-			sym->rev_dep.expr,
-			expr_alloc_and(parent->prompt->visible.expr,
-				       expr_alloc_symbol(&symbol_mod)));
+		sym->rev_dep.expr = expr_alloc_or(sym->rev_dep.expr,
+						  expr_alloc_and(parent->prompt->visible.expr, expr_alloc_symbol(&symbol_mod)));
 	}
 }
 
@@ -473,8 +436,7 @@ bool menu_is_visible(struct menu *menu)
 		sym_calc_value(sym);
 		visible = menu->prompt->visible.tri;
 	} else
-		visible = menu->prompt->visible.tri =
-			expr_calc_value(menu->prompt->visible.expr);
+		visible = menu->prompt->visible.tri = expr_calc_value(menu->prompt->visible.expr);
 
 	if (visible != no)
 		return true;
@@ -538,8 +500,7 @@ static void get_prompt_str(struct gstr *r, struct property *prop)
 	struct menu *submenu[8], *menu;
 
 	str_printf(r, _("Prompt: %s\n"), _(prop->text));
-	str_printf(r, _("  Defined at %s:%d\n"), prop->menu->file->name,
-		   prop->menu->lineno);
+	str_printf(r, _("  Defined at %s:%d\n"), prop->menu->file->name, prop->menu->lineno);
 	if (!expr_is_yes(prop->visible.expr)) {
 		str_append(r, _("  Depends on: "));
 		expr_gstr_print(prop->visible.expr, r);
@@ -552,12 +513,9 @@ static void get_prompt_str(struct gstr *r, struct property *prop)
 		str_printf(r, _("  Location:\n"));
 		for (j = 4; --i >= 0; j += 2) {
 			menu = submenu[i];
-			str_printf(r, "%*c-> %s", j, ' ',
-				   _(menu_get_prompt(menu)));
+			str_printf(r, "%*c-> %s", j, ' ', _(menu_get_prompt(menu)));
 			if (menu->sym) {
-				str_printf(r, " (%s [=%s])",
-					   menu->sym->name ? menu->sym->name :
-							     _("<choice>"),
+				str_printf(r, " (%s [=%s])", menu->sym->name ? menu->sym->name : _("<choice>"),
 					   sym_get_string_value(menu->sym));
 			}
 			str_append(r, "\n");
@@ -571,8 +529,7 @@ void get_symbol_str(struct gstr *r, struct symbol *sym)
 	struct property *prop;
 
 	if (sym && sym->name) {
-		str_printf(r, "Symbol: %s [=%s]\n", sym->name,
-			   sym_get_string_value(sym));
+		str_printf(r, "Symbol: %s [=%s]\n", sym->name, sym_get_string_value(sym));
 		str_printf(r, "Type  : %s\n", sym_type_name(sym->type));
 		if (sym->type == S_INT || sym->type == S_HEX) {
 			prop = sym_get_range_prop(sym);

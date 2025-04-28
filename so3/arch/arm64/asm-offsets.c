@@ -44,8 +44,7 @@ int main(void)
 #ifdef CONFIG_AVZ
 
 	DEFINE(OFFSET_AVZ_SHARED, offsetof(struct domain, avz_shared));
-	DEFINE(OFFSET_EVTCHN_UPCALL_PENDING,
-	       offsetof(struct avz_shared, evtchn_upcall_pending));
+	DEFINE(OFFSET_EVTCHN_UPCALL_PENDING, offsetof(struct avz_shared, evtchn_upcall_pending));
 
 	DEFINE(OFFSET_CPU_REGS, offsetof(struct domain, vcpu.regs));
 #endif
@@ -92,8 +91,7 @@ int main(void)
 	DEFINE(ARM_SMCCC_RES_X0_OFFS, offsetof(struct arm_smccc_res, a0));
 	DEFINE(ARM_SMCCC_RES_X2_OFFS, offsetof(struct arm_smccc_res, a2));
 	DEFINE(ARM_SMCCC_QUIRK_ID_OFFS, offsetof(struct arm_smccc_quirk, id));
-	DEFINE(ARM_SMCCC_QUIRK_STATE_OFFS,
-	       offsetof(struct arm_smccc_quirk, state));
+	DEFINE(ARM_SMCCC_QUIRK_STATE_OFFS, offsetof(struct arm_smccc_quirk, state));
 
 	BLANK();
 

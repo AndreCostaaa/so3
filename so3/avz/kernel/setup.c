@@ -114,9 +114,7 @@ void avz_start(void)
 	/* create idle domain */
 	init_idle_domain();
 
-	LOG_DEBUG(
-		"This configuration will spin up at most %d total processors ...",
-		CONFIG_NR_CPUS);
+	LOG_DEBUG("This configuration will spin up at most %d total processors ...", CONFIG_NR_CPUS);
 
 #ifdef CONFIG_SOO
 	/*
@@ -124,8 +122,7 @@ void avz_start(void)
 	 * hypercalls and upcalls will be processed correctly.
 	 */
 
-	domains[DOMID_AGENCY_RT] =
-		domain_create(DOMID_AGENCY_RT, AGENCY_RT_CPU);
+	domains[DOMID_AGENCY_RT] = domain_create(DOMID_AGENCY_RT, AGENCY_RT_CPU);
 
 	if (domains[DOMID_AGENCY_RT] == NULL)
 		panic("Error creating realtime agency subdomain.");
@@ -153,8 +150,7 @@ void avz_start(void)
 
 	smp_init();
 
-	LOG_DEBUG(
-		"Now, unpausing the agency domain and doing its bootstrap...");
+	LOG_DEBUG("Now, unpausing the agency domain and doing its bootstrap...");
 
 	domain_unpause_by_systemcontroller(agency);
 

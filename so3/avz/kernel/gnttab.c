@@ -161,14 +161,12 @@ addr_t map_vbstore_pfn(int target_domid, int pfn)
 		if (cur->target_domid == target_domid) {
 			/* Here, we get an IPA address corresponding to the grant page */
 			if (pfn == 0)
-				grant_paddr =
-					pfn_to_phys(allocate_grant_pfn(d));
+				grant_paddr = pfn_to_phys(allocate_grant_pfn(d));
 			else
 				grant_paddr = pfn_to_phys(pfn);
 
-			__create_mapping((addr_t *)d->pagetable_vaddr,
-					 grant_paddr, pfn_to_phys(cur->pfn),
-					 PAGE_SIZE, true, S2);
+			__create_mapping((addr_t *) d->pagetable_vaddr, grant_paddr, pfn_to_phys(cur->pfn), PAGE_SIZE, true,
+					 S2);
 
 			return phys_to_pfn(grant_paddr);
 		}
@@ -199,8 +197,7 @@ void do_gnttab(gnttab_op_t *args)
 
 		/* Create a new entry in the list of gnttab page */
 
-		paddr = ipa_to_pa(DOM_TO_MEMSLOT(d->avz_shared->domID),
-				  pfn_to_phys(args->pfn));
+		paddr = ipa_to_pa(DOM_TO_MEMSLOT(d->avz_shared->domID), pfn_to_phys(args->pfn));
 
 		gnttab = new_gnttab_entry(d, args->domid, phys_to_pfn(paddr));
 
@@ -224,8 +221,7 @@ void do_gnttab(gnttab_op_t *args)
 		/* This pfn will be exported to the domain */
 		args->pfn = phys_to_pfn(grant_paddr);
 
-		__create_mapping((addr_t *)d->pagetable_vaddr, grant_paddr,
-				 pfn_to_phys(gnttab->pfn), PAGE_SIZE, true, S2);
+		__create_mapping((addr_t *) d->pagetable_vaddr, grant_paddr, pfn_to_phys(gnttab->pfn), PAGE_SIZE, true, S2);
 
 		break;
 

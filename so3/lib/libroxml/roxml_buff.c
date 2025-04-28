@@ -32,13 +32,12 @@ ROXML_INT void roxml_close_buff(node_t *n)
 	return;
 }
 
-ROXML_INT int roxml_parse_buff(roxml_load_ctx_t *context,
-			       roxml_parser_item_t *parser, char *buffer)
+ROXML_INT int roxml_parse_buff(roxml_load_ctx_t *context, roxml_parser_item_t *parser, char *buffer)
 {
 	int ret = 0;
 
 	context->type = ROXML_BUFF;
-	context->src = (void *)buffer;
+	context->src = (void *) buffer;
 	ret = roxml_parse_line(parser, buffer, 0, context);
 
 	if (ret >= 0 && context->lvl != 0)
@@ -54,8 +53,7 @@ ROXML_API node_t *roxml_load_buf(char *buffer)
 		return NULL;
 	}
 
-	current_node =
-		roxml_create_node(0, buffer, ROXML_ELM_NODE | ROXML_BUFF);
+	current_node = roxml_create_node(0, buffer, ROXML_ELM_NODE | ROXML_BUFF);
 
 	return roxml_load(current_node, NULL, buffer);
 }

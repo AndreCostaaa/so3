@@ -43,8 +43,7 @@ void avz_get_shared(void)
 
 	BUG_ON(!args.u.avz_domctl_args.domctl.avz_shared_paddr);
 
-	avz_shared = (avz_shared_t *)io_map(
-		args.u.avz_domctl_args.domctl.avz_shared_paddr, PAGE_SIZE);
+	avz_shared = (avz_shared_t *) io_map(args.u.avz_domctl_args.domctl.avz_shared_paddr, PAGE_SIZE);
 	BUG_ON(!avz_shared);
 }
 
@@ -67,8 +66,7 @@ void avz_printstr(char *s)
 	args.cmd = AVZ_CONSOLE_IO_OP;
 	args.u.avz_console_io_args.console.cmd = CONSOLE_IO_PRINTSTR;
 
-	strncpy(args.u.avz_console_io_args.console.u.str, s,
-		CONSOLE_STR_MAX_LEN);
+	strncpy(args.u.avz_console_io_args.console.u.str, s, CONSOLE_STR_MAX_LEN);
 
 	avz_hypercall(&args);
 }
@@ -110,9 +108,9 @@ void avz_hypercall(avz_hyp_t *avz_hyp)
 
 	memcpy(__avz_hyp, avz_hyp, sizeof(avz_hyp_t));
 
-	__asm_flush_dcache_range((addr_t)__avz_hyp, sizeof(avz_hyp_t));
+	__asm_flush_dcache_range((addr_t) __avz_hyp, sizeof(avz_hyp_t));
 	__avz_hypercall(AVZ_HYPERCALL_TRAP, __pa(__avz_hyp));
-	__asm_invalidate_dcache_range((addr_t)__avz_hyp, sizeof(avz_hyp_t));
+	__asm_invalidate_dcache_range((addr_t) __avz_hyp, sizeof(avz_hyp_t));
 
 	memcpy(avz_hyp, __avz_hyp, sizeof(avz_hyp_t));
 

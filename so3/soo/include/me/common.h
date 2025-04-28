@@ -78,8 +78,7 @@ void del_host(struct list_head *hosts, uint64_t agencyUID);
  * @param me_common
  * @param agencyUID
  */
-void new_host(struct list_head *hosts, uint64_t agencyUID, void *priv,
-	      int priv_len);
+void new_host(struct list_head *hosts, uint64_t agencyUID, void *priv, int priv_len);
 
 /**
  * Retrieve the list of host from an array.

@@ -15,8 +15,8 @@
 #include "util.h"
 
 #define ALIGN(x, a) (((x) + ((a) - 1)) & ~((a) - 1))
-#define PALIGN(p, a) ((void *)(ALIGN((unsigned long)(p), (a))))
-#define GET_CELL(p) (p += 4, *((const uint32_t *)(p - 4)))
+#define PALIGN(p, a) ((void *) (ALIGN((unsigned long) (p), (a))))
+#define GET_CELL(p) (p += 4, *((const uint32_t *) (p - 4)))
 
 static void print_data(const char *data, int len)
 {
@@ -28,12 +28,11 @@ static void print_data(const char *data, int len)
 		return;
 
 	if (util_is_printable_string(data, len)) {
-		printf(" = \"%s\"", (const char *)data);
+		printf(" = \"%s\"", (const char *) data);
 	} else if ((len % 4) == 0) {
 		printf(" = <");
 		for (i = 0; i < len; i += 4)
-			printf("0x%08x%s", fdt32_to_cpu(GET_CELL(p)),
-			       i < (len - 4) ? " " : "");
+			printf("0x%08x%s", fdt32_to_cpu(GET_CELL(p)), i < (len - 4) ? " " : "");
 		printf(">");
 	} else {
 		printf(" = [");
@@ -49,10 +48,9 @@ static void dump_blob(void *blob)
 	uint32_t off_mem_rsvmap = fdt32_to_cpu(bph->off_mem_rsvmap);
 	uint32_t off_dt = fdt32_to_cpu(bph->off_dt_struct);
 	uint32_t off_str = fdt32_to_cpu(bph->off_dt_strings);
-	struct fdt_reserve_entry *p_rsvmap =
-		(struct fdt_reserve_entry *)((char *)blob + off_mem_rsvmap);
-	const char *p_struct = (const char *)blob + off_dt;
-	const char *p_strings = (const char *)blob + off_str;
+	struct fdt_reserve_entry *p_rsvmap = (struct fdt_reserve_entry *) ((char *) blob + off_mem_rsvmap);
+	const char *p_struct = (const char *) blob + off_dt;
+	const char *p_strings = (const char *) blob + off_str;
 	uint32_t version = fdt32_to_cpu(bph->version);
 	uint32_t totalsize = fdt32_to_cpu(bph->totalsize);
 	uint32_t tag;
@@ -71,18 +69,14 @@ static void dump_blob(void *blob)
 	printf("// off_dt_strings:\t0x%x\n", off_str);
 	printf("// off_mem_rsvmap:\t0x%x\n", off_mem_rsvmap);
 	printf("// version:\t\t%d\n", version);
-	printf("// last_comp_version:\t%d\n",
-	       fdt32_to_cpu(bph->last_comp_version));
+	printf("// last_comp_version:\t%d\n", fdt32_to_cpu(bph->last_comp_version));
 	if (version >= 2)
-		printf("// boot_cpuid_phys:\t0x%x\n",
-		       fdt32_to_cpu(bph->boot_cpuid_phys));
+		printf("// boot_cpuid_phys:\t0x%x\n", fdt32_to_cpu(bph->boot_cpuid_phys));
 
 	if (version >= 3)
-		printf("// size_dt_strings:\t0x%x\n",
-		       fdt32_to_cpu(bph->size_dt_strings));
+		printf("// size_dt_strings:\t0x%x\n", fdt32_to_cpu(bph->size_dt_strings));
 	if (version >= 17)
-		printf("// size_dt_struct:\t0x%x\n",
-		       fdt32_to_cpu(bph->size_dt_struct));
+		printf("// size_dt_struct:\t0x%x\n", fdt32_to_cpu(bph->size_dt_struct));
 	printf("\n");
 
 	for (i = 0;; i++) {
@@ -91,8 +85,7 @@ static void dump_blob(void *blob)
 		if (addr == 0 && size == 0)
 			break;
 
-		printf("/memreserve/ %llx %llx;\n", (unsigned long long)addr,
-		       (unsigned long long)size);
+		printf("/memreserve/ %llx %llx;\n", (unsigned long long) addr, (unsigned long long) size);
 	}
 
 	p = p_struct;
@@ -125,8 +118,7 @@ static void dump_blob(void *blob)
 		}
 
 		if (tag != FDT_PROP) {
-			fprintf(stderr, "%*s ** Unknown tag 0x%08x\n",
-				depth * shift, "", tag);
+			fprintf(stderr, "%*s ** Unknown tag 0x%08x\n", depth * shift, "", tag);
 			break;
 		}
 		sz = fdt32_to_cpu(GET_CELL(p));

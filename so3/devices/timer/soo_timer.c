@@ -77,9 +77,7 @@ void periodic_timer_start(void)
 {
 	periodic_timer.period = NSECS / CONFIG_HZ;
 
-	clocks_calc_mult_shift(&clocksource_timer.mult,
-			       &clocksource_timer.shift, clocksource_timer.rate,
-			       NSECS, 3600);
+	clocks_calc_mult_shift(&clocksource_timer.mult, &clocksource_timer.shift, clocksource_timer.rate, NSECS, 3600);
 
 	bind_virq_to_irqhandler(VIRQ_TIMER, timer_isr, NULL, NULL);
 }

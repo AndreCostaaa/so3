@@ -40,11 +40,10 @@
 		printk("EVTCHNOP failure: error %d\n", (_errno)); \
 		BUG();                                            \
 	} while (0)
-#define ERROR_EXIT_DOM(_errno, _dom)                              \
-	do {                                                      \
-		printk("EVTCHNOP failure: domain %d, error %d\n", \
-		       (_dom)->avz_shared->domID, (_errno));      \
-		BUG();                                            \
+#define ERROR_EXIT_DOM(_errno, _dom)                                                                    \
+	do {                                                                                            \
+		printk("EVTCHNOP failure: domain %d, error %d\n", (_dom)->avz_shared->domID, (_errno)); \
+		BUG();                                                                                  \
 	} while (0)
 
 static void evtchn_set_pending(struct domain *d, int evtchn);
@@ -122,11 +121,9 @@ static void evtchn_bind_interdomain(evtchn_bind_interdomain_t *bind)
 	lchn = &ld->evtchn[levtchn];
 	rchn = &rd->evtchn[revtchn];
 
-	valid = ((rchn->state == ECS_INTERDOMAIN) &&
-		 (rchn->interdomain.remote_dom == NULL));
+	valid = ((rchn->state == ECS_INTERDOMAIN) && (rchn->interdomain.remote_dom == NULL));
 
-	if (!valid && ((rchn->state != ECS_UNBOUND) ||
-		       (rchn->unbound.remote_domid != ld->avz_shared->domID)))
+	if (!valid && ((rchn->state != ECS_UNBOUND) || (rchn->unbound.remote_domid != ld->avz_shared->domID)))
 		ERROR_EXIT_DOM(-EINVAL, rd);
 
 	lchn->interdomain.remote_dom = rd;
@@ -150,8 +147,7 @@ static void evtchn_bind_interdomain(evtchn_bind_interdomain_t *bind)
  * as    
  *
  */
-void evtchn_bind_existing_interdomain(struct domain *ld, struct domain *remote,
-				      int levtchn, int revtchn)
+void evtchn_bind_existing_interdomain(struct domain *ld, struct domain *remote, int levtchn, int revtchn)
 {
 	struct evtchn *lchn, *rchn;
 	struct domain *rd;
@@ -179,8 +175,7 @@ void evtchn_bind_existing_interdomain(struct domain *ld, struct domain *remote,
 		rchn->unbound.remote_domid = remote->avz_shared->domID;
 
 	if ((rchn->state != ECS_UNBOUND) ||
-	    ((rchn->unbound.remote_domid != DOMID_SELF) &&
-	     (rchn->unbound.remote_domid != ld->avz_shared->domID)))
+	    ((rchn->unbound.remote_domid != DOMID_SELF) && (rchn->unbound.remote_domid != ld->avz_shared->domID)))
 		ERROR_EXIT_DOM(-EINVAL, rd);
 
 	lchn->interdomain.remote_dom = rd;
@@ -321,8 +316,7 @@ void evtchn_send(struct domain *d, unsigned int levtchn)
 	if (lchn->state != ECS_INTERDOMAIN) {
 		/* Abnormal situation */
 		printk("%s: failure, undefined state: %d, local domain: %d, remote domain: %d, revtchn: %d, levtchn: %d, CPU: %d\n",
-		       __func__, lchn->state, ld->avz_shared->domID,
-		       ((rd != NULL) ? rd->avz_shared->domID : -1), revtchn,
+		       __func__, lchn->state, ld->avz_shared->domID, ((rd != NULL) ? rd->avz_shared->domID : -1), revtchn,
 		       levtchn, smp_processor_id());
 
 		BUG();
@@ -396,24 +390,18 @@ void do_event_channel_op(avz_hyp_t *args)
 {
 	switch (args->u.avz_evtchn.evtchn_op.cmd) {
 	case EVTCHNOP_alloc_unbound:
-		evtchn_alloc_unbound(
-			&args->u.avz_evtchn.evtchn_op.u.alloc_unbound);
+		evtchn_alloc_unbound(&args->u.avz_evtchn.evtchn_op.u.alloc_unbound);
 		break;
 
 	case EVTCHNOP_bind_interdomain:
-		evtchn_bind_interdomain(
-			&args->u.avz_evtchn.evtchn_op.u.bind_interdomain);
+		evtchn_bind_interdomain(&args->u.avz_evtchn.evtchn_op.u.bind_interdomain);
 		break;
 
 	case EVTCHNOP_bind_existing_interdomain:
-		evtchn_bind_existing_interdomain(
-			current_domain,
-			domains[args->u.avz_evtchn.evtchn_op.u.bind_interdomain
-					.remote_dom],
-			args->u.avz_evtchn.evtchn_op.u.bind_interdomain
-				.local_evtchn,
-			args->u.avz_evtchn.evtchn_op.u.bind_interdomain
-				.remote_evtchn);
+		evtchn_bind_existing_interdomain(current_domain,
+						 domains[args->u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_dom],
+						 args->u.avz_evtchn.evtchn_op.u.bind_interdomain.local_evtchn,
+						 args->u.avz_evtchn.evtchn_op.u.bind_interdomain.remote_evtchn);
 		break;
 
 	case EVTCHNOP_bind_virq:
@@ -425,8 +413,7 @@ void do_event_channel_op(avz_hyp_t *args)
 		break;
 
 	case EVTCHNOP_send:
-		evtchn_send(current_domain,
-			    args->u.avz_evtchn.evtchn_op.u.send.evtchn);
+		evtchn_send(current_domain, args->u.avz_evtchn.evtchn_op.u.send.evtchn);
 		break;
 
 	default:
@@ -476,19 +463,16 @@ static void domain_dump_evtchn_info(struct domain *d)
 		if (chn->state == ECS_FREE)
 			continue;
 
-		printk("  Dom: %d  chn: %d pending:%d: state: %d",
-		       d->avz_shared->domID, i,
-		       d->avz_shared->evtchn_pending[i], chn->state);
+		printk("  Dom: %d  chn: %d pending:%d: state: %d", d->avz_shared->domID, i, d->avz_shared->evtchn_pending[i],
+		       chn->state);
 
 		switch (chn->state) {
 		case ECS_UNBOUND:
-			printk(" unbound:remote_domid:%d",
-			       chn->unbound.remote_domid);
+			printk(" unbound:remote_domid:%d", chn->unbound.remote_domid);
 			break;
 
 		case ECS_INTERDOMAIN:
-			printk(" interdomain remote_dom:%d remove_evtchn: %d",
-			       chn->interdomain.remote_dom->avz_shared->domID,
+			printk(" interdomain remote_dom:%d remove_evtchn: %d", chn->interdomain.remote_dom->avz_shared->domID,
 			       chn->interdomain.remote_evtchn);
 			break;
 
@@ -522,10 +506,7 @@ static void dump_evtchn_info(unsigned char key)
 		spin_unlock(&per_cpu(intc_lock, i));
 }
 
-static struct keyhandler dump_evtchn_info_keyhandler = {
-	.fn = dump_evtchn_info,
-	.desc = "dump evtchn info"
-};
+static struct keyhandler dump_evtchn_info_keyhandler = { .fn = dump_evtchn_info, .desc = "dump evtchn info" };
 
 void event_channel_init(void)
 {

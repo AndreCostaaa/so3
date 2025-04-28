@@ -42,8 +42,7 @@ void __sync_serror(addr_t lr)
 
 void __sync_el2_fault(addr_t lr, addr_t sp)
 {
-	lprintk("### Got a sync interrupt in EL2 / lr: 0x%lx sp: 0x%lx ###\n",
-		lr, sp);
+	lprintk("### Got a sync interrupt in EL2 / lr: 0x%lx sp: 0x%lx ###\n", lr, sp);
 
 	kernel_panic();
 }
@@ -80,8 +79,7 @@ void kernel_panic(void)
 	if (user_mode())
 		printk("%s: entering infinite loop...\n", __func__);
 	else {
-		lprintk("%s: entering infinite loop... CPU: %d\n", __func__,
-			smp_processor_id());
+		lprintk("%s: entering infinite loop... CPU: %d\n", __func__, smp_processor_id());
 	}
 	/* Stop all activities. */
 	local_irq_disable();

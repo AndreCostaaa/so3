@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	srv_addr.sin_port = htons(5000);
 
-	if (bind(s, (struct sockaddr *)&srv_addr, sizeof(srv_addr)) < 0) {
+	if (bind(s, (struct sockaddr *) &srv_addr, sizeof(srv_addr)) < 0) {
 		printf("Impossible to bind\n");
 		return -1;
 	}

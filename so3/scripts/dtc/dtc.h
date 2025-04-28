@@ -84,7 +84,7 @@ struct data {
 	struct marker *markers;
 };
 
-#define empty_data ((struct data){ 0 /* all .members = 0 or NULL */ })
+#define empty_data ((struct data) { 0 /* all .members = 0 or NULL */ })
 
 #define for_each_marker(m) for (; (m); (m) = (m)->next)
 #define for_each_marker_of_type(m, t) for_each_marker(m) if ((m)->type == (t))
@@ -100,8 +100,7 @@ struct data data_copy_escape_string(const char *s, int len);
 struct data data_copy_file(FILE *f, size_t len);
 
 struct data data_append_data(struct data d, const void *p, int len);
-struct data data_insert_at_marker(struct data d, struct marker *m,
-				  const void *p, int len);
+struct data data_insert_at_marker(struct data d, struct marker *m, const void *p, int len);
 struct data data_merge(struct data d1, struct data d2);
 struct data data_append_cell(struct data d, cell_t word);
 struct data data_append_integer(struct data d, uint64_t word, int bits);
@@ -168,36 +167,30 @@ struct node {
 
 #define for_each_label(l0, l) for_each_label_withdel(l0, l) if (!(l)->deleted)
 
-#define for_each_property_withdel(n, p) \
-	for ((p) = (n)->proplist; (p); (p) = (p)->next)
+#define for_each_property_withdel(n, p) for ((p) = (n)->proplist; (p); (p) = (p)->next)
 
-#define for_each_property(n, p) \
-	for_each_property_withdel(n, p) if (!(p)->deleted)
+#define for_each_property(n, p) for_each_property_withdel(n, p) if (!(p)->deleted)
 
-#define for_each_child_withdel(n, c) \
-	for ((c) = (n)->children; (c); (c) = (c)->next_sibling)
+#define for_each_child_withdel(n, c) for ((c) = (n)->children; (c); (c) = (c)->next_sibling)
 
 #define for_each_child(n, c) for_each_child_withdel(n, c) if (!(c)->deleted)
 
 void add_label(struct label **labels, char *label);
 void delete_labels(struct label **labels);
 
-struct property *build_property(char *name, struct data val,
-				struct srcpos *srcpos);
+struct property *build_property(char *name, struct data val, struct srcpos *srcpos);
 struct property *build_property_delete(char *name);
 struct property *chain_property(struct property *first, struct property *list);
 struct property *reverse_properties(struct property *first);
 
-struct node *build_node(struct property *proplist, struct node *children,
-			struct srcpos *srcpos);
+struct node *build_node(struct property *proplist, struct node *children, struct srcpos *srcpos);
 struct node *build_node_delete(struct srcpos *srcpos);
 struct node *name_node(struct node *node, char *name);
 struct node *omit_node_if_unused(struct node *node);
 struct node *reference_node(struct node *node);
 struct node *chain_node(struct node *first, struct node *list);
 struct node *merge_nodes(struct node *old_node, struct node *new_node);
-struct node *add_orphan_node(struct node *old_node, struct node *new_node,
-			     char *ref);
+struct node *add_orphan_node(struct node *old_node, struct node *new_node, char *ref);
 
 void add_property(struct node *node, struct property *prop);
 void delete_property_by_name(struct node *node, char *name);
@@ -205,17 +198,14 @@ void delete_property(struct property *prop);
 void add_child(struct node *parent, struct node *child);
 void delete_node_by_name(struct node *parent, char *name);
 void delete_node(struct node *node);
-void append_to_property(struct node *node, char *name, const void *data,
-			int len, enum markertype type);
+void append_to_property(struct node *node, char *name, const void *data, int len, enum markertype type);
 
 const char *get_unitname(struct node *node);
 struct property *get_property(struct node *node, const char *propname);
 cell_t propval_cell(struct property *prop);
 cell_t propval_cell_n(struct property *prop, int n);
-struct property *get_property_by_label(struct node *tree, const char *label,
-				       struct node **node);
-struct marker *get_marker_label(struct node *tree, const char *label,
-				struct node **node, struct property **prop);
+struct property *get_property_by_label(struct node *tree, const char *label, struct node **node);
+struct marker *get_marker_label(struct node *tree, const char *label, struct node **node, struct property **prop);
 struct node *get_subnode(struct node *node, const char *nodename);
 struct node *get_node_by_path(struct node *tree, const char *path);
 struct node *get_node_by_label(struct node *tree, const char *label);
@@ -236,10 +226,8 @@ struct reserve_info {
 };
 
 struct reserve_info *build_reserve_entry(uint64_t start, uint64_t len);
-struct reserve_info *chain_reserve_entry(struct reserve_info *first,
-					 struct reserve_info *list);
-struct reserve_info *add_reserve_entry(struct reserve_info *list,
-				       struct reserve_info *new);
+struct reserve_info *chain_reserve_entry(struct reserve_info *first, struct reserve_info *list);
+struct reserve_info *add_reserve_entry(struct reserve_info *list, struct reserve_info *new);
 
 struct dt_info {
 	unsigned int dtsflags;
@@ -253,9 +241,8 @@ struct dt_info {
 #define DTSF_V1 0x0001 /* /dts-v1/ */
 #define DTSF_PLUGIN 0x0002 /* /plugin/ */
 
-struct dt_info *build_dt_info(unsigned int dtsflags,
-			      struct reserve_info *reservelist,
-			      struct node *tree, uint32_t boot_cpuid_phys);
+struct dt_info *build_dt_info(unsigned int dtsflags, struct reserve_info *reservelist, struct node *tree,
+			      uint32_t boot_cpuid_phys);
 void sort_tree(struct dt_info *dti);
 void generate_label_tree(struct dt_info *dti, char *name, bool allocph);
 void generate_fixups_tree(struct dt_info *dti, char *name);

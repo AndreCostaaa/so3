@@ -46,7 +46,7 @@ name:
 #else
 #define __AC(X, Y) (X##Y)
 #define _AC(X, Y) __AC(X, Y)
-#define _AT(T, X) ((T)(X))
+#define _AT(T, X) ((T) (X))
 #endif
 
 #define _UL(x) (_AC(x, UL))

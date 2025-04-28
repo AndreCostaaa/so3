@@ -207,8 +207,7 @@
 
 #define MMC_RSP_NONE (0)
 #define MMC_RSP_R1 (MMC_RSP_PRESENT | MMC_RSP_CRC | MMC_RSP_OPCODE)
-#define MMC_RSP_R1b \
-	(MMC_RSP_PRESENT | MMC_RSP_CRC | MMC_RSP_OPCODE | MMC_RSP_BUSY)
+#define MMC_RSP_R1b (MMC_RSP_PRESENT | MMC_RSP_CRC | MMC_RSP_OPCODE | MMC_RSP_BUSY)
 #define MMC_RSP_R2 (MMC_RSP_PRESENT | MMC_RSP_136 | MMC_RSP_CRC)
 #define MMC_RSP_R3 (MMC_RSP_PRESENT)
 #define MMC_RSP_R4 (MMC_RSP_PRESENT)
@@ -259,8 +258,7 @@ struct mmc_data {
 struct mmc;
 
 struct mmc_ops {
-	int (*send_cmd)(struct mmc *mmc, struct mmc_cmd *cmd,
-			struct mmc_data *data);
+	int (*send_cmd)(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *data);
 	void (*set_ios)(struct mmc *mmc);
 	int (*init)(struct mmc *mmc);
 	int (*getcd)(struct mmc *mmc);
@@ -330,8 +328,7 @@ int mmc_getcd(struct mmc *mmc);
 int mmc_getwp(struct mmc *mmc);
 int mmc_set_dsr(struct mmc *mmc, u16 val);
 /* Function to change the size of boot partition and rpmb partitions */
-int mmc_boot_partition_size_change(struct mmc *mmc, unsigned long bootsize,
-				   unsigned long rpmbsize);
+int mmc_boot_partition_size_change(struct mmc *mmc, unsigned long bootsize, unsigned long rpmbsize);
 /* Function to modify the PARTITION_CONFIG field of EXT_CSD */
 int mmc_set_part_conf(struct mmc *mmc, u8 ack, u8 part_num, u8 access);
 /* Function to modify the BOOT_BUS_WIDTH field of EXT_CSD */

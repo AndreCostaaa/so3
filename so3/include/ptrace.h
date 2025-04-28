@@ -207,8 +207,7 @@ struct ptrace_peeksiginfo_args {
 	int32_t nr;
 };
 
-int do_ptrace(enum __ptrace_request request, uint32_t pid, void *addr,
-	      void *data);
+int do_ptrace(enum __ptrace_request request, uint32_t pid, void *addr, void *data);
 
 struct pcb;
 struct user;

@@ -35,8 +35,7 @@ static const char *page;
 /*
  * refresh window content
  */
-static void refresh_text_box(WINDOW *dialog, WINDOW *box, int boxh, int boxw,
-			     int cur_y, int cur_x)
+static void refresh_text_box(WINDOW *dialog, WINDOW *box, int boxh, int boxw, int cur_y, int cur_x)
 {
 	print_page(box, boxh, boxw);
 	print_position(dialog);
@@ -47,8 +46,7 @@ static void refresh_text_box(WINDOW *dialog, WINDOW *box, int boxh, int boxw,
 /*
  * Display text from a file in a dialog box.
  */
-int dialog_textbox(const char *title, const char *tbuf, int initial_height,
-		   int initial_width)
+int dialog_textbox(const char *title, const char *tbuf, int initial_height, int initial_width)
 {
 	int i, x, y, cur_x, cur_y, key = 0;
 	int height, width, boxh, boxw;
@@ -110,8 +108,7 @@ do_resize:
 
 	print_title(dialog, title, width);
 
-	print_button(dialog, gettext(" Exit "), height - 2, width / 2 - 4,
-		     TRUE);
+	print_button(dialog, gettext(" Exit "), height - 2, width / 2 - 4, TRUE);
 	wnoutrefresh(dialog);
 	getyx(dialog, cur_y, cur_x); /* Save cursor position */
 
@@ -134,8 +131,7 @@ do_resize:
 			if (!begin_reached) {
 				begin_reached = 1;
 				page = buf;
-				refresh_text_box(dialog, box, boxh, boxw, cur_y,
-						 cur_x);
+				refresh_text_box(dialog, box, boxh, boxw, cur_y, cur_x);
 			}
 			break;
 		case 'G': /* Last page */
@@ -161,8 +157,7 @@ do_resize:
 				 * by calling get_line() in the following
 				 * 'for' loop. */
 				scrollok(box, TRUE);
-				wscrl(box,
-				      -1); /* Scroll box region down one line */
+				wscrl(box, -1); /* Scroll box region down one line */
 				scrollok(box, FALSE);
 				page_length = 0;
 				passed_end = 0;
@@ -181,8 +176,7 @@ do_resize:
 				}
 
 				print_position(dialog);
-				wmove(dialog, cur_y,
-				      cur_x); /* Restore cursor position */
+				wmove(dialog, cur_y, cur_x); /* Restore cursor position */
 				wrefresh(dialog);
 			}
 			break;
@@ -205,8 +199,7 @@ do_resize:
 				print_line(box, boxh - 1, boxw);
 				wnoutrefresh(box);
 				print_position(dialog);
-				wmove(dialog, cur_y,
-				      cur_x); /* Restore cursor position */
+				wmove(dialog, cur_y, cur_x); /* Restore cursor position */
 				wrefresh(dialog);
 			}
 			break;

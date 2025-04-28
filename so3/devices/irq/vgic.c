@@ -61,8 +61,7 @@ static enum mmio_result gicv2_handle_dist_access(struct mmio_access *mmio)
 /*
  * GICv2 uses 8bit values for each IRQ in the ITARGETSR registers
  */
-static enum mmio_result gicv2_handle_irq_target(struct mmio_access *mmio,
-						unsigned int irq)
+static enum mmio_result gicv2_handle_irq_target(struct mmio_access *mmio, unsigned int irq)
 {
 	/*
          * ITARGETSR contain one byte per IRQ, so the first one affected by this
@@ -105,8 +104,7 @@ static enum mmio_result gicv2_handle_irq_target(struct mmio_access *mmio,
 	if (mmio->is_write) {
 		spin_lock(&dist_lock);
 
-		itargetsr =
-			ioread32((void *)gic->gicd + GICD_ITARGETSR + irq_base);
+		itargetsr = ioread32((void *) gic->gicd + GICD_ITARGETSR + irq_base);
 		mmio->value &= access_mask;
 
 		/* Combine with external SPIs */

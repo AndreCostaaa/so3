@@ -64,7 +64,7 @@ unsigned short checksum(void *b, int len)
 		sum += *buf++;
 	}
 	if (len == 1) {
-		sum += *(unsigned char *)buf;
+		sum += *(unsigned char *) buf;
 	}
 	sum = (sum >> 16) + (sum & 0xFFFF);
 	sum += (sum >> 16);
@@ -186,15 +186,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	setsockopt(s, 0xfff, IP_TTL, (const char *)&ttl, sizeof(ttl));
+	setsockopt(s, 0xfff, IP_TTL, (const char *) &ttl, sizeof(ttl));
 
-	setsockopt(s, 0xfff, 0x1005, (const char *)&timeout,
-		   sizeof(struct timeval));
-	setsockopt(s, 0xfff, 0x1006, (const char *)&timeout,
-		   sizeof(struct timeval));
+	setsockopt(s, 0xfff, 0x1005, (const char *) &timeout, sizeof(struct timeval));
+	setsockopt(s, 0xfff, 0x1006, (const char *) &timeout, sizeof(struct timeval));
 
 	while (attempt++ < count) {
-		usleep((unsigned)(interval_s * 1000000u));
+		usleep((unsigned) (interval_s * 1000000u));
 
 		inet_pton(AF_INET, destination, &ping_addr.sin_addr);
 
@@ -215,18 +213,14 @@ int main(int argc, char **argv)
 
 		gettimeofday(&start, NULL);
 
-		if (sendto(s, &packet, sizeof(packet), 0,
-			   (struct sockaddr *)&ping_addr,
-			   sizeof(ping_addr)) <= 0) {
+		if (sendto(s, &packet, sizeof(packet), 0, (struct sockaddr *) &ping_addr, sizeof(ping_addr)) <= 0) {
 			printf("Packet sending failed!!\n");
 			continue;
 		}
 
 		size = sizeof(recv_addr);
 
-		if (recvfrom(s, &packet, sizeof(packet), 0,
-			     (struct sockaddr *)&recv_addr, &size) <= 0 &&
-		    msg_count > 1) {
+		if (recvfrom(s, &packet, sizeof(packet), 0, (struct sockaddr *) &recv_addr, &size) <= 0 && msg_count > 1) {
 			printf("Packet receive failed!!\n");
 			continue;
 		}
@@ -235,15 +229,12 @@ int main(int argc, char **argv)
 
 		inet_ntop(AF_INET, &recv_addr.sin_addr, ip, sizeof(ip));
 
-		rtt = end.tv_usec / 1000.0 + end.tv_sec * 1000 -
-		      (start.tv_usec / 1000.0 + start.tv_sec * 1000);
+		rtt = end.tv_usec / 1000.0 + end.tv_sec * 1000 - (start.tv_usec / 1000.0 + start.tv_sec * 1000);
 
 		if (!(packet.hdr.type == 69 && packet.hdr.code == 0)) {
-			printf("Error... Packet received with ICMP type %d code %d\n",
-			       packet.hdr.type, packet.hdr.code);
+			printf("Error... Packet received with ICMP type %d code %d\n", packet.hdr.type, packet.hdr.code);
 		} else {
-			printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%Lf ms\n",
-			       PING_PKT_LEN, ip, msg_count, ttl, rtt);
+			printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%Lf ms\n", PING_PKT_LEN, ip, msg_count, ttl, rtt);
 
 			rtt_max = fmaxf(rtt_max, rtt);
 			rtt_min = fminf(rtt_min, rtt);
@@ -254,13 +245,11 @@ int main(int argc, char **argv)
 	}
 
 	printf("\n--- %s ping statistics ---\n", destination);
-	printf("%d packets transmitted, %d received, %d%% packet loss\n",
-	       msg_count, msg_count_succeed,
-	       (1.0 - msg_count_succeed / (float)msg_count) * 100);
+	printf("%d packets transmitted, %d received, %d%% packet loss\n", msg_count, msg_count_succeed,
+	       (1.0 - msg_count_succeed / (float) msg_count) * 100);
 
 	if (msg_count_succeed > 0)
-		printf("rtt min/avg/max = %Lf/%Lf/%Lf ms\n", rtt_min,
-		       rtt_total / msg_count_succeed, rtt_max);
+		printf("rtt min/avg/max = %Lf/%Lf/%Lf ms\n", rtt_min, rtt_total / msg_count_succeed, rtt_max);
 
 	return 0;
 

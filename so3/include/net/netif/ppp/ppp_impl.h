@@ -74,9 +74,9 @@ extern "C" {
 /*
  * The basic PPP frame.
  */
-#define PPP_ADDRESS(p) (((u_char *)(p))[0])
-#define PPP_CONTROL(p) (((u_char *)(p))[1])
-#define PPP_PROTOCOL(p) ((((u_char *)(p))[2] << 8) + ((u_char *)(p))[3])
+#define PPP_ADDRESS(p) (((u_char *) (p))[0])
+#define PPP_CONTROL(p) (((u_char *) (p))[1])
+#define PPP_PROTOCOL(p) ((((u_char *) (p))[2] << 8) + ((u_char *) (p))[3])
 
 /*
  * Significant octet values.
@@ -154,14 +154,11 @@ struct link_callbacks {
 	/* Write a pbuf to a ppp link, only used from PPP functions to send PPP packets. */
 	err_t (*write)(ppp_pcb *pcb, void *ctx, struct pbuf *p);
 	/* Send a packet from lwIP core (IPv4 or IPv6) */
-	err_t (*netif_output)(ppp_pcb *pcb, void *ctx, struct pbuf *p,
-			      u_short protocol);
+	err_t (*netif_output)(ppp_pcb *pcb, void *ctx, struct pbuf *p, u_short protocol);
 	/* configure the transmit-side characteristics of the PPP interface */
-	void (*send_config)(ppp_pcb *pcb, void *ctx, u32_t accm, int pcomp,
-			    int accomp);
+	void (*send_config)(ppp_pcb *pcb, void *ctx, u32_t accm, int pcomp, int accomp);
 	/* confire the receive-side characteristics of the PPP interface */
-	void (*recv_config)(ppp_pcb *pcb, void *ctx, u32_t accm, int pcomp,
-			    int accomp);
+	void (*recv_config)(ppp_pcb *pcb, void *ctx, u32_t accm, int pcomp, int accomp);
 };
 
 /*
@@ -299,8 +296,7 @@ struct protent {
 	void (*close)(ppp_pcb *pcb, const char *reason);
 #if PRINTPKT_SUPPORT
 	/* Print a packet in readable form */
-	int (*printpkt)(const u_char *pkt, int len,
-			void (*printer)(void *, const char *, ...), void *arg);
+	int (*printpkt)(const u_char *pkt, int len, void (*printer)(void *, const char *, ...), void *arg);
 #endif /* PRINTPKT_SUPPORT */
 #if PPP_DATAINPUT
 	/* Process a received data packet */
@@ -357,8 +353,7 @@ extern const struct protent *const protocols[];
 #if CHAP_SUPPORT
 
 #if MSCHAP_SUPPORT
-#define CHAP_MDTYPE_SUPPORTED \
-	(MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
+#define CHAP_MDTYPE_SUPPORTED (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
 #else /* MSCHAP_SUPPORT */
 #define CHAP_MDTYPE_SUPPORTED (MDTYPE_MD5)
 #endif /* MSCHAP_SUPPORT */
@@ -395,9 +390,8 @@ int ppp_init(void);
  */
 
 /* Create a new PPP control block */
-ppp_pcb *ppp_new(struct netif *pppif, const struct link_callbacks *callbacks,
-		 void *link_ctx_cb, ppp_link_status_cb_fn link_status_cb,
-		 void *ctx_cb);
+ppp_pcb *ppp_new(struct netif *pppif, const struct link_callbacks *callbacks, void *link_ctx_cb,
+		 ppp_link_status_cb_fn link_status_cb, void *ctx_cb);
 
 /* Initiate LCP open request */
 void ppp_start(ppp_pcb *pcb);
@@ -463,8 +457,7 @@ int netif_get_mtu(ppp_pcb *pcb);
 #if 0 /* unused */
 int ccp_test(ppp_pcb *pcb, u_char *opt_ptr, int opt_len, int for_transmit);
 #endif /* unused */
-void ccp_set(ppp_pcb *pcb, u8_t isopen, u8_t isup, u8_t receive_method,
-	     u8_t transmit_method);
+void ccp_set(ppp_pcb *pcb, u8_t isopen, u8_t isup, u8_t receive_method, u8_t transmit_method);
 void ccp_reset_comp(ppp_pcb *pcb);
 void ccp_reset_decomp(ppp_pcb *pcb);
 #if 0 /* unused */
@@ -502,19 +495,19 @@ void update_link_stats(int u); /* Get stats at link termination */
 	{                      \
 		(c) = *(cp)++; \
 	}
-#define PUTCHAR(c, cp)                 \
-	{                              \
-		*(cp)++ = (u_char)(c); \
+#define PUTCHAR(c, cp)                  \
+	{                               \
+		*(cp)++ = (u_char) (c); \
 	}
 #define GETSHORT(s, cp)             \
 	{                           \
 		(s) = *(cp)++ << 8; \
 		(s) |= *(cp)++;     \
 	}
-#define PUTSHORT(s, cp)                       \
-	{                                     \
-		*(cp)++ = (u_char)((s) >> 8); \
-		*(cp)++ = (u_char)(s);        \
+#define PUTSHORT(s, cp)                        \
+	{                                      \
+		*(cp)++ = (u_char) ((s) >> 8); \
+		*(cp)++ = (u_char) (s);        \
 	}
 #define GETLONG(l, cp)              \
 	{                           \
@@ -525,12 +518,12 @@ void update_link_stats(int u); /* Get stats at link termination */
 		(l) <<= 8;          \
 		(l) |= *(cp)++;     \
 	}
-#define PUTLONG(l, cp)                         \
-	{                                      \
-		*(cp)++ = (u_char)((l) >> 24); \
-		*(cp)++ = (u_char)((l) >> 16); \
-		*(cp)++ = (u_char)((l) >> 8);  \
-		*(cp)++ = (u_char)(l);         \
+#define PUTLONG(l, cp)                          \
+	{                                       \
+		*(cp)++ = (u_char) ((l) >> 24); \
+		*(cp)++ = (u_char) ((l) >> 16); \
+		*(cp)++ = (u_char) ((l) >> 8);  \
+		*(cp)++ = (u_char) (l);         \
 	}
 
 #define INCPTR(n, cp) ((cp) += (n))
@@ -576,17 +569,14 @@ void link_down(ppp_pcb *pcb); /* the LCP layer has left the Opened state */
 void upper_layers_down(ppp_pcb *pcb); /* take all NCPs down */
 void link_established(ppp_pcb *pcb); /* the link is up; authenticate now */
 void start_networks(ppp_pcb *pcb); /* start all the network control protos */
-void continue_networks(
-	ppp_pcb *pcb); /* start network [ip, etc] control protos */
+void continue_networks(ppp_pcb *pcb); /* start network [ip, etc] control protos */
 #if PPP_AUTH_SUPPORT
 #if PPP_SERVER
-int auth_check_passwd(ppp_pcb *pcb, char *auser, int userlen, char *apasswd,
-		      int passwdlen, const char **msg, int *msglen);
+int auth_check_passwd(ppp_pcb *pcb, char *auser, int userlen, char *apasswd, int passwdlen, const char **msg, int *msglen);
 /* check the user name and passwd against configuration */
 void auth_peer_fail(ppp_pcb *pcb, int protocol);
 /* peer failed to authenticate itself */
-void auth_peer_success(ppp_pcb *pcb, int protocol, int prot_flavor,
-		       const char *name, int namelen);
+void auth_peer_success(ppp_pcb *pcb, int protocol, int prot_flavor, const char *name, int namelen);
 /* peer successfully authenticated itself */
 #endif /* PPP_SERVER */
 void auth_withpeer_fail(ppp_pcb *pcb, int protocol);
@@ -596,11 +586,9 @@ void auth_withpeer_success(ppp_pcb *pcb, int protocol, int prot_flavor);
 #endif /* PPP_AUTH_SUPPORT */
 void np_up(ppp_pcb *pcb, int proto); /* a network protocol has come up */
 void np_down(ppp_pcb *pcb, int proto); /* a network protocol has gone down */
-void np_finished(ppp_pcb *pcb,
-		 int proto); /* a network protocol no longer needs link */
+void np_finished(ppp_pcb *pcb, int proto); /* a network protocol no longer needs link */
 #if PPP_AUTH_SUPPORT
-int get_secret(ppp_pcb *pcb, const char *client, const char *server,
-	       char *secret, int *secret_len, int am_server);
+int get_secret(ppp_pcb *pcb, const char *client, const char *server, char *secret, int *secret_len, int am_server);
 /* get "secret" for chap */
 #endif /* PPP_AUTH_SUPPORT */
 
@@ -634,12 +622,10 @@ int str_to_epdisc(struct epdisc *, char *); /* endpt disc. from str */
 #endif
 
 /* Procedures exported from utils.c. */
-void ppp_print_string(const u_char *p, int len,
-		      void (*printer)(void *, const char *, ...),
+void ppp_print_string(const u_char *p, int len, void (*printer)(void *, const char *, ...),
 		      void *arg); /* Format a string for output */
 int ppp_slprintf(char *buf, int buflen, const char *fmt, ...); /* sprintf++ */
-int ppp_vslprintf(char *buf, int buflen, const char *fmt,
-		  va_list args); /* vsprintf++ */
+int ppp_vslprintf(char *buf, int buflen, const char *fmt, va_list args); /* vsprintf++ */
 size_t ppp_strlcpy(char *dest, const char *src, size_t len); /* safe strcpy */
 size_t ppp_strlcat(char *dest, const char *src, size_t len); /* safe strncpy */
 void ppp_dbglog_impl(const char *fmt, ...); /* log a debug message */
