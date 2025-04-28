@@ -602,7 +602,7 @@ void do_close(int fd)
 	gfd = pcb->fd_array[fd];
 
 	if (gfd < 0) {
-		LOG_WARNING("Was already freed\n");
+		LOG_DEBUG("Was already freed\n");
 		mutex_unlock(&vfs_lock);
 		return;
 	}

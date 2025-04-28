@@ -120,8 +120,9 @@ void switch_mm_domain(struct domain *d)
  *
  * @param size		Requested size
  * @param ME_state	Initial state of the ME
- * @return int		-1 if no slot is available or <slotID> if a slot is available
  * @param slotID	if different than -1, try to allocate to this specific slot 
+ * @return int		-1 if no slot is available or <slotID> if a slot is available
+ * 
  */
 int get_ME_free_slot(unsigned int size, int slotID)
 {

@@ -695,7 +695,7 @@ void load_process(elf_img_info_t *elf_img_info)
 			}
 
 			if (!section_supported) {
-				LOG_WARNING("Section %s not loaded: unsupported name\n",
+				LOG_DEBUG("Section %s not loaded: unsupported name\n",
 				    elf_img_info->section_names[j]);
 				continue;
 			}
