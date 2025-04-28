@@ -49,8 +49,7 @@ int main(int argc, char **argv)
 	if (argc == 2) {
 		fd = open(argv[1], O_RDONLY);
 		if (fd == -1) {
-			printf("Error #%d:\n  Unable to open %s\n", errno,
-			       argv[1]);
+			printf("Error #%d:\n  Unable to open %s\n", errno, argv[1]);
 			return 2;
 		}
 	}
@@ -72,7 +71,7 @@ int main(int argc, char **argv)
 		for (i = 0; i < nb_bytes; i++) {
 			cpt_columns++;
 
-			if ((int)buf[i] == 9) { /* Horizontal TAB */
+			if ((int) buf[i] == 9) { /* Horizontal TAB */
 				cpt_columns += 7 - (cpt_columns % 8);
 				if (cpt_columns >= columns_max) {
 					cpt_columns = 8;
@@ -80,19 +79,18 @@ int main(int argc, char **argv)
 					putchar(13);
 					putchar(10);
 				}
-			} else if (cpt_columns ==
-				   columns_max) { /* End of line */
+			} else if (cpt_columns == columns_max) { /* End of line */
 				cpt_columns = -1;
 				cpt_line++;
 				putchar(13);
 				putchar(10);
-			} else if ((int)buf[i] == 10) { /* Line feed in text */
+			} else if ((int) buf[i] == 10) { /* Line feed in text */
 				cpt_columns = -1;
 				cpt_line++;
 			}
 
 			if (cpt_line == (line_max - 2)) {
-				if ((int)buf[i] == 10)
+				if ((int) buf[i] == 10)
 					putchar(buf[i++]); /* print Line feed before ---MORE--- */
 				cpt_line = 0;
 

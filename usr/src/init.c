@@ -173,7 +173,7 @@ int process_cmd(const char *command)
  */
 void sigint_handler(int sig)
 {
-	(void)sig;
+	(void) sig;
 }
 /*
  * Processes the file given by `fd`
