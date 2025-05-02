@@ -60,12 +60,12 @@ void inject_capsule(avz_hyp_t *args)
 	void *itb_vaddr;
 	mem_info_t guest_mem_info;
 
-	LOG_DEBUG("%s: Preparing ME injection, source image vaddr = %lx\n", __func__, 
-		ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr));
+	LOG_DEBUG("%s: Preparing ME injection, source image vaddr = %lx\n", __func__,
+		  ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr));
 
 	BUG_ON(local_irq_is_enabled());
 
-	itb_vaddr = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr);
+	itb_vaddr = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr);
 
 	LOG_DEBUG("%s: ITB vaddr: %lx\n", __func__, itb_vaddr);
 
@@ -144,8 +144,14 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me, stru
 	domctxt->avz_shared = *(me->avz_shared);
 	strcpy(domctxt->avz_shared.signature, SOO_ME_SIGNATURE);
 
-	/* Update the state for the ME instance which will migrate. */
-	domctxt->avz_shared.dom_desc.u.ME.state = ME_state_hibernate;
+	/* The snapshot will contain a capsule with the state ME_state_suspended only
+	 * if the capsule was living, otherwise it has to be in ME_state_stopped, right
+	 * before its execution. 
+	*/
+	if (me->avz_shared->dom_desc.u.ME.state == ME_state_suspended)
+		domctxt->avz_shared.dom_desc.u.ME.state = ME_state_hibernate;
+
+	BUG_ON(me->avz_shared->dom_desc.u.ME.state != ME_state_stopped);
 
 	domctxt->pause_count = me->pause_count;
 
@@ -176,7 +182,7 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me, stru
 	       sizeof(struct cpu_regs));
 }
 
- /**
+/**
   * @brief Take a memory snapshot of a capsule. This will lead to a capsule with HIBERNATE state
   * 	   while the resident capsule will end up in resuming state.
   * 
@@ -186,7 +192,7 @@ void read_ME_snapshot(avz_hyp_t *args)
 {
 	unsigned int slotID = args->u.avz_snapshot_args.slotID;
 	struct domain *domME = domains[slotID];
-	void *snapshot_buffer = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
+	void *snapshot_buffer = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	/* If the size is 0, we return the snapshot size. */
 	if (args->u.avz_snapshot_args.size == 0) {
@@ -194,6 +200,9 @@ void read_ME_snapshot(avz_hyp_t *args)
 		return;
 	}
 
+	/* If the capsule is living, it will be put in ME_state_suspended state by Linux
+	 * before being entering this function.  
+	*/
 	if (domME->avz_shared->dom_desc.u.ME.state == ME_state_suspended) {
 		/* Pause the capsule */
 		domain_pause_by_systemcontroller(domME);
@@ -299,25 +308,24 @@ void write_ME_snapshot(avz_hyp_t *args)
 	snapshot_size = args->u.avz_snapshot_args.size;
 
 	/* Ask for available slot and perform the reservation */
-	
+
 	LOG_DEBUG("Original size of the snapshot: %d bytes\n", snapshot_size);
-	LOG_DEBUG("Looking for an available slot for a capsule of %d bytes...\n", snapshot_size - sizeof(uint32_t) -
-		sizeof(struct dom_context));
+	LOG_DEBUG("Looking for an available slot for a capsule of %d bytes...\n",
+		  snapshot_size - sizeof(uint32_t) - sizeof(struct dom_context));
 
 	slotID = get_ME_free_slot(snapshot_size - sizeof(uint32_t) - sizeof(struct dom_context), slotID);
 	if (slotID > 0)
 		args->u.avz_snapshot_args.slotID = slotID;
-	else 
+	else
 		return;
 
 	LOG_DEBUG("Available slotID: %d\n", args->u.avz_snapshot_args.slotID);
 
-	
 	LOG_DEBUG("Writing the snapshot into memory...\n");
 	snapshot_buffer = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	domME = domains[slotID];
-	domctxt = (struct dom_context *)(snapshot_buffer + sizeof(uint32_t));
+	domctxt = (struct dom_context *) (snapshot_buffer + sizeof(uint32_t));
 
 	LOG_DEBUG("Restoring the domain context...\n");
 	restore_domain_context(slotID, domME, domctxt);
@@ -329,7 +337,7 @@ void write_ME_snapshot(avz_hyp_t *args)
 	memcpy((void *)__xva(slotID, memslot[slotID].base_paddr),
 	       snapshot_buffer + sizeof(uint32_t) + sizeof(struct dom_context), memslot[slotID].size);
 
-	/* Create a stack devoted to this restored domain */
+	/* Create a stack for this restored domain */
 
 	dom_stack = memalign(DOMAIN_STACK_SIZE, DOMAIN_STACK_SIZE);
 	BUG_ON(!dom_stack);
@@ -345,25 +353,29 @@ void write_ME_snapshot(avz_hyp_t *args)
 
 	/* We need to re-map the vbstore page corresponding to this slotID */
 	map_vbstore_pfn(domME->avz_shared->domID, domME->avz_shared->dom_desc.u.ME.vbstore_pfn);
+	LOG_DEBUG("State of the saved capsule: %d\n", domME->avz_shared->dom_desc.u.ME.state);
 
-	/* As we will be resumed from the schedule function, we need to update the
-	* CPU registers from the VCPU regs.
-	*/
-	domME->vcpu.regs.sp = (unsigned long)frame;
-	domME->vcpu.regs.x21 = (unsigned long)domME->avz_shared->dom_desc.u.ME.resume_fn;
+	if (domME->avz_shared->dom_desc.u.ME.state != ME_state_stopped) {
+		BUG_ON(domME->avz_shared->dom_desc.u.ME.state != ME_state_hibernate);
 
-	domME->vcpu.regs.lr = (unsigned long)resume_to_guest;
+		/* As we will be resumed from the schedule function, we need to update the
+		 * CPU registers from the VCPU regs.
+		 */
+		domME->vcpu.regs.sp = (unsigned long) frame;
+		domME->vcpu.regs.x21 = (unsigned long) domME->avz_shared->dom_desc.u.ME.resume_fn;
 
-	/* Now restoring event channel configuration */
-	evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.vbstore_levtchn,
-					 agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID]);
+		domME->vcpu.regs.lr = (unsigned long) resume_to_guest;
 
-	LOG_DEBUG("%s: Rebinding directcomm event channels: %d (agency) <-> %d (ME)\n", __func__,
-	    agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID], domME->avz_shared->dom_desc.u.ME.dc_evtchn);
+		/* Now restoring event channel configuration */
+		evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.vbstore_levtchn,
+						 agency->avz_shared->dom_desc.u.agency.vbstore_evtchn[slotID]);
 
-	evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.dc_evtchn,
-					 agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID]);
+		LOG_DEBUG("%s: Rebinding directcomm event channels: %d (agency) <-> %d (ME)\n", __func__,
+			  agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID], domME->avz_shared->dom_desc.u.ME.dc_evtchn);
 
+		evtchn_bind_existing_interdomain(domME, agency, domME->avz_shared->dom_desc.u.ME.dc_evtchn,
+						 agency->avz_shared->dom_desc.u.agency.dc_evtchn[slotID]);
+	}
 	LOG_DEBUG("%s: Now, resuming ME slotID %d...\n", __func__, slotID);
 
 	domain_unpause_by_systemcontroller(domME);
