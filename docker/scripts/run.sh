@@ -18,6 +18,7 @@ mount_loop_partition() {
     sleep 0.01
     count=$((count + 1))
   done
+  sleep 0.1
   
   if [ ! -e "${device}p1" ]; then
     echo "Timeout waiting for ${device}p1 to appear" >&2
