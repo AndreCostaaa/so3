@@ -17,10 +17,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <elf.h>
 #include <heap.h>
@@ -475,7 +471,7 @@ void *preserve_args_and_env(int argc, char **argv, char **envp)
 		/* We check if the pointer do not exceed the page we
                  * allocated before */
 		if (((addr_t) args_str_p - (addr_t) args) > PAGE_SIZE) {
-			DBG("Not enougth memory allocated\n");
+			LOG_CRITICAL("Not enougth memory allocated\n");
 			set_errno(ENOMEM);
 
 			free(args);
@@ -603,8 +599,8 @@ int setup_proc_image_replace(elf_img_info_t *elf_img_info, pcb_t *pcb, int argc,
 	/* Map the elementary sections (text, data, bss) */
 	allocate_page(pcb, (uint32_t) elf_img_info->header->e_entry, elf_img_info->segment_page_count, true);
 
-	DBG("entry point: 0x%08x\n", elf_img_info->header->e_entry);
-	DBG("page count: 0x%08x\n", pcb->page_count);
+	LOG_DEBUG("entry point: 0x%08x\n", elf_img_info->header->e_entry);
+	LOG_DEBUG("page count: 0x%08x\n", pcb->page_count);
 
 	/* Maximum heap size */
 	page_count = ALIGN_UP(HEAP_SIZE, PAGE_SIZE) >> PAGE_SHIFT;

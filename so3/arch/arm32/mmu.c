@@ -117,7 +117,7 @@ static void alloc_init_pte(uint32_t *l1pte, addr_t addr, addr_t end, addr_t pfn,
 
 		set_l2_pte_dcache(l2pte, (nocache ? L2_DCACHE_OFF : L2_DCACHE_WRITEALLOC));
 
-		DBG("Setting l2pte %p with contents: %x\n", l2pte, *l2pte);
+		LOG_DEBUG("Setting l2pte %p with contents: %x\n", l2pte, *l2pte);
 
 		pfn++;
 
@@ -213,7 +213,7 @@ static void free_l2_mapping(uint32_t *l1pte, addr_t addr, addr_t end)
 	l2pte = l2pte_offset(l1pte, addr);
 
 	do {
-		DBG("Re-setting l2pte to 0: %p\n", l2pte);
+		LOG_DEBUG("Re-setting l2pte to 0: %p\n", l2pte);
 
 		*l2pte = 0; /* Free this entry */
 

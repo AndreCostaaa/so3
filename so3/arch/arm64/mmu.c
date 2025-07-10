@@ -16,10 +16,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <memory.h>
 #include <heap.h>
@@ -204,7 +200,7 @@ static void alloc_init_l2(u64 *l0pgtable, addr_t addr, addr_t end, addr_t phys, 
 			if ((addr != phys) && user_space_vaddr(addr))
 				*l2pte |= PTE_BLOCK_AP1;
 #endif
-			DBG("Allocating a 2 MB block at l2pte: %p content: %lx\n", l2pte, *l2pte);
+			LOG_DEBUG("Allocating a 2 MB block at l2pte: %p content: %lx\n", l2pte, *l2pte);
 
 			flush_pte_entry(addr, l2pte);
 
