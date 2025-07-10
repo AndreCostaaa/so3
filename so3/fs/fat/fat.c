@@ -17,10 +17,6 @@
  *
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <errno.h>
 
@@ -179,7 +175,7 @@ int fat_read(int fd, void *buffer, int count)
 	int bread = 0;
 
 	if (!ptrent) {
-		DBG("Error while reading fd %d\n", fd);
+		LOG_ERROR("Error while reading fd %d\n", fd);
 		return -1;
 	}
 
@@ -201,7 +197,7 @@ int fat_write(int fd, const void *buffer, int count)
 	int bwritten = 0;
 
 	if (!ptrent) {
-		DBG("Error while writing fd %d\n", fd);
+		LOG_ERROR("Error while writing fd %d\n", fd);
 		return -1;
 	}
 
@@ -230,7 +226,7 @@ int fat_open(int fd, const char *path)
 
 	ptrent = (struct fat_entry *) malloc(sizeof(struct fat_entry));
 	if (!ptrent) {
-		printk("%s: heap overflow...\n", __func__);
+		LOG_CRITICAL("%s: heap overflow...\n", __func__);
 		kernel_panic();
 	}
 
@@ -293,8 +289,10 @@ int fat_mount(const char *mount_point)
 
 	for (i = 0; i < ARRAY_SIZE(volumes); i++) {
 		if (!volumes[i].mounted) {
-			if ((rc = f_mount(&volumes[i].mp, mount_point, MOUNT_NOW))) {
-				DBG("Error %d while mounting volume %s\n", rc, mount_point);
+			if ((rc = f_mount(&volumes[i].mp, mount_point,
+					  MOUNT_NOW))) {
+				LOG_ERROR("Error %d while mounting volume %s\n", rc,
+				    mount_point);
 				return -rc;
 			}
 
@@ -333,7 +331,7 @@ struct dirent *fat_readdir(int fd)
 		return NULL;
 
 	/* No more file/folder */
-	DBG("altname = %s , fname = %s\n", fno.altname, fno.fname);
+	LOG_DEBUG("altname = %s , fname = %s\n", fno.altname, fno.fname);
 	if (fno.fname[0] == 0)
 		return NULL;
 

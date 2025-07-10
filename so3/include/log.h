@@ -18,20 +18,34 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <common.h>
+#include <printk.h>
 
-#define LOG_LEVEL_CRITICAL 1
-#define LOG_LEVEL_ERROR 2
-#define LOG_LEVEL_WARNING 3
-#define LOG_LEVEL_INFO 4
-#define LOG_LEVEL_DEBUG 5
-#define LOG_LEVEL_TRACE 6
+#define LOG_LEVEL_CRITICAL 	1
+#define LOG_LEVEL_ERROR 	2
+#define LOG_LEVEL_WARNING 	3
+#define LOG_LEVEL_INFO 		4
+#define LOG_LEVEL_DEBUG 	5
+#define LOG_LEVEL_TRACE 	6
 
 #ifndef CONFIG_LOG_LEVEL
-#define CONFIG_LOG_LEVEL LOG_LEVEL_INFO
+#define CONFIG_LOG_LEVEL 	LOG_LEVEL_INFO
 #endif
 
-#define LOG(level, fmt, ...) lprintk("[SO3 " #level "] <%s:%d> " fmt "\r\n", __func__, __LINE__, ##__VA_ARGS__)
+#ifdef CONFIG_AVZ
+
+#define LOG(level, fmt, ...)                                                                        \
+	do {                                                                                        \
+		lprintk("[SO3:AVZ " #level "] <%s:%d> " fmt, __func__, __LINE__, ##__VA_ARGS__);\
+	} while (0)
+
+#else
+
+#define LOG(level, fmt, ...)                                                                        \
+	do {                                                                                        \
+		lprintk("[SO3 " #level "] <%s:%d> " fmt, __func__, __LINE__, ##__VA_ARGS__);\
+	} while (0)
+
+#endif /* !CONFIG_AVZ */
 
 #if CONFIG_LOG_LEVEL >= LOG_LEVEL_CRITICAL
 #define LOG_CRITICAL(fmt, ...) LOG(CRITICAL, fmt, ##__VA_ARGS__)

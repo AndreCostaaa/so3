@@ -39,10 +39,6 @@
  * the Jailhouse project.
  */
 
-#if 0
-#define DEBUG
-#endif
-
 #include <common.h>
 #include <errno.h>
 #include <heap.h>
@@ -667,7 +663,7 @@ static int gic_init(dev_t *dev, int fdt_offset)
 	gic = (gic_t *) malloc(sizeof(gic_t));
 	BUG_ON(!gic);
 
-	DBG("%s\n", __FUNCTION__);
+	LOG_DEBUG("%s\n", __FUNCTION__);
 
 	prop = fdt_get_property(__fdt_addr, fdt_offset, "reg", &prop_len);
 	BUG_ON(!prop);

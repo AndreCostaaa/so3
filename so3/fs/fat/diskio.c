@@ -62,11 +62,11 @@ disk_initialize(BYTE pdrv /* Physical drive nmuber to identify the drive */
 )
 {
 	if (pdrv >= ARRAY_SIZE(block_drvr)) {
-		DBG("Device %d does not exists\n", pdrv);
+		LOG_ERROR("Device %d does not exists\n", pdrv);
 		return STA_NODISK;
 	}
 
-	DBG("Opening device %s\n", block_drvr[pdrv].name);
+	LOG_DEBUG("Opening device %s\n", block_drvr[pdrv].name);
 	block_drvr[pdrv].dev_desc = block_drvr[pdrv].get_dev(pdrv);
 
 	if (!block_drvr[pdrv].dev_desc) {
@@ -89,7 +89,7 @@ DRESULT disk_read(BYTE pdrv, /* Physical drive nmuber to identify the drive */
 	block_dev_desc_t *drvr;
 
 	if (pdrv >= ARRAY_SIZE(block_drvr)) {
-		DBG("Device %d does not exists\n", pdrv);
+		LOG_ERROR("Device %d does not exists\n", pdrv);
 		return STA_NODISK;
 	}
 
@@ -119,7 +119,7 @@ DRESULT disk_write(BYTE pdrv, /* Physical drive nmuber to identify the drive */
 	block_dev_desc_t *drvr;
 
 	if (pdrv >= ARRAY_SIZE(block_drvr)) {
-		DBG("Device %d does not exists\n", pdrv);
+		LOG_ERROR("Device %d does not exists\n", pdrv);
 		return STA_NODISK;
 	}
 
@@ -145,7 +145,8 @@ DRESULT disk_ioctl(BYTE pdrv, /* Physical drive nmuber (0..) */
 		   void *buff /* Buffer to send/receive control data */
 )
 {
-	DBG("IOCLT %d %p\n", cmd, buff);
+	LOG_DEBUG("IOCLT %d %p\n", cmd, buff);
+
 	/* As for now, this is not in use */
 	return 0;
 }

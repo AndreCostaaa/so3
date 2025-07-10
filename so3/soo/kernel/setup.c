@@ -78,9 +78,9 @@ void avz_setup(void)
 
 	avz_shared->dom_desc.u.ME.resume_fn = resume_fn;
 
-	lprintk("SOO Virtualizer (avz) shared page:\n\n");
+	LOG_INFO("SOO Virtualizer (avz) shared page:\n\n");
 
-	lprintk("- Dom phys offset: %lx\n\n", (addr_t) mem_info.phys_base);
+	LOG_INFO("- Dom phys offset: %lx\n\n", (addr_t)mem_info.phys_base);
 
 	virq_init();
 
@@ -91,12 +91,14 @@ void avz_setup(void)
 
 void post_init_setup(void)
 {
-	printk("Mapping VBstore shared page pfn %d\n", avz_shared->dom_desc.u.ME.vbstore_pfn);
+	LOG_INFO("Mapping VBstore shared page pfn %d\n",
+	       avz_shared->dom_desc.u.ME.vbstore_pfn);
 
-	__intf = (void *) io_map(pfn_to_phys(avz_shared->dom_desc.u.ME.vbstore_pfn), PAGE_SIZE);
+	__intf = (void *)io_map(
+		pfn_to_phys(avz_shared->dom_desc.u.ME.vbstore_pfn), PAGE_SIZE);
 	BUG_ON(!__intf);
 
-	printk("SOO Mobile Entity booting ...\n");
+	LOG_INFO("SOO Mobile Entity booting ...\n");
 
 	soo_guest_activity_init();
 
@@ -111,9 +113,9 @@ void post_init_setup(void)
 	/* How create all vbstore entries required by the frontend drivers */
 	vbstore_init_dev_populate();
 
-	lprintk("%s", SO3_BANNER);
+	LOG_INFO("%s", SO3_BANNER);
 
-	DBG("ME running as domain %d\n", ME_domID());
+	LOG_DEBUG("ME running as domain %d\n", ME_domID());
 }
 
 REGISTER_POSTINIT(post_init_setup)
