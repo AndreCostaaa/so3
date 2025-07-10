@@ -51,8 +51,7 @@
 extern "C" {
 #endif
 
-#if LWIP_IPV6 && \
-	LWIP_IPV6_REASS /* don't build if not configured for use in lwipopts.h */
+#if LWIP_IPV6 && LWIP_IPV6_REASS /* don't build if not configured for use in lwipopts.h */
 
 /** The IPv6 reassembly timer interval in milliseconds. */
 #define IP6_REASS_TMR_INTERVAL 1000
@@ -117,8 +116,7 @@ struct pbuf *ip6_reass(struct pbuf *p);
 
 #endif /* LWIP_IPV6 && LWIP_IPV6_REASS */
 
-#if LWIP_IPV6 && \
-	LWIP_IPV6_FRAG /* don't build if not configured for use in lwipopts.h */
+#if LWIP_IPV6 && LWIP_IPV6_FRAG /* don't build if not configured for use in lwipopts.h */
 
 #ifndef LWIP_PBUF_CUSTOM_REF_DEFINED
 #define LWIP_PBUF_CUSTOM_REF_DEFINED

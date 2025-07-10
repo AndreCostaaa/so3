@@ -13,14 +13,13 @@
 /* Allocate a memory block                                                */
 /*------------------------------------------------------------------------*/
 
-void *
-ff_memalloc(/* Returns pointer to the allocated memory block (null on not enough core) */
-	    UINT msize /* Number of bytes to allocate */
+void *ff_memalloc(/* Returns pointer to the allocated memory block (null on not enough core) */
+		  UINT msize /* Number of bytes to allocate */
 )
 {
 	void *ret;
 
-	ret = (void *)malloc(msize);
+	ret = (void *) malloc(msize);
 	if (!ret) {
 		printk("%s: heap overflow\n", __func__);
 		kernel_panic();
@@ -57,7 +56,7 @@ int ff_cre_syncobj(/* 1:Function succeeded, 0:Could not create the sync object *
 {
 	/* Win32 */
 	*sobj = CreateMutex(NULL, FALSE, NULL);
-	return (int)(*sobj != INVALID_HANDLE_VALUE);
+	return (int) (*sobj != INVALID_HANDLE_VALUE);
 }
 
 /*------------------------------------------------------------------------*/
@@ -73,7 +72,7 @@ int ff_del_syncobj(/* 1:Function succeeded, 0:Could not delete due to an error *
 )
 {
 	/* Win32 */
-	return (int)CloseHandle(sobj);
+	return (int) CloseHandle(sobj);
 }
 
 /*------------------------------------------------------------------------*/
@@ -88,7 +87,7 @@ int ff_req_grant(/* 1:Got a grant to access the volume, 0:Could not get a grant 
 )
 {
 	/* Win32 */
-	return (int)(WaitForSingleObject(sobj, FF_FS_TIMEOUT) == WAIT_OBJECT_0);
+	return (int) (WaitForSingleObject(sobj, FF_FS_TIMEOUT) == WAIT_OBJECT_0);
 }
 
 /*------------------------------------------------------------------------*/

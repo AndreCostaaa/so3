@@ -128,7 +128,7 @@ void clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 maxsec)
 	 * Calculate the shift factor which is limiting the conversion
 	 * range:
 	 */
-	tmp = ((u64)maxsec * from) >> 32;
+	tmp = ((u64) maxsec * from) >> 32;
 	while (tmp) {
 		tmp >>= 1;
 		sftacc--;
@@ -139,7 +139,7 @@ void clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 maxsec)
 	 * accuracy and fits the maxsec conversion range:
 	 */
 	for (sft = 32; sft > 0; sft--) {
-		tmp = (u64)to << sft;
+		tmp = (u64) to << sft;
 		tmp += from / 2;
 		do_div(tmp, from);
 		if ((tmp >> sftacc) == 0)
@@ -349,9 +349,8 @@ again:
 static void dump_timer(struct timer *t, u64 now)
 {
 	/* We convert 1000 to u64 in order to use the well-implemented __aeabi_uldivmod function */
-	lprintk("  expires = %llu, now = %llu, expires - now = %llu ns timer=%p cb=%p(%p) cpu=%d\n",
-		t->expires, now, t->expires - now, t, t->function, t->data,
-		t->cpu);
+	lprintk("  expires = %llu, now = %llu, expires - now = %llu ns timer=%p cb=%p(%p) cpu=%d\n", t->expires, now,
+		t->expires - now, t, t->function, t->data, t->cpu);
 }
 
 static void dump_timerq(unsigned char key)
@@ -374,10 +373,7 @@ static void dump_timerq(unsigned char key)
 	spin_unlock(&ts->lock);
 }
 
-static struct keyhandler dump_timerq_keyhandler = {
-	.fn = dump_timerq,
-	.desc = "dump timer queues"
-};
+static struct keyhandler dump_timerq_keyhandler = { .fn = dump_timerq, .desc = "dump timer queues" };
 
 #endif /* CONFIG_AVZ */
 
@@ -397,7 +393,6 @@ void timer_init(void)
 	}
 
 	register_softirq(TIMER_SOFTIRQ, timer_softirq_action);
-
 
 	/* The timer devices have been previously initialized during devices_init() */
 #ifdef CONFIG_RTOS
@@ -427,7 +422,7 @@ int do_get_time_of_day(struct timespec *ts)
 
 	time = NOW();
 
-	ts->tv_sec = time / (time_t)1000000000;
+	ts->tv_sec = time / (time_t) 1000000000;
 	ts->tv_nsec = time;
 
 	return 0;
@@ -451,7 +446,7 @@ int do_get_clock_time(int clk_id, struct timespec *ts)
 
 	time = NOW();
 
-	ts->tv_sec = time / (time_t)1000000000;
+	ts->tv_sec = time / (time_t) 1000000000;
 	ts->tv_nsec = time;
 
 	return 0;

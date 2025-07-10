@@ -56,14 +56,10 @@ static void show_handlers(unsigned char key)
 	printk("'%c' pressed -> showing installed handlers\n", key);
 	for (i = 0; i < ARRAY_SIZE(key_table); i++)
 		if (key_table[i] != NULL)
-			printk(" key '%c' (ascii '%02x') => %s\n",
-			       isprint(i) ? i : ' ', i, key_table[i]->desc);
+			printk(" key '%c' (ascii '%02x') => %s\n", isprint(i) ? i : ' ', i, key_table[i]->desc);
 }
 
-static struct keyhandler show_handlers_keyhandler = {
-	.fn = show_handlers,
-	.desc = "show this message"
-};
+static struct keyhandler show_handlers_keyhandler = { .fn = show_handlers, .desc = "show this message" };
 
 static void dump_registers(unsigned char key)
 {
@@ -84,10 +80,7 @@ static void dump_registers(unsigned char key)
 	printk("\n");
 }
 
-static struct keyhandler dump_registers_keyhandler = {
-	.fn = dump_registers,
-	.desc = "dump registers"
-};
+static struct keyhandler dump_registers_keyhandler = { .fn = dump_registers, .desc = "dump registers" };
 
 extern void vcpu_show_execution_state(void);
 static void dump_agency_registers(unsigned char key)
@@ -100,10 +93,7 @@ static void dump_agency_registers(unsigned char key)
 	vcpu_show_execution_state();
 }
 
-static struct keyhandler dump_agency_registers_keyhandler = {
-	.fn = dump_agency_registers,
-	.desc = "dump agency registers"
-};
+static struct keyhandler dump_agency_registers_keyhandler = { .fn = dump_agency_registers, .desc = "dump agency registers" };
 
 static void dump_domains(unsigned char key)
 {
@@ -113,23 +103,18 @@ static void dump_domains(unsigned char key)
 
 #define tmpstr keyhandler_scratch
 
-	printk("'%c' pressed -> dumping domain info (now=0x%X:%08X)\n", key,
-	       (u32)(now >> 32), (u32)now);
+	printk("'%c' pressed -> dumping domain info (now=0x%X:%08X)\n", key, (u32) (now >> 32), (u32) now);
 
 	for (i = 0; i < MAX_DOMAINS; i++) {
 		d = domains[i];
 
-		printk("General information for domain %u:\n",
-		       d->avz_shared->domID);
+		printk("General information for domain %u:\n", d->avz_shared->domID);
 
-		printk("    dying=%d nr_pages=%d max_pages=%u\n", d->is_dying,
-		       d->avz_shared->nr_pages, d->max_pages);
+		printk("    dying=%d nr_pages=%d max_pages=%u\n", d->is_dying, d->avz_shared->nr_pages, d->max_pages);
 
-		printk("VCPU information and callbacks for domain %u:\n",
-		       d->avz_shared->domID);
+		printk("VCPU information and callbacks for domain %u:\n", d->avz_shared->domID);
 
-		printk("    CPU%d [has=%c] flags=%lx ", d->processor,
-		       d->is_running ? 'T' : 'F', d->pause_flags);
+		printk("    CPU%d [has=%c] flags=%lx ", d->processor, d->is_running ? 'T' : 'F', d->pause_flags);
 
 		printk("    %s\n", tmpstr);
 	}
@@ -137,10 +122,7 @@ static void dump_domains(unsigned char key)
 #undef tmpstr
 }
 
-static struct keyhandler dump_domains_keyhandler = {
-	.fn = dump_domains,
-	.desc = "dump domain (and guest debug) info"
-};
+static struct keyhandler dump_domains_keyhandler = { .fn = dump_domains, .desc = "dump domain (and guest debug) info" };
 
 void initialize_keytable(void)
 {

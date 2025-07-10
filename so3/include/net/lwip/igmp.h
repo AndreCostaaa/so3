@@ -45,8 +45,7 @@
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
 
-#if LWIP_IPV4 && \
-	LWIP_IGMP /* don't build if not configured for use in lwipopts.h */
+#if LWIP_IPV4 && LWIP_IGMP /* don't build if not configured for use in lwipopts.h */
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,8 +91,7 @@ void igmp_init(void);
 err_t igmp_start(struct netif *netif);
 err_t igmp_stop(struct netif *netif);
 void igmp_report_groups(struct netif *netif);
-struct igmp_group *igmp_lookfor_group(struct netif *ifp,
-				      const ip4_addr_t *addr);
+struct igmp_group *igmp_lookfor_group(struct netif *ifp, const ip4_addr_t *addr);
 void igmp_input(struct pbuf *p, struct netif *inp, const ip4_addr_t *dest);
 err_t igmp_joingroup(const ip4_addr_t *ifaddr, const ip4_addr_t *groupaddr);
 err_t igmp_joingroup_netif(struct netif *netif, const ip4_addr_t *groupaddr);
@@ -106,9 +104,7 @@ void igmp_tmr(void);
  * Note: The allsystems group IP is contained in the list as first entry.
  * @see @ref netif_set_igmp_mac_filter()
  */
-#define netif_igmp_data(netif)                       \
-	((struct igmp_group *)netif_get_client_data( \
-		netif, LWIP_NETIF_CLIENT_DATA_INDEX_IGMP))
+#define netif_igmp_data(netif) ((struct igmp_group *) netif_get_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_IGMP))
 
 #ifdef __cplusplus
 }

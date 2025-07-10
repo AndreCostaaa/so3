@@ -71,8 +71,8 @@ typedef struct {
 /* Fake signal functions.  */
 
 #define SIG_ERR ((__sighandler_t) - 1) /* Error return.  */
-#define SIG_DFL ((__sighandler_t)0) /* Default action.  */
-#define SIG_IGN ((__sighandler_t)1) /* Ignore signal.  */
+#define SIG_DFL ((__sighandler_t) 0) /* Default action.  */
+#define SIG_IGN ((__sighandler_t) 1) /* Ignore signal.  */
 
 /*
  * This structure must match the k_sigaction structure used in the libc.
@@ -93,8 +93,7 @@ typedef struct __sigaction {
 	sigaction_t *sa;
 } __sigaction_t;
 
-int do_sigaction(int signum, const sigaction_t *action,
-		 sigaction_t *old_action);
+int do_sigaction(int signum, const sigaction_t *action, sigaction_t *old_action);
 int do_kill(int pid, int sig);
 void do_sigreturn(void);
 

@@ -219,8 +219,7 @@ static void domain_schedule(void)
 
 #ifdef CONFIG_SOO
 	if (next_slice.time > 0ull)
-		set_timer(&next->sched->sched_data.s_timer,
-			  NOW() + MILLISECS(next_slice.time));
+		set_timer(&next->sched->sched_data.s_timer, NOW() + MILLISECS(next_slice.time));
 #endif /* CONFIG_SOO */
 
 	if (unlikely(prev == next)) {
@@ -231,11 +230,9 @@ static void domain_schedule(void)
 	}
 	ASSERT(prev->runstate == RUNSTATE_running);
 
-	domain_runstate_change(prev,
-			       (test_bit(_VPF_blocked, &prev->pause_flags) ?
-					RUNSTATE_blocked :
-					(prev->is_dying ? RUNSTATE_offline :
-							  RUNSTATE_runnable)));
+	domain_runstate_change(prev, (test_bit(_VPF_blocked, &prev->pause_flags) ?
+					      RUNSTATE_blocked :
+					      (prev->is_dying ? RUNSTATE_offline : RUNSTATE_runnable)));
 
 	ASSERT(next->runstate != RUNSTATE_running);
 	domain_runstate_change(next, RUNSTATE_running);

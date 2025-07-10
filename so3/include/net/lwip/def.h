@@ -69,27 +69,26 @@ extern "C" {
 #define LWIP_ARRAYSIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 /** Create u32_t value from bytes */
-#define LWIP_MAKEU32(a, b, c, d)                                     \
-	(((u32_t)((a) & 0xff) << 24) | ((u32_t)((b) & 0xff) << 16) | \
-	 ((u32_t)((c) & 0xff) << 8) | (u32_t)((d) & 0xff))
+#define LWIP_MAKEU32(a, b, c, d) \
+	(((u32_t) ((a) & 0xff) << 24) | ((u32_t) ((b) & 0xff) << 16) | ((u32_t) ((c) & 0xff) << 8) | (u32_t) ((d) & 0xff))
 
 #ifndef NULL
 #ifdef __cplusplus
 #define NULL 0
 #else
-#define NULL ((void *)0)
+#define NULL ((void *) 0)
 #endif
 #endif
 
 #if BYTE_ORDER == BIG_ENDIAN
-#define lwip_htons(x) ((u16_t)(x))
-#define lwip_ntohs(x) ((u16_t)(x))
-#define lwip_htonl(x) ((u32_t)(x))
-#define lwip_ntohl(x) ((u32_t)(x))
-#define PP_HTONS(x) ((u16_t)(x))
-#define PP_NTOHS(x) ((u16_t)(x))
-#define PP_HTONL(x) ((u32_t)(x))
-#define PP_NTOHL(x) ((u32_t)(x))
+#define lwip_htons(x) ((u16_t) (x))
+#define lwip_ntohs(x) ((u16_t) (x))
+#define lwip_htonl(x) ((u32_t) (x))
+#define lwip_ntohl(x) ((u32_t) (x))
+#define PP_HTONS(x) ((u16_t) (x))
+#define PP_NTOHS(x) ((u16_t) (x))
+#define PP_HTONL(x) ((u32_t) (x))
+#define PP_NTOHL(x) ((u32_t) (x))
 #else /* BYTE_ORDER != BIG_ENDIAN */
 #ifndef lwip_htons
 u16_t lwip_htons(u16_t x);
@@ -104,14 +103,11 @@ u32_t lwip_htonl(u32_t x);
 /* These macros should be calculated by the preprocessor and are used
    with compile-time constants only (so that there is no little-endian
    overhead at runtime). */
-#define PP_HTONS(x) \
-	((u16_t)((((x) & (u16_t)0x00ffU) << 8) | (((x) & (u16_t)0xff00U) >> 8)))
+#define PP_HTONS(x) ((u16_t) ((((x) & (u16_t) 0x00ffU) << 8) | (((x) & (u16_t) 0xff00U) >> 8)))
 #define PP_NTOHS(x) PP_HTONS(x)
-#define PP_HTONL(x)                            \
-	((((x) & (u32_t)0x000000ffUL) << 24) | \
-	 (((x) & (u32_t)0x0000ff00UL) << 8) |  \
-	 (((x) & (u32_t)0x00ff0000UL) >> 8) |  \
-	 (((x) & (u32_t)0xff000000UL) >> 24))
+#define PP_HTONL(x)                                                                                                         \
+	((((x) & (u32_t) 0x000000ffUL) << 24) | (((x) & (u32_t) 0x0000ff00UL) << 8) | (((x) & (u32_t) 0x00ff0000UL) >> 8) | \
+	 (((x) & (u32_t) 0xff000000UL) >> 24))
 #define PP_NTOHL(x) PP_HTONL(x)
 #endif /* BYTE_ORDER == BIG_ENDIAN */
 

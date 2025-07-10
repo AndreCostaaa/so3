@@ -26,7 +26,7 @@
  */
 void __dump_regs(void *regs)
 {
-	unsigned long *cpuregs = (unsigned long *)regs;
+	unsigned long *cpuregs = (unsigned long *) regs;
 	int i;
 
 	printk("---------- CPU regs ----------\n");

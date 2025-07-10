@@ -26,11 +26,11 @@
 
 #define NSECS 1000000000ull
 
-#define NOW() ((u64)get_s_time())
-#define SECONDS(_s) ((u64)((_s) * 1000000000ull))
-#define MILLISECS(_ms) ((u64)((_ms) * 1000000ull))
-#define MICROSECS(_us) ((u64)((_us) * 1000ull))
-#define STIME_MAX ((u64)(~0ull))
+#define NOW() ((u64) get_s_time())
+#define SECONDS(_s) ((u64) ((_s) * 1000000000ull))
+#define MILLISECS(_ms) ((u64) ((_ms) * 1000000ull))
+#define MICROSECS(_us) ((u64) ((_us) * 1000ull))
+#define STIME_MAX ((u64) (~0ull))
 
 struct timer {
 	/* System time expiry value (nanoseconds since boot). */
@@ -80,8 +80,7 @@ static inline int active_timer(struct timer *timer)
  * time (and multiple times) on an inactive timer. It must *never* execute
  * concurrently with any other operation on the same timer.
  */
-static inline void init_timer(struct timer *timer, void (*function)(void *),
-			      void *data, unsigned int cpu)
+static inline void init_timer(struct timer *timer, void (*function)(void *), void *data, unsigned int cpu)
 {
 	memset(timer, 0, sizeof(*timer));
 
@@ -124,8 +123,7 @@ extern void apply_timer_offset(u64 offset);
 extern void reprogram_timer(u64 deadline);
 void clocksource_timer_reset(void);
 
-void clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to,
-			    u32 maxsec);
+void clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 maxsec);
 
 int do_nanosleep(const struct timespec *req, struct timespec *rem);
 

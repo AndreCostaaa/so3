@@ -31,7 +31,7 @@
  */
 static int otherend(uint32_t gfd)
 {
-	struct pipe_desc *pd = (struct pipe_desc *)vfs_get_priv(gfd);
+	struct pipe_desc *pd = (struct pipe_desc *) vfs_get_priv(gfd);
 
 	if (!pd)
 		return -EINVAL;
@@ -64,7 +64,7 @@ bool pipe_empty(pipe_desc_t *pd)
  */
 static int pipe_read_byte(int gfd, char *value, bool suspend)
 {
-	pipe_desc_t *pd = (pipe_desc_t *)vfs_get_priv(gfd);
+	pipe_desc_t *pd = (pipe_desc_t *) vfs_get_priv(gfd);
 
 	/* While no data to read, place thread in waiting state */
 	while (suspend && pipe_empty(pd) && (otherend(gfd) != -1)) {
@@ -83,8 +83,7 @@ static int pipe_read_byte(int gfd, char *value, bool suspend)
 	if (pipe_empty(pd))
 		return 0;
 
-	value[0] =
-		((char *)pd->pipe_buf)[pd->pos_read]; /* Read value from buffer */
+	value[0] = ((char *) pd->pipe_buf)[pd->pos_read]; /* Read value from buffer */
 
 	/* Update circular read index */
 	pd->pos_read = (pd->pos_read + 1) % PIPE_SIZE;
@@ -96,7 +95,7 @@ static int pipe_read(int gfd, void *buffer, int count)
 {
 	int pos, ret;
 	bool first;
-	pipe_desc_t *pd = (pipe_desc_t *)vfs_get_priv(gfd);
+	pipe_desc_t *pd = (pipe_desc_t *) vfs_get_priv(gfd);
 
 	/* Sanity checks*/
 	if (!buffer || (count <= 0)) {
@@ -117,7 +116,7 @@ static int pipe_read(int gfd, void *buffer, int count)
 	first = true;
 	pos = 0;
 	do {
-		ret = pipe_read_byte(gfd, (char *)buffer + pos, first);
+		ret = pipe_read_byte(gfd, (char *) buffer + pos, first);
 
 		if (ret < 0) {
 			set_errno(EPIPE);
@@ -163,8 +162,7 @@ static int pipe_write_byte(pipe_desc_t *pd, char value)
 			return -1;
 	}
 
-	((char *)pd->pipe_buf)[pd->pos_write] =
-		value; /* Set new buffer value */
+	((char *) pd->pipe_buf)[pd->pos_write] = value; /* Set new buffer value */
 
 	/* Update circular write index */
 	pd->pos_write = (pd->pos_write + 1) % PIPE_SIZE;
@@ -175,7 +173,7 @@ static int pipe_write_byte(pipe_desc_t *pd, char value)
 static int pipe_write(int gfd, const void *buffer, int count)
 {
 	int pos, ret;
-	pipe_desc_t *pd = (pipe_desc_t *)vfs_get_priv(gfd);
+	pipe_desc_t *pd = (pipe_desc_t *) vfs_get_priv(gfd);
 
 	/* Do Sanity checks */
 	if (!buffer || (count <= 0)) {
@@ -194,7 +192,7 @@ static int pipe_write(int gfd, const void *buffer, int count)
 	}
 
 	for (pos = 0; pos < count; pos++) {
-		ret = pipe_write_byte(pd, *((char *)buffer + pos));
+		ret = pipe_write_byte(pd, *((char *) buffer + pos));
 		if (ret < 0) {
 			set_errno(EPIPE);
 			mutex_unlock(&pd->lock);
@@ -253,9 +251,7 @@ static int pipe_close(int gfd)
 /*
  * Pipe file operations
  */
-struct file_operations pipe_fops = { .read = pipe_read,
-				     .write = pipe_write,
-				     .close = pipe_close };
+struct file_operations pipe_fops = { .read = pipe_read, .write = pipe_write, .close = pipe_close };
 
 /*
  * @brief This is the syscall interface
@@ -266,7 +262,7 @@ struct file_operations pipe_fops = { .read = pipe_read,
 int do_pipe(int pipefd[2])
 {
 	/* Allocated two file descriptor */
-	pipe_desc_t *pd = (struct pipe_desc *)memalign(sizeof(pipe_desc_t), 2);
+	pipe_desc_t *pd = (struct pipe_desc *) memalign(sizeof(pipe_desc_t), 2);
 
 	if (!pd) {
 		printk("%s: heap overflow...\n", __func__);

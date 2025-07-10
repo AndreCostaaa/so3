@@ -36,16 +36,13 @@ typedef unsigned int RING_IDX;
  * A ring contains as many entries as will fit, rounded down to the nearest
  * power of two (so we can mask with (size-1) to loop around).
  */
-#define __CONST_RING_SIZE(_s, _sz)                            \
-	(__RD32(((_sz) - offsetof(struct _s##_sring, ring)) / \
-		sizeof(((struct _s##_sring *)0)->ring[0])))
+#define __CONST_RING_SIZE(_s, _sz) \
+	(__RD32(((_sz) - offsetof(struct _s##_sring, ring)) / sizeof(((struct _s##_sring *) 0)->ring[0])))
 
 /*
  * The same for passing in an actual pointer instead of a name tag.
  */
-#define __RING_SIZE(_s, _sz)                               \
-	(__RD32(((_sz) - (long)&(_s)->ring + (long)(_s)) / \
-		sizeof((_s)->ring[0])))
+#define __RING_SIZE(_s, _sz) (__RD32(((_sz) - (long) &(_s)->ring + (long) (_s)) / sizeof((_s)->ring[0])))
 
 /*
  * Macros to make the correct C datatypes for a new kind of ring.
@@ -79,90 +76,76 @@ typedef unsigned int RING_IDX;
  *     BACK_RING_INIT(&back_ring, (mytag_sring_t *)shared_page, PAGE_SIZE);
  */
 
-#define DEFINE_RING_TYPES(__name, __req_t, __rsp_t)                           \
-                                                                              \
-	/* Shared ring entry */                                               \
-	struct __name##_sring_entry {                                         \
-		__req_t req;                                                  \
-		__rsp_t rsp;                                                  \
-	};                                                                    \
-                                                                              \
-	/* Shared ring page */                                                \
-	struct __name##_sring {                                               \
-		RING_IDX req_prod, req_cons;                                  \
-		RING_IDX rsp_prod, rsp_cons;                                  \
-		uint8_t pad[40];                                              \
-		struct __name##_sring_entry ring[1]; /* variable-length */    \
-	};                                                                    \
-                                                                              \
-	/* "Front" end's private variables */                                 \
-	struct __name##_front_ring {                                          \
-		RING_IDX req_prod_pvt;                                        \
-                                                                              \
-		unsigned int nr_ents;                                         \
-		struct __name##_sring *sring;                                 \
-	};                                                                    \
-                                                                              \
-	/* "Back" end's private variables */                                  \
-	struct __name##_back_ring {                                           \
-		RING_IDX rsp_prod_pvt;                                        \
-                                                                              \
-		unsigned int nr_ents;                                         \
-		struct __name##_sring *sring;                                 \
-	};                                                                    \
-                                                                              \
-	/* Syntactic sugar */                                                 \
-	typedef struct __name##_sring __name##_sring_t;                       \
-	typedef struct __name##_front_ring __name##_front_ring_t;             \
-	typedef struct __name##_back_ring __name##_back_ring_t;               \
-                                                                              \
-	static inline __req_t *__name##_new_ring_request(                     \
-		__name##_front_ring_t *__name##_front_ring)                   \
-	{                                                                     \
-		return RING_GET_REQUEST(__name##_front_ring,                  \
-					__name##_front_ring->req_prod_pvt++); \
-	}                                                                     \
-                                                                              \
-	static inline void __name##_ring_request_ready(                       \
-		__name##_front_ring_t *__name##_front_ring)                   \
-	{                                                                     \
-		RING_PUSH_REQUESTS(__name##_front_ring);                      \
-	}                                                                     \
-                                                                              \
-	static inline __rsp_t *__name##_get_ring_response(                    \
-		__name##_front_ring_t *__name##_front_ring)                   \
-	{                                                                     \
-		if (__name##_front_ring->sring->rsp_cons ==                   \
-		    __name##_front_ring->sring->rsp_prod)                     \
-			return NULL;                                          \
-		else                                                          \
-			return RING_GET_RESPONSE(                             \
-				__name##_front_ring,                          \
-				__name##_front_ring->sring->rsp_cons++);      \
-	}                                                                     \
-	static inline __rsp_t *__name##_new_ring_response(                    \
-		__name##_back_ring_t *__name##_back_ring)                     \
-	{                                                                     \
-		return RING_GET_RESPONSE(__name##_back_ring,                  \
-					 __name##_back_ring->rsp_prod_pvt++); \
-	}                                                                     \
-                                                                              \
-	static inline void __name##_ring_response_ready(                      \
-		__name##_back_ring_t *__name##_back_ring)                     \
-	{                                                                     \
-		RING_PUSH_RESPONSES(__name##_back_ring);                      \
-	}                                                                     \
-                                                                              \
-	static inline __req_t *__name##_get_ring_request(                     \
-		__name##_back_ring_t *__name##_back_ring)                     \
-	{                                                                     \
-		if (__name##_back_ring->sring->req_cons ==                    \
-		    __name##_back_ring->sring->req_prod)                      \
-			return NULL;                                          \
-		else                                                          \
-			return RING_GET_REQUEST(                              \
-				__name##_back_ring,                           \
-				__name##_back_ring->sring->req_cons++);       \
+#define DEFINE_RING_TYPES(__name, __req_t, __rsp_t)                                                            \
+                                                                                                               \
+	/* Shared ring entry */                                                                                \
+	struct __name##_sring_entry {                                                                          \
+		__req_t req;                                                                                   \
+		__rsp_t rsp;                                                                                   \
+	};                                                                                                     \
+                                                                                                               \
+	/* Shared ring page */                                                                                 \
+	struct __name##_sring {                                                                                \
+		RING_IDX req_prod, req_cons;                                                                   \
+		RING_IDX rsp_prod, rsp_cons;                                                                   \
+		uint8_t pad[40];                                                                               \
+		struct __name##_sring_entry ring[1]; /* variable-length */                                     \
+	};                                                                                                     \
+                                                                                                               \
+	/* "Front" end's private variables */                                                                  \
+	struct __name##_front_ring {                                                                           \
+		RING_IDX req_prod_pvt;                                                                         \
+                                                                                                               \
+		unsigned int nr_ents;                                                                          \
+		struct __name##_sring *sring;                                                                  \
+	};                                                                                                     \
+                                                                                                               \
+	/* "Back" end's private variables */                                                                   \
+	struct __name##_back_ring {                                                                            \
+		RING_IDX rsp_prod_pvt;                                                                         \
+                                                                                                               \
+		unsigned int nr_ents;                                                                          \
+		struct __name##_sring *sring;                                                                  \
+	};                                                                                                     \
+                                                                                                               \
+	/* Syntactic sugar */                                                                                  \
+	typedef struct __name##_sring __name##_sring_t;                                                        \
+	typedef struct __name##_front_ring __name##_front_ring_t;                                              \
+	typedef struct __name##_back_ring __name##_back_ring_t;                                                \
+                                                                                                               \
+	static inline __req_t *__name##_new_ring_request(__name##_front_ring_t *__name##_front_ring)           \
+	{                                                                                                      \
+		return RING_GET_REQUEST(__name##_front_ring, __name##_front_ring->req_prod_pvt++);             \
+	}                                                                                                      \
+                                                                                                               \
+	static inline void __name##_ring_request_ready(__name##_front_ring_t *__name##_front_ring)             \
+	{                                                                                                      \
+		RING_PUSH_REQUESTS(__name##_front_ring);                                                       \
+	}                                                                                                      \
+                                                                                                               \
+	static inline __rsp_t *__name##_get_ring_response(__name##_front_ring_t *__name##_front_ring)          \
+	{                                                                                                      \
+		if (__name##_front_ring->sring->rsp_cons == __name##_front_ring->sring->rsp_prod)              \
+			return NULL;                                                                           \
+		else                                                                                           \
+			return RING_GET_RESPONSE(__name##_front_ring, __name##_front_ring->sring->rsp_cons++); \
+	}                                                                                                      \
+	static inline __rsp_t *__name##_new_ring_response(__name##_back_ring_t *__name##_back_ring)            \
+	{                                                                                                      \
+		return RING_GET_RESPONSE(__name##_back_ring, __name##_back_ring->rsp_prod_pvt++);              \
+	}                                                                                                      \
+                                                                                                               \
+	static inline void __name##_ring_response_ready(__name##_back_ring_t *__name##_back_ring)              \
+	{                                                                                                      \
+		RING_PUSH_RESPONSES(__name##_back_ring);                                                       \
+	}                                                                                                      \
+                                                                                                               \
+	static inline __req_t *__name##_get_ring_request(__name##_back_ring_t *__name##_back_ring)             \
+	{                                                                                                      \
+		if (__name##_back_ring->sring->req_cons == __name##_back_ring->sring->req_prod)                \
+			return NULL;                                                                           \
+		else                                                                                           \
+			return RING_GET_REQUEST(__name##_back_ring, __name##_back_ring->sring->req_cons++);    \
 	}
 
 /*
@@ -177,11 +160,11 @@ typedef unsigned int RING_IDX;
  */
 
 /* Initialising empty rings */
-#define SHARED_RING_INIT(_s)                                   \
-	do {                                                   \
-		(_s)->req_prod = (_s)->rsp_prod = 0;           \
-		(_s)->req_cons = (_s)->rsp_cons = 0;           \
-		(void)memset((_s)->pad, 0, sizeof((_s)->pad)); \
+#define SHARED_RING_INIT(_s)                                    \
+	do {                                                    \
+		(_s)->req_prod = (_s)->rsp_prod = 0;            \
+		(_s)->req_cons = (_s)->rsp_cons = 0;            \
+		(void) memset((_s)->pad, 0, sizeof((_s)->pad)); \
 	} while (0)
 
 #define FRONT_RING_INIT(_r, _s, __size)                  \
@@ -203,8 +186,7 @@ typedef unsigned int RING_IDX;
 
 /* Number of free requests (for use on front side only
  * with non 1-to-1 (non injective) communication). */
-#define RING_FREE_REQUESTS(_r) \
-	(RING_SIZE(_r) - ((_r)->req_prod_pvt - (_r)->sring->req_cons))
+#define RING_FREE_REQUESTS(_r) (RING_SIZE(_r) - ((_r)->req_prod_pvt - (_r)->sring->req_cons))
 
 /* Test if there is an empty slot available on the front ring.
  * (This is only meaningful from the front. )
@@ -213,18 +195,14 @@ typedef unsigned int RING_IDX;
 #define RING_REQ_FULL(_r) (RING_FREE_REQUESTS(_r) == 0)
 
 /* Test if there are outstanding messages to be processed on a ring. */
-#define RING_HAS_UNCONSUMED_RESPONSES(_r) \
-	((_r)->sring->rsp_prod - (_r)->sring->rsp_cons)
+#define RING_HAS_UNCONSUMED_RESPONSES(_r) ((_r)->sring->rsp_prod - (_r)->sring->rsp_cons)
 
-#define RING_HAS_UNCONSUMED_REQUESTS(_r) \
-	((_r)->sring->req_prod - (_r)->sring->req_cons)
+#define RING_HAS_UNCONSUMED_REQUESTS(_r) ((_r)->sring->req_prod - (_r)->sring->req_cons)
 
 /* Direct access to individual ring elements, by index. */
-#define RING_GET_REQUEST(_r, _idx) \
-	(&((_r)->sring->ring[((_idx) & (RING_SIZE(_r) - 1))].req))
+#define RING_GET_REQUEST(_r, _idx) (&((_r)->sring->ring[((_idx) & (RING_SIZE(_r) - 1))].req))
 
-#define RING_GET_RESPONSE(_r, _idx) \
-	(&((_r)->sring->ring[((_idx) & (RING_SIZE(_r) - 1))].rsp))
+#define RING_GET_RESPONSE(_r, _idx) (&((_r)->sring->ring[((_idx) & (RING_SIZE(_r) - 1))].rsp))
 
 #define RING_PUSH_REQUESTS(_r)                                                      \
 	do {                                                                        \
@@ -238,8 +216,7 @@ typedef unsigned int RING_IDX;
 		(_r)->sring->rsp_prod = (_r)->rsp_prod_pvt;                           \
 	} while (0)
 
-#define RING_FREE_RESPONSES(_r) \
-	(RING_SIZE(_r) - ((_r)->rsp_prod_pvt - (_r)->sring->rsp_cons))
+#define RING_FREE_RESPONSES(_r) (RING_SIZE(_r) - ((_r)->rsp_prod_pvt - (_r)->sring->rsp_cons))
 
 #define RING_RESP_FULL(_r) (RING_FREE_RESPONSES(_r) == 0)
 

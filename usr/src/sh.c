@@ -289,8 +289,7 @@ void process_cmd(void)
 
 			} else {
 				close(pipe_fd[1]);
-				while ((byte_read = read(pipe_fd[0], file_buff,
-							 500)) > 0) {
+				while ((byte_read = read(pipe_fd[0], file_buff, 500)) > 0) {
 					write(fd, file_buff, byte_read);
 				}
 				close(fd);

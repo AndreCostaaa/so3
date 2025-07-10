@@ -143,8 +143,8 @@ void dump_all_execution_state(void)
 	ulong lr;
 
 	dump_execution_state();
-	sp = (ulong)__builtin_frame_address(0);
-	lr = (ulong)__builtin_return_address(0);
+	sp = (ulong) __builtin_frame_address(0);
+	lr = (ulong) __builtin_return_address(0);
 
 	show_backtrace(sp, lr, lr);
 }

@@ -103,26 +103,25 @@ void *fb_mmap(int fd, addr_t virt_addr, uint32_t page_count, off_t offset)
 	for (i = 0; i < page_count; i++) {
 		/* Map a process' virtual page to the physical one (here the VRAM). */
 		page = LCDUPBASE + i * PAGE_SIZE;
-		create_mapping(pcb->pgtable, virt_addr + (i * PAGE_SIZE), page,
-			       PAGE_SIZE, false);
+		create_mapping(pcb->pgtable, virt_addr + (i * PAGE_SIZE), page, PAGE_SIZE, false);
 	}
 
-	return (void *)virt_addr;
+	return (void *) virt_addr;
 }
 
 int fb_ioctl(int fd, unsigned long cmd, unsigned long args)
 {
 	switch (cmd) {
 	case IOCTL_FB_HRES:
-		*((uint32_t *)args) = HRES;
+		*((uint32_t *) args) = HRES;
 		return 0;
 
 	case IOCTL_FB_VRES:
-		*((uint32_t *)args) = VRES;
+		*((uint32_t *) args) = VRES;
 		return 0;
 
 	case IOCTL_FB_SIZE:
-		*((uint32_t *)args) = HRES * VRES * 4; /* assume 24bpp */
+		*((uint32_t *) args) = HRES * VRES * 4; /* assume 24bpp */
 		return 0;
 
 	default:
@@ -136,9 +135,7 @@ int fb_close(int fd)
 	return 0;
 }
 
-struct file_operations pl111_fops = { .mmap = fb_mmap,
-				      .ioctl = fb_ioctl,
-				      .close = fb_close };
+struct file_operations pl111_fops = { .mmap = fb_mmap, .ioctl = fb_ioctl, .close = fb_close };
 
 struct devclass pl111_cdev = {
 	.class = DEV_CLASS_FB,
@@ -156,8 +153,7 @@ static int pl111_init(dev_t *dev, int fdt_offset)
 	int prop_len;
 	void *base;
 
-	printk("%s: probing a framebufer (PL111) device, please make sure such a framebuffer is available...\n",
-	       __func__);
+	printk("%s: probing a framebufer (PL111) device, please make sure such a framebuffer is available...\n", __func__);
 
 	prop = fdt_get_property(__fdt_addr, fdt_offset, "reg", &prop_len);
 	BUG_ON(!prop);
@@ -165,11 +161,11 @@ static int pl111_init(dev_t *dev, int fdt_offset)
 
 	/* Mapping the device properly */
 #ifdef CONFIG_ARCH_ARM32
-	base = (void *)io_map(fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-			      fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	base = (void *) io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]),
+			       fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 #else
-	base = (void *)io_map(fdt64_to_cpu(((const fdt64_t *)prop->data)[0]),
-			      fdt64_to_cpu(((const fdt64_t *)prop->data)[1]));
+	base = (void *) io_map(fdt64_to_cpu(((const fdt64_t *) prop->data)[0]),
+			       fdt64_to_cpu(((const fdt64_t *) prop->data)[1]));
 
 #endif
 
@@ -179,8 +175,7 @@ static int pl111_init(dev_t *dev, int fdt_offset)
 	/* Set timing registers. */
 	iowrite32(base + CLCD_TIM0, HBP | HFP | HSW | PPL);
 	iowrite32(base + CLCD_TIM1, VBP | VFP | VSW | LPP);
-	iowrite32(base + CLCD_TIM2, PCD_HI | BCD | CPL | IOE | IPC | IHS | IVS |
-					    ACB | CLKSEL | PCD_LO);
+	iowrite32(base + CLCD_TIM2, PCD_HI | BCD | CPL | IOE | IPC | IHS | IVS | ACB | CLKSEL | PCD_LO);
 	iowrite32(base + CLCD_TIM3, LEE | LED);
 
 	/* Set framebuffer addresses. */
@@ -190,9 +185,8 @@ static int pl111_init(dev_t *dev, int fdt_offset)
 	}
 
 	/* Configure, enable and power on the controller. */
-	iowrite32(base + CLCD_CNTL, WATERMARK | LCDVCOMP | LCDPWR | BEPO |
-					    BEBO | BGR | LCDDUAL | LCDMONO8 |
-					    LCDTFT | LCDBW | LCDBPP | LCDEN);
+	iowrite32(base + CLCD_CNTL,
+		  WATERMARK | LCDVCOMP | LCDPWR | BEPO | BEBO | BGR | LCDDUAL | LCDMONO8 | LCDTFT | LCDBW | LCDBPP | LCDEN);
 
 	/* Register the framebuffer so it can be accessed from user space. */
 	devclass_register(dev, &pl111_cdev);

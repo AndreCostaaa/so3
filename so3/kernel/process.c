@@ -48,9 +48,8 @@
 #endif
 
 static char *proc_state_strings[5] = {
-	[PROC_STATE_NEW] = "NEW",	  [PROC_STATE_READY] = "READY",
-	[PROC_STATE_RUNNING] = "RUNNING", [PROC_STATE_WAITING] = "WAITING",
-	[PROC_STATE_ZOMBIE] = "ZOMBIE",
+	[PROC_STATE_NEW] = "NEW",	  [PROC_STATE_READY] = "READY",	  [PROC_STATE_RUNNING] = "RUNNING",
+	[PROC_STATE_WAITING] = "WAITING", [PROC_STATE_ZOMBIE] = "ZOMBIE",
 };
 
 char *proc_state_str(proc_state_t state)
@@ -108,8 +107,7 @@ pcb_t *find_proc_zombie_to_clean(void)
 
 	list_for_each(pos, &proc_list) {
 		pcb = list_entry(pos, pcb_t, list);
-		if ((pcb->state == PROC_STATE_ZOMBIE) &&
-		    (pcb->main_thread != NULL))
+		if ((pcb->state == PROC_STATE_ZOMBIE) && (pcb->main_thread != NULL))
 			return pcb;
 	}
 
@@ -301,8 +299,7 @@ static void allocate_page(pcb_t *pcb, addr_t virt_addr, int nr_pages, bool usr)
 		page = get_free_page();
 		BUG_ON(!page);
 
-		create_mapping(pcb->pgtable, virt_addr + (i * PAGE_SIZE), page,
-			       PAGE_SIZE, false);
+		create_mapping(pcb->pgtable, virt_addr + (i * PAGE_SIZE), page, PAGE_SIZE, false);
 
 		add_page_to_proc(pcb, phys_to_page(page));
 	}
@@ -332,8 +329,7 @@ void create_root_process(void)
 	/* We map the initial user space process stack here, and fork() will
          * inherit from this mapping */
 
-	allocate_page(pcb, pcb->stack_top - (pcb->page_count * PAGE_SIZE),
-		      pcb->page_count, true);
+	allocate_page(pcb, pcb->stack_top - (pcb->page_count * PAGE_SIZE), pcb->page_count, true);
 
 	LOG_DEBUG("Stack mapped at 0x%08x (size: %d bytes)\n",
 	    pcb->stack_top - (pcb->page_count * PAGE_SIZE), PROC_STACK_SIZE);
@@ -342,13 +338,11 @@ void create_root_process(void)
          * the initial code can run normally in user mode.
          */
 	create_mapping(pcb->pgtable, USER_SPACE_VADDR, __pa(__root_proc_start),
-		       (void *)__root_proc_end - (void *)__root_proc_start,
-		       false);
+		       (void *) __root_proc_end - (void *) __root_proc_start, false);
 
 	/* Start main thread <args> of the thread is not used in this context.
          */
-	pcb->main_thread =
-		user_thread((th_fn_t)USER_SPACE_VADDR, "root_proc", NULL, pcb);
+	pcb->main_thread = user_thread((th_fn_t) USER_SPACE_VADDR, "root_proc", NULL, pcb);
 
 	/* init process? */
 	if (!root_process)
@@ -417,7 +411,7 @@ void *preserve_args_and_env(int argc, char **argv, char **envp)
 
 	memset(args, 0, PAGE_SIZE);
 
-	args_p = (char *)args;
+	args_p = (char *) args;
 	if (!argc)
 		i = 1;
 	else
@@ -445,7 +439,7 @@ void *preserve_args_and_env(int argc, char **argv, char **envp)
 
 	/* Environment string addresses */
 	if (!envp) {
-		*((addr_t *)args_p) = 0; /* Keep array-end with NULL */
+		*((addr_t *) args_p) = 0; /* Keep array-end with NULL */
 		args_p += sizeof(char *);
 
 	} else {
@@ -458,7 +452,7 @@ void *preserve_args_and_env(int argc, char **argv, char **envp)
 	/* Manage the arg strings */
 
 	args_str_p = args_p;
-	__args = (char **)(args + sizeof(int));
+	__args = (char **) (args + sizeof(int));
 
 	/* As said before, if argc is 0 (argv NULL), we put the process name (a
          * kind of by-default argument) */
@@ -480,8 +474,8 @@ void *preserve_args_and_env(int argc, char **argv, char **envp)
 
 		/* We check if the pointer do not exceed the page we
                  * allocated before */
-		if (((addr_t)args_str_p - (addr_t)args) > PAGE_SIZE) {
-			LOG_ERROR("Not enougth memory allocated\n");
+		if (((addr_t) args_str_p - (addr_t) args) > PAGE_SIZE) {
+			DBG("Not enougth memory allocated\n");
 			set_errno(ENOMEM);
 
 			free(args);
@@ -492,8 +486,7 @@ void *preserve_args_and_env(int argc, char **argv, char **envp)
 	/* Environment strings */
 
 	/* First env. variable */
-	__args = (char **)(args + sizeof(int) +
-			   sizeof(char *) * (*((int *)args)));
+	__args = (char **) (args + sizeof(int) + sizeof(char *) * (*((int *) args)));
 
 	/* If the environment was passed */
 	if (envp) {
@@ -526,7 +519,7 @@ void post_setup_image(void *args_env)
 	char *args_base;
 	int argc, i;
 
-	args_base = (char *)arch_get_args_base();
+	args_base = (char *) arch_get_args_base();
 
 	memcpy(args_base, args_env, PAGE_SIZE);
 
@@ -534,20 +527,20 @@ void post_setup_image(void *args_env)
 
 	/* Now, readjust the address of the var and env strings */
 
-	argc = *((int *)args_base);
-	__args = (char **)(args_base + sizeof(int));
+	argc = *((int *) args_base);
+	__args = (char **) (args_base + sizeof(int));
 
 	/* We get the offset based on the current location and the start of the
          * args_env page, then we adjust it to match our final destination.
          */
 	for (i = 0; i < argc; i++)
-		__args[i] = ((addr_t)__args[i] - (addr_t)args_env) + args_base;
+		__args[i] = ((addr_t) __args[i] - (addr_t) args_env) + args_base;
 
 	/* Focus on the env addresses now */
-	__args = (char **)(args_base + sizeof(int) + argc * sizeof(char *));
+	__args = (char **) (args_base + sizeof(int) + argc * sizeof(char *));
 
 	for (i = 0; __args[i] != NULL; i++)
-		__args[i] = ((addr_t)__args[i] - (addr_t)args_env) + args_base;
+		__args[i] = ((addr_t) __args[i] - (addr_t) args_env) + args_base;
 }
 
 /*
@@ -591,14 +584,13 @@ int setup_proc_image_replace(elf_img_info_t *elf_img_info, pcb_t *pcb, int argc,
 	/* We re-init the user space process stack here, and fork() will inherit
          * from this mapping */
 
-	allocate_page(pcb, pcb->stack_top - (pcb->page_count * PAGE_SIZE),
-		      pcb->page_count, true);
+	allocate_page(pcb, pcb->stack_top - (pcb->page_count * PAGE_SIZE), pcb->page_count, true);
 
 	LOG_DEBUG("stack mapped at 0x%08x (size: %d bytes)\n",
 	    pcb->stack_top - (pcb->page_count * PAGE_SIZE), PROC_STACK_SIZE);
 
 	/* Initialize the pc register */
-	pcb->bin_image_entry = (uint32_t)elf_img_info->header->e_entry;
+	pcb->bin_image_entry = (uint32_t) elf_img_info->header->e_entry;
 
 	/* The first virtual page will not be mapped since it is the zero-page
          * which is used to detect NULL pointer access. It has to raise a data
@@ -609,11 +601,10 @@ int setup_proc_image_replace(elf_img_info_t *elf_img_info, pcb_t *pcb, int argc,
 	pcb->page_count += elf_img_info->segment_page_count;
 
 	/* Map the elementary sections (text, data, bss) */
-	allocate_page(pcb, (uint32_t)elf_img_info->header->e_entry,
-		      elf_img_info->segment_page_count, true);
+	allocate_page(pcb, (uint32_t) elf_img_info->header->e_entry, elf_img_info->segment_page_count, true);
 
-	LOG_DEBUG("entry point: 0x%08x\n", elf_img_info->header->e_entry);
-	LOG_DEBUG("page count: 0x%08x\n", pcb->page_count);
+	DBG("entry point: 0x%08x\n", elf_img_info->header->e_entry);
+	DBG("page count: 0x%08x\n", pcb->page_count);
 
 	/* Maximum heap size */
 	page_count = ALIGN_UP(HEAP_SIZE, PAGE_SIZE) >> PAGE_SHIFT;
@@ -662,22 +653,18 @@ void load_process(elf_img_info_t *elf_img_info)
 		/* Sections */
 		for (j = 0; j < elf_img_info->header->e_shnum; j++) {
 			section_start = elf_img_info->sections[j].sh_offset;
-			section_end = section_start +
-				      elf_img_info->sections[j].sh_size;
+			section_end = section_start + elf_img_info->sections[j].sh_size;
 
 			/* Verify if the section is part of this segment */
-			if ((section_start < segment_start) ||
-			    (section_end > segment_end))
+			if ((section_start < segment_start) || (section_end > segment_end))
 				continue;
 
 			/* Copy only base name of the section */
 			l = 0;
 			section_name_dots = 0;
 			do {
-				section_base_name[l] =
-					elf_img_info->section_names[j][l];
-				if (section_base_name[l] == '.' &&
-				    section_name_dots++)
+				section_base_name[l] = elf_img_info->section_names[j][l];
+				if (section_base_name[l] == '.' && section_name_dots++)
 					break; // Base name stops at second '.'
 			} while (section_base_name[l++] != '\0');
 
@@ -687,8 +674,7 @@ void load_process(elf_img_info_t *elf_img_info)
 			/* Not all sections are supported */
 			section_supported = false;
 			for (k = 0; k < SUPPORTED_SECTION_COUNT; k++) {
-				if (!strcmp(section_base_name,
-					    supported_section_names[k])) {
+				if (!strcmp(section_base_name, supported_section_names[k])) {
 					section_supported = true;
 					break;
 				}
@@ -708,9 +694,8 @@ void load_process(elf_img_info_t *elf_img_info)
 
 			/* Real load of contents in the user space memory of the
                          * process */
-			memcpy((void *)elf_img_info->sections[j].sh_addr,
-			       (void *)(elf_img_info->file_buffer +
-					elf_img_info->sections[j].sh_offset),
+			memcpy((void *) elf_img_info->sections[j].sh_addr,
+			       (void *) (elf_img_info->file_buffer + elf_img_info->sections[j].sh_offset),
 			       elf_img_info->sections[j].sh_size);
 		}
 	}
@@ -780,19 +765,17 @@ int do_execve(const char *filename, char **argv, char **envp)
 	/* Now, we need to create the main user thread associated to this binary
          * image. */
 	/* start main thread */
-	start_routine = (th_fn_t)pcb->bin_image_entry;
+	start_routine = (th_fn_t) pcb->bin_image_entry;
 
 	/* We start the new thread */
-	pcb->main_thread = user_thread(start_routine, pcb->name,
-				       (void *)arch_get_args_base(), pcb);
+	pcb->main_thread = user_thread(start_routine, pcb->name, (void *) arch_get_args_base(), pcb);
 
 	/* Transfer the waiting thread if any */
 
 	/* Make sure it is the main thread of the dying thread, i.e. another
          * process is waiting on it (the parent) */
 	if (!list_empty(&current()->joinQueue)) {
-		cur = list_entry(current()->joinQueue.next, queue_thread_t,
-				 list);
+		cur = list_entry(current()->joinQueue.next, queue_thread_t, list);
 
 		ASSERT(cur->tcb->pcb == current()->pcb->parent);
 
@@ -842,8 +825,7 @@ pcb_t *duplicate_process(pcb_t *parent)
 
 	/* Duplicate the array of allocated stack slots dedicated to user
          * threads */
-	memcpy(pcb->stack_slotID, parent->stack_slotID,
-	       sizeof(parent->stack_slotID));
+	memcpy(pcb->stack_slotID, parent->stack_slotID, sizeof(parent->stack_slotID));
 
 	/* Clone all file descriptors */
 	if (vfs_clone_fd(parent->fd_array, pcb->fd_array)) {
@@ -887,15 +869,11 @@ int do_fork(void)
          */
 	sprintf(newp->name, "%s_child_%d", parent->name, newp->pid);
 
-	newp->main_thread = user_thread(NULL, newp->name,
-					(void *)arch_get_args_base(), newp);
+	newp->main_thread = user_thread(NULL, newp->name, (void *) arch_get_args_base(), newp);
 
 	/* Copy the kernel stack of the main thread */
-	memcpy((void *)get_kernel_stack_top(newp->main_thread->stack_slotID) -
-		       THREAD_STACK_SIZE,
-	       (void *)get_kernel_stack_top(parent->main_thread->stack_slotID) -
-		       THREAD_STACK_SIZE,
-	       THREAD_STACK_SIZE);
+	memcpy((void *) get_kernel_stack_top(newp->main_thread->stack_slotID) - THREAD_STACK_SIZE,
+	       (void *) get_kernel_stack_top(parent->main_thread->stack_slotID) - THREAD_STACK_SIZE, THREAD_STACK_SIZE);
 
 	/*
          * Preserve the current value of all registers concerned by this
@@ -903,8 +881,7 @@ int do_fork(void)
          * once scheduled.
          */
 
-	__save_context(newp->main_thread,
-		       get_kernel_stack_top(newp->main_thread->stack_slotID));
+	__save_context(newp->main_thread, get_kernel_stack_top(newp->main_thread->stack_slotID));
 
 	/* The main process thread is ready to be scheduled for its execution.*/
 	newp->state = PROC_STATE_READY;
@@ -1031,8 +1008,7 @@ int do_waitpid(int pid, uint32_t *wstatus, uint32_t options)
 		child = find_proc_by_pid(pid);
 		if (!child) {
 			if (wstatus != NULL)
-				*wstatus =
-					~0x7f; /* !WTERMSIG -> WIFEXITED true */
+				*wstatus = ~0x7f; /* !WTERMSIG -> WIFEXITED true */
 			set_errno(ECHILD);
 			return -1;
 		}
@@ -1046,8 +1022,7 @@ int do_waitpid(int pid, uint32_t *wstatus, uint32_t options)
 
 	/* Must the child be resumed after being stopped due to a ptrace request
          * ? */
-	if ((child->ptrace_pending_req != PTRACE_NO_REQUEST) &&
-	    (child->ptrace_pending_req != PTRACE_TRACEME)) {
+	if ((child->ptrace_pending_req != PTRACE_NO_REQUEST) && (child->ptrace_pending_req != PTRACE_TRACEME)) {
 		/* Resume the child process being stopped previously. */
 
 		child->state = PROC_STATE_READY;
@@ -1060,15 +1035,14 @@ int do_waitpid(int pid, uint32_t *wstatus, uint32_t options)
 
 	/* Before joining, we need to check the state of child because it could
          * have been finished before this call. */
-	if ((child->state == PROC_STATE_ZOMBIE) &&
-	    (child->ptrace_pending_req == PTRACE_NO_REQUEST)) {
+	if ((child->state == PROC_STATE_ZOMBIE) && (child->ptrace_pending_req == PTRACE_NO_REQUEST)) {
 		/* Free the page tables used for this process */
 		reset_root_pgtable(child->pgtable, true);
 
 		/* Get the exit code left in the PCB by the child */
 		if (wstatus) {
 			*wstatus = ~0x7f; /* !WTERMSIG -> WIFEXITED true */
-			*wstatus = ((char)child->exit_status) << 8;
+			*wstatus = ((char) child->exit_status) << 8;
 		}
 
 		/*
@@ -1089,7 +1063,7 @@ int do_waitpid(int pid, uint32_t *wstatus, uint32_t options)
 
 			if (wstatus) {
 				*wstatus = 0x17f; /* WIFSTOPPED true */
-				*wstatus |= ((char)child->exit_status) << 8;
+				*wstatus |= ((char) child->exit_status) << 8;
 			}
 		} else {
 			/* Free the page tables used for this process */
@@ -1097,9 +1071,8 @@ int do_waitpid(int pid, uint32_t *wstatus, uint32_t options)
 
 			/* Get the exit code left in the PCB by the child */
 			if (wstatus) {
-				*wstatus =
-					~0x7f; /* !WTERMSIG -> WIFEXITED true */
-				*wstatus |= ((char)child->exit_status) << 8;
+				*wstatus = ~0x7f; /* !WTERMSIG -> WIFEXITED true */
+				*wstatus |= ((char) child->exit_status) << 8;
 			}
 
 			/* Finally remove the process from the system
@@ -1194,8 +1167,8 @@ void do_ps()
 
 	LOG_INFO("\n****************************************************\n");
 	if (list_empty(&proc_list)) {
-		LOG_INFO(" process list is <empty>\n");
-		LOG_INFO("\n****************************************************"
+		printk(" process list is <empty>\n");
+		printk("\n****************************************************"
 		       "\n\n");
 		return;
 	}

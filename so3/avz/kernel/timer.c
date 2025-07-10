@@ -35,10 +35,7 @@ void timer_interrupt(bool periodic)
 			 * there is no need to propagate the timer event.
 			 */
 			if ((domains[i] != NULL) && !domains[i]->is_dying) {
-				if ((domains[i]->runstate ==
-				     RUNSTATE_running) ||
-				    (domains[i]->runstate ==
-				     RUNSTATE_runnable)) {
+				if ((domains[i]->runstate == RUNSTATE_running) || (domains[i]->runstate == RUNSTATE_runnable)) {
 					if (domains[i]->need_periodic_timer)
 
 						/* Forward to the guest */

@@ -50,14 +50,13 @@ static bool thread_created = false;
 
 irq_return_t vdummy_interrupt(int irq, void *dev_id)
 {
-	struct vbus_device *vdev = (struct vbus_device *)dev_id;
+	struct vbus_device *vdev = (struct vbus_device *) dev_id;
 	vdummy_priv_t *vdummy_priv = dev_get_drvdata(vdev->dev);
 	vdummy_response_t *ring_rsp;
 
 	DBG("%s, %d\n", __func__, ME_domID());
 
-	while ((ring_rsp = vdummy_get_ring_response(
-			&vdummy_priv->vdummy.ring)) != NULL) {
+	while ((ring_rsp = vdummy_get_ring_response(&vdummy_priv->vdummy.ring)) != NULL) {
 		DBG("%s, cons=%d\n", __func__, i);
 
 		/* Do something with the response */
@@ -130,15 +129,13 @@ static void vdummy_probe(struct vbus_device *vdev)
 	/* Allocate an event channel associated to the ring */
 	vbus_alloc_evtchn(vdev, &evtchn);
 
-	vdummy_priv->vdummy.irq = bind_evtchn_to_irq_handler(
-		evtchn, vdummy_interrupt, NULL, vdev);
+	vdummy_priv->vdummy.irq = bind_evtchn_to_irq_handler(evtchn, vdummy_interrupt, NULL, vdev);
 	vdummy_priv->vdummy.evtchn = evtchn;
 
 	/* Allocate a shared page for the ring */
-	sring = (vdummy_sring_t *)get_free_vpage();
+	sring = (vdummy_sring_t *) get_free_vpage();
 	if (!sring) {
-		lprintk("%s - line %d: Allocating shared ring failed for device %s\n",
-			__func__, __LINE__, vdev->nodename);
+		lprintk("%s - line %d: Allocating shared ring failed for device %s\n", __func__, __LINE__, vdev->nodename);
 		BUG();
 	}
 
@@ -147,16 +144,13 @@ static void vdummy_probe(struct vbus_device *vdev)
 
 	/* Prepare the shared to page to be visible on the other end */
 
-	vdummy_priv->vdummy.ring_ref = vbus_grant_ring(
-		vdev, phys_to_pfn(virt_to_phys_pt(
-			      (addr_t)vdummy_priv->vdummy.ring.sring)));
+	vdummy_priv->vdummy.ring_ref =
+		vbus_grant_ring(vdev, phys_to_pfn(virt_to_phys_pt((addr_t) vdummy_priv->vdummy.ring.sring)));
 
 	vbus_transaction_start(&vbt);
 
-	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u",
-		    vdummy_priv->vdummy.ring_ref);
-	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u",
-		    vdummy_priv->vdummy.evtchn);
+	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u", vdummy_priv->vdummy.ring_ref);
+	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u", vdummy_priv->vdummy.evtchn);
 
 	vbus_transaction_end(vbt);
 }
@@ -181,14 +175,11 @@ static void vdummy_reconfiguring(struct vbus_device *vdev)
 	vdummy_priv->vdummy.ring_ref = GRANT_INVALID_REF;
 
 	SHARED_RING_INIT(vdummy_priv->vdummy.ring.sring);
-	FRONT_RING_INIT(&vdummy_priv->vdummy.ring,
-			(&vdummy_priv->vdummy.ring)->sring, PAGE_SIZE);
+	FRONT_RING_INIT(&vdummy_priv->vdummy.ring, (&vdummy_priv->vdummy.ring)->sring, PAGE_SIZE);
 
 	/* Prepare the shared to page to be visible on the other end */
 
-	res = vbus_grant_ring(vdev,
-			      phys_to_pfn(virt_to_phys_pt(
-				      (addr_t)vdummy_priv->vdummy.ring.sring)));
+	res = vbus_grant_ring(vdev, phys_to_pfn(virt_to_phys_pt((addr_t) vdummy_priv->vdummy.ring.sring)));
 	if (res < 0)
 		BUG();
 
@@ -196,10 +187,8 @@ static void vdummy_reconfiguring(struct vbus_device *vdev)
 
 	vbus_transaction_start(&vbt);
 
-	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u",
-		    vdummy_priv->vdummy.ring_ref);
-	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u",
-		    vdummy_priv->vdummy.evtchn);
+	vbus_printf(vbt, vdev->nodename, "ring-ref", "%u", vdummy_priv->vdummy.ring_ref);
+	vbus_printf(vbt, vdev->nodename, "ring-evtchn", "%u", vdummy_priv->vdummy.evtchn);
 
 	vbus_transaction_end(vbt);
 }
@@ -222,7 +211,7 @@ static void vdummy_closed(struct vbus_device *vdev)
 	/* Free resources associated with old device channel. */
 	if (vdummy_priv->vdummy.ring_ref != GRANT_INVALID_REF) {
 		gnttab_end_foreign_access(vdummy_priv->vdummy.ring_ref);
-		free_vpage((addr_t)vdummy_priv->vdummy.ring.sring);
+		free_vpage((addr_t) vdummy_priv->vdummy.ring.sring);
 
 		vdummy_priv->vdummy.ring_ref = GRANT_INVALID_REF;
 		vdummy_priv->vdummy.ring.sring = NULL;

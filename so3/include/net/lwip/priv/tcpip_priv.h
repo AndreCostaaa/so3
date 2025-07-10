@@ -57,19 +57,18 @@ struct netif;
 #define API_VAR_DECLARE(type, name) type *name
 #define API_VAR_ALLOC_EXT(type, pool, name, errorblock) \
 	do {                                            \
-		name = (type *)memp_malloc(pool);       \
+		name = (type *) memp_malloc(pool);      \
 		if (name == NULL) {                     \
 			errorblock;                     \
 		}                                       \
 	} while (0)
-#define API_VAR_ALLOC(type, pool, name, errorval) \
-	API_VAR_ALLOC_EXT(type, pool, name, return errorval)
-#define API_VAR_ALLOC_POOL(type, pool, name, errorval)   \
-	do {                                             \
-		name = (type *)LWIP_MEMPOOL_ALLOC(pool); \
-		if (name == NULL) {                      \
-			return errorval;                 \
-		}                                        \
+#define API_VAR_ALLOC(type, pool, name, errorval) API_VAR_ALLOC_EXT(type, pool, name, return errorval)
+#define API_VAR_ALLOC_POOL(type, pool, name, errorval)    \
+	do {                                              \
+		name = (type *) LWIP_MEMPOOL_ALLOC(pool); \
+		if (name == NULL) {                       \
+			return errorval;                  \
+		}                                         \
 	} while (0)
 #define API_VAR_FREE(pool, name) memp_free(pool, name)
 #define API_VAR_FREE_POOL(pool, name) LWIP_MEMPOOL_FREE(pool, name)
@@ -97,8 +96,7 @@ struct netif;
 #define API_MSG_M_DEF_C(t, m) const t *m
 #endif /* LWIP_MPU_COMPATIBLE */
 
-err_t tcpip_send_msg_wait_sem(tcpip_callback_fn fn, void *apimsg,
-			      sys_sem_t *sem);
+err_t tcpip_send_msg_wait_sem(tcpip_callback_fn fn, void *apimsg, sys_sem_t *sem);
 
 struct tcpip_api_call_data {
 #if !LWIP_TCPIP_CORE_LOCKING

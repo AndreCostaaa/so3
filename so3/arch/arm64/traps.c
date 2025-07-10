@@ -42,27 +42,23 @@
 
 #ifdef CONFIG_AVZ
 
-const char entry_error_messages[19][32] = {
-	"SYNC_INVALID_EL2t",	 "IRQ_INVALID_EL2t",	"FIQ_INVALID_EL2t",
-	"SERROR_INVALID_EL2t",	 "SYNC_INVALID_EL2h",	"IRQ_INVALID_EL2h",
-	"FIQ_INVALID_EL2h",	 "SERROR_INVALID_EL2h", "SYNC_INVALID_EL1_64",
-	"IRQ_INVALID_EL1_64",	 "FIQ_INVALID_EL1_64",	"SERROR_INVALID_EL1_64",
-	"SYNC_INVALID_EL1_32",	 "IRQ_INVALID_EL1_32",	"FIQ_INVALID_EL1_32",
-	"SERROR_INVALID_EL1_32", "SYNC_ERROR",		"SYSCALL_ERROR",
-	"DATA_ABORT_ERROR"
-};
+const char entry_error_messages[19][32] = { "SYNC_INVALID_EL2t",     "IRQ_INVALID_EL2t",    "FIQ_INVALID_EL2t",
+					    "SERROR_INVALID_EL2t",   "SYNC_INVALID_EL2h",   "IRQ_INVALID_EL2h",
+					    "FIQ_INVALID_EL2h",	     "SERROR_INVALID_EL2h", "SYNC_INVALID_EL1_64",
+					    "IRQ_INVALID_EL1_64",    "FIQ_INVALID_EL1_64",  "SERROR_INVALID_EL1_64",
+					    "SYNC_INVALID_EL1_32",   "IRQ_INVALID_EL1_32",  "FIQ_INVALID_EL1_32",
+					    "SERROR_INVALID_EL1_32", "SYNC_ERROR",	    "SYSCALL_ERROR",
+					    "DATA_ABORT_ERROR" };
 
 #else
 
-const char entry_error_messages[19][32] = {
-	"SYNC_INVALID_EL1t",	 "IRQ_INVALID_EL1t",	"FIQ_INVALID_EL1t",
-	"SERROR_INVALID_EL1t",	 "SYNC_INVALID_EL1h",	"IRQ_INVALID_EL1h",
-	"FIQ_INVALID_EL1h",	 "SERROR_INVALID_EL1h", "SYNC_INVALID_EL0_64",
-	"IRQ_INVALID_EL0_64",	 "FIQ_INVALID_EL0_64",	"SERROR_INVALID_EL0_64",
-	"SYNC_INVALID_EL0_32",	 "IRQ_INVALID_EL0_32",	"FIQ_INVALID_EL0_32",
-	"SERROR_INVALID_EL0_32", "SYNC_ERROR",		"SYSCALL_ERROR",
-	"DATA_ABORT_ERROR"
-};
+const char entry_error_messages[19][32] = { "SYNC_INVALID_EL1t",     "IRQ_INVALID_EL1t",    "FIQ_INVALID_EL1t",
+					    "SERROR_INVALID_EL1t",   "SYNC_INVALID_EL1h",   "IRQ_INVALID_EL1h",
+					    "FIQ_INVALID_EL1h",	     "SERROR_INVALID_EL1h", "SYNC_INVALID_EL0_64",
+					    "IRQ_INVALID_EL0_64",    "FIQ_INVALID_EL0_64",  "SERROR_INVALID_EL0_64",
+					    "SYNC_INVALID_EL0_32",   "IRQ_INVALID_EL0_32",  "FIQ_INVALID_EL0_32",
+					    "SERROR_INVALID_EL0_32", "SYNC_ERROR",	    "SYSCALL_ERROR",
+					    "DATA_ABORT_ERROR" };
 
 #endif
 
@@ -133,9 +129,7 @@ void trap_handle(cpu_regs_t *regs)
 
 #ifdef CONFIG_SOO
 	unsigned int memslotID =
-		((current_domain->avz_shared->domID == DOMID_AGENCY) ?
-			 MEMSLOT_AGENCY :
-			 current_domain->avz_shared->domID);
+		((current_domain->avz_shared->domID == DOMID_AGENCY) ? MEMSLOT_AGENCY : current_domain->avz_shared->domID);
 #endif /* CONFIG_SOO */
 
 #else
@@ -184,8 +178,7 @@ void trap_handle(cpu_regs_t *regs)
 			break;
 
 		case PSCI_0_2_FN64_CPU_ON:
-			printk("Power on CPU #%d starting at %x...\n",
-			       regs->x1 & 3, regs->x2);
+			printk("Power on CPU #%d starting at %x...\n", regs->x1 & 3, regs->x2);
 
 			cpu_entrypoint = regs->x2;
 			smp_trigger_event(regs->x1 & 3);
@@ -200,8 +193,7 @@ void trap_handle(cpu_regs_t *regs)
 #endif /* CONFIG_SMP */
 
 		case AVZ_HYPERCALL_TRAP:
-			do_avz_hypercall(
-				(avz_hyp_t *)ipa_to_va(memslotID, regs->x1));
+			do_avz_hypercall((avz_hyp_t *) ipa_to_va(memslotID, regs->x1));
 			break;
 
 		case AVZ_HYPERCALL_SIGRETURN:
@@ -252,8 +244,7 @@ void trap_handle(cpu_regs_t *regs)
 #endif
 
 	default:
-		lprintk("### On CPU %d: ESR_Elx_EC(esr): 0x%lx\n",
-			smp_processor_id(), ESR_ELx_EC(esr));
+		lprintk("### On CPU %d: ESR_Elx_EC(esr): 0x%lx\n", smp_processor_id(), ESR_ELx_EC(esr));
 		trap_handle_error(regs->lr);
 		kernel_panic();
 	}

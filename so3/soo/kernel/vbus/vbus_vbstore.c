@@ -114,8 +114,8 @@ static void vbs_write(const void *data, unsigned len)
 	VBSTORE_RING_IDX prod;
 	volatile char *dst;
 
-	DBG("__intf->req_prod: %d __intf->req_pvt: %d __intf->req_cons: %d\n",
-	    __intf->req_prod, __intf->req_pvt, __intf->req_cons);
+	DBG("__intf->req_prod: %d __intf->req_pvt: %d __intf->req_cons: %d\n", __intf->req_prod, __intf->req_pvt,
+	    __intf->req_cons);
 
 	/* Read indexes, then verify. */
 	prod = __intf->req_pvt;
@@ -134,7 +134,7 @@ static void vbs_write(const void *data, unsigned len)
 	/* Must write data /after/ reading the producer index. */
 	smp_mb();
 
-	memcpy((void *)dst, data, len);
+	memcpy((void *) dst, data, len);
 
 	__intf->req_pvt += len;
 
@@ -147,8 +147,8 @@ static void vbs_read(void *data, unsigned len)
 	VBSTORE_RING_IDX cons;
 	volatile const char *src;
 
-	DBG("__intf->rsp_prod: %d __intf->rsp_pvt: %d __intf->rsp_cons: %d\n",
-	    __intf->rsp_prod, __intf->rsp_pvt, __intf->rsp_cons);
+	DBG("__intf->rsp_prod: %d __intf->rsp_pvt: %d __intf->rsp_cons: %d\n", __intf->rsp_prod, __intf->rsp_pvt,
+	    __intf->rsp_cons);
 
 	/* Read indexes, then verify. */
 	cons = __intf->rsp_cons;
@@ -161,7 +161,7 @@ static void vbs_read(void *data, unsigned len)
 	/* Must read data /after/ reading the producer index. */
 	smp_mb();
 
-	memcpy(data, (void *)src, len);
+	memcpy(data, (void *) src, len);
 
 	__intf->rsp_cons += len;
 
@@ -174,8 +174,7 @@ static void vbs_read(void *data, unsigned len)
  * message to vbstore. It follows a synchronous send/reply scheme.
  * A message may have several strings within the payload. These (sub-)strings are known as vectors (msgvec_t).
  */
-static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
-		       const msgvec_t *vec, unsigned int num_vecs,
+static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type, const msgvec_t *vec, unsigned int num_vecs,
 		       unsigned int *len)
 {
 	vbus_msg_t msg;
@@ -197,8 +196,7 @@ static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
 	/* Allocating a completion structure for this message - need to do that dynamically since the msg is part of the shared vbstore page
 	 * and the size may vary depending on SMP is enabled or not.
 	 */
-	msg.u.reply_wait =
-		(struct completion *)malloc(sizeof(struct completion));
+	msg.u.reply_wait = (struct completion *) malloc(sizeof(struct completion));
 
 	init_completion(msg.u.reply_wait);
 
@@ -211,8 +209,7 @@ static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
 
 	payload = malloc(msg.len);
 	if (payload == NULL) {
-		printk("%s:%d ERROR cannot kmalloc the msg payload.\n",
-		       __func__, __LINE__);
+		printk("%s:%d ERROR cannot kmalloc the msg payload.\n", __func__, __LINE__);
 		BUG();
 	}
 	memset(payload, 0, msg.len);
@@ -223,8 +220,7 @@ static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
 		__payload_pos += vec[i].len;
 	}
 
-	DBG("Msg type: %d msg len: %d   content: %s\n", msg.type, msg.len,
-	    payload);
+	DBG("Msg type: %d msg len: %d   content: %s\n", msg.type, msg.len, payload);
 
 	vbs_write(payload, msg.len);
 	free(payload);
@@ -243,8 +239,7 @@ static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
 	notify_remote_via_evtchn(avz_shared->dom_desc.u.ME.vbstore_levtchn);
 
 	/* Now we are waiting for the answer from vbstore */
-	DBG("Now, we wait for the reply / msg ID: %d (0x%lx)\n", msg.id,
-	    &msg.list);
+	DBG("Now, we wait for the reply / msg ID: %d (0x%lx)\n", msg.id, &msg.list);
 
 	wait_for_completion(msg.u.reply_wait);
 
@@ -252,10 +247,9 @@ static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
 
 	/* Consistency check */
 	if ((msg.reply->type != msg.type) || (msg.reply->id != msg.id)) {
-		printk("%s: reply msg type or ID does not match...\n",
-		       __func__);
-		printk("VBus received type [%d] expected: %d, received ID [%d] expected: %d\n",
-		       msg.reply->type, msg.type, msg.reply->id, msg.id);
+		printk("%s: reply msg type or ID does not match...\n", __func__);
+		printk("VBus received type [%d] expected: %d, received ID [%d] expected: %d\n", msg.reply->type, msg.type,
+		       msg.reply->id, msg.id);
 		BUG();
 	}
 
@@ -275,12 +269,11 @@ static void *vbs_talkv(struct vbus_transaction t, vbus_msg_type_t type,
 /* Send a single message to vbstore.
  * Returns an (heap) allocated message (payload) to be free'd by the called.
  */
-static void *vbs_single(struct vbus_transaction t, vbus_msg_type_t type,
-			const char *string, unsigned int *len)
+static void *vbs_single(struct vbus_transaction t, vbus_msg_type_t type, const char *string, unsigned int *len)
 {
 	msgvec_t vec;
 
-	vec.base = (void *)string;
+	vec.base = (void *) string;
 	vec.len = strlen(string) + 1;
 
 	return vbs_talkv(t, type, &vec, 1, len);
@@ -325,7 +318,7 @@ static char **split(char *strings, unsigned int len, unsigned int *num)
 	memcpy(&ret[*num], strings, len);
 	free(strings);
 
-	strings = (char *)&ret[*num];
+	strings = (char *) &ret[*num];
 	for (p = strings, *num = 0; p < strings + len; p += strlen(p) + 1) {
 		ret[(*num)++] = p;
 	}
@@ -333,8 +326,7 @@ static char **split(char *strings, unsigned int len, unsigned int *num)
 	return ret;
 }
 
-char **vbus_directory(struct vbus_transaction t, const char *dir,
-		      const char *node, unsigned int *num)
+char **vbus_directory(struct vbus_transaction t, const char *dir, const char *node, unsigned int *num)
 {
 	char *strings, *path;
 	unsigned int len;
@@ -366,8 +358,7 @@ char **vbus_directory(struct vbus_transaction t, const char *dir,
  * Check if a directory exists.
  * Return 1 if the directory has been found, 0 otherwise.
  */
-int vbus_directory_exists(struct vbus_transaction t, const char *dir,
-			  const char *node)
+int vbus_directory_exists(struct vbus_transaction t, const char *dir, const char *node)
 {
 	char *strings, *path;
 	unsigned int len;
@@ -392,8 +383,7 @@ int vbus_directory_exists(struct vbus_transaction t, const char *dir,
  * Returns a kmalloced value: call free() on it after use.
  * len indicates length in bytes.
  */
-void *vbus_read(struct vbus_transaction t, const char *dir, const char *node,
-		unsigned int *len)
+void *vbus_read(struct vbus_transaction t, const char *dir, const char *node, unsigned int *len)
 {
 	char *path;
 	void *ret;
@@ -410,8 +400,7 @@ void *vbus_read(struct vbus_transaction t, const char *dir, const char *node,
 /* Write the value of a single file.
  * Returns -err on failure.
  */
-void vbus_write(struct vbus_transaction t, const char *dir, const char *node,
-		const char *string)
+void vbus_write(struct vbus_transaction t, const char *dir, const char *node, const char *string)
 {
 	char *path;
 	msgvec_t vec[2];
@@ -421,10 +410,10 @@ void vbus_write(struct vbus_transaction t, const char *dir, const char *node,
 	if (IS_ERR(path))
 		BUG();
 
-	vec[0].base = (void *)path;
+	vec[0].base = (void *) path;
 	vec[0].len = strlen(path) + 1;
 
-	vec[1].base = (void *)string;
+	vec[1].base = (void *) string;
 	vec[1].len = strlen(string) + 1;
 
 	str = vbs_talkv(t, VBS_WRITE, vec, ARRAY_SIZE(vec), NULL);
@@ -529,8 +518,7 @@ void vbus_transaction_end(struct vbus_transaction t)
 }
 
 /* Single read and scanf: returns -errno or num scanned. */
-int vbus_scanf(struct vbus_transaction t, const char *dir, const char *node,
-	       const char *fmt, ...)
+int vbus_scanf(struct vbus_transaction t, const char *dir, const char *node, const char *fmt, ...)
 {
 	va_list ap;
 	int ret;
@@ -557,8 +545,7 @@ int vbus_scanf(struct vbus_transaction t, const char *dir, const char *node,
 }
 
 /* Single printf and write: returns -errno or 0. */
-void vbus_printf(struct vbus_transaction t, const char *dir, const char *node,
-		 const char *fmt, ...)
+void vbus_printf(struct vbus_transaction t, const char *dir, const char *node, const char *fmt, ...)
 {
 	va_list ap;
 	int ret;
@@ -614,7 +601,7 @@ void vbs_watch(const char *path)
 {
 	msgvec_t vec[1];
 
-	vec[0].base = (void *)path;
+	vec[0].base = (void *) path;
 	vec[0].len = strlen(path) + 1;
 
 	if (IS_ERR(vbs_talkv(VBT_NIL, VBS_WATCH, vec, ARRAY_SIZE(vec), NULL)))
@@ -625,7 +612,7 @@ static void vbs_unwatch(const char *path)
 {
 	msgvec_t vec[1];
 
-	vec[0].base = (char *)path;
+	vec[0].base = (char *) path;
 	vec[0].len = strlen(path) + 1;
 
 	if (IS_ERR(vbs_talkv(VBT_NIL, VBS_UNWATCH, vec, ARRAY_SIZE(vec), NULL)))
@@ -637,8 +624,7 @@ static void vbs_unwatch(const char *path)
  * Since there might be several watches with different callbacks and the same node, the
  * first watch entry is returned.
  */
-static struct vbus_watch *find_first_watch(struct list_head *__watches,
-					   const char *node)
+static struct vbus_watch *find_first_watch(struct list_head *__watches, const char *node)
 {
 	struct vbus_watch *__w;
 
@@ -653,21 +639,18 @@ static struct vbus_watch *find_first_watch(struct list_head *__watches,
  * Look for a precise watch in the list of watches. If the watch exists, it is returned (same pointer as the argument)
  * or NULL if it does not exist.
  */
-static struct vbus_watch *get_watch(struct list_head *__watches,
-				    struct vbus_watch *w)
+static struct vbus_watch *get_watch(struct list_head *__watches, struct vbus_watch *w)
 {
 	struct vbus_watch *__w;
 
 	list_for_each_entry(__w, __watches, list)
-		if (!strcmp(__w->node, w->node) &&
-		    (__w->callback == w->callback))
+		if (!strcmp(__w->node, w->node) && (__w->callback == w->callback))
 			return __w;
 
 	return NULL;
 }
 
-void __register_vbus_watch(struct list_head *__watches,
-			   struct vbus_watch *watch)
+void __register_vbus_watch(struct list_head *__watches, struct vbus_watch *watch)
 {
 	unsigned long flags;
 
@@ -696,8 +679,7 @@ void register_vbus_watch(struct vbus_watch *watch)
 	__register_vbus_watch(&watches, watch);
 }
 
-static void ____unregister_vbus_watch(struct list_head *__watches,
-				      struct vbus_watch *watch, int vbus)
+static void ____unregister_vbus_watch(struct list_head *__watches, struct vbus_watch *watch, int vbus)
 {
 	unsigned long flags;
 
@@ -789,10 +771,8 @@ irq_return_t vbus_vbstore_isr(int irq, void *data)
 	struct vbus_watch *__w;
 	bool found;
 
-	DBG("IRQ: %d intf: %lx req_cons: %d  req_prod: %d\n", irq, __intf,
-	    __intf->req_cons, __intf->req_prod);
-	DBG("IRQ: %d intf: %lx rsp_cons: %d  rsp_prod: %d\n", irq, __intf,
-	    __intf->rsp_cons, __intf->rsp_prod);
+	DBG("IRQ: %d intf: %lx req_cons: %d  req_prod: %d\n", irq, __intf, __intf->req_cons, __intf->req_prod);
+	DBG("IRQ: %d intf: %lx rsp_cons: %d  rsp_prod: %d\n", irq, __intf, __intf->rsp_cons, __intf->rsp_prod);
 
 	BUG_ON(local_irq_is_enabled());
 
@@ -839,11 +819,9 @@ irq_return_t vbus_vbstore_isr(int irq, void *data)
 			/* Look for the peer vbus_msg which did the request */
 			found = false;
 
-			list_for_each_entry_safe(orig_msg, orig_msg_tmp,
-						 &vbus_msg_standby_list, list) {
+			list_for_each_entry_safe(orig_msg, orig_msg_tmp, &vbus_msg_standby_list, list) {
 				if (orig_msg->id == msg->id) {
-					list_del(
-						&orig_msg->list); /* Remove this message from the standby list */
+					list_del(&orig_msg->list); /* Remove this message from the standby list */
 
 					found = true;
 					orig_msg->reply = msg;
@@ -910,15 +888,13 @@ void vbus_vbstore_init(void)
 	/* dev temporary used to set up event channel used by vbstore. */
 
 	dev.otherend_id = 0;
-	DBG("%s: binding a local event channel to the remote evtchn %d in Agency (intf: %lx) ...\n",
-	    __func__, avz_shared->dom_desc.u.ME.vbstore_revtchn, __intf);
+	DBG("%s: binding a local event channel to the remote evtchn %d in Agency (intf: %lx) ...\n", __func__,
+	    avz_shared->dom_desc.u.ME.vbstore_revtchn, __intf);
 
-	vbus_bind_evtchn(
-		&dev, avz_shared->dom_desc.u.ME.vbstore_revtchn,
-		(uint32_t *)&avz_shared->dom_desc.u.ME.vbstore_levtchn);
+	vbus_bind_evtchn(&dev, avz_shared->dom_desc.u.ME.vbstore_revtchn,
+			 (uint32_t *) &avz_shared->dom_desc.u.ME.vbstore_levtchn);
 
-	DBG("Local vbstore_evtchn is %d (remote is %d)\n",
-	    avz_shared->dom_desc.u.ME.vbstore_levtchn,
+	DBG("Local vbstore_evtchn is %d (remote is %d)\n", avz_shared->dom_desc.u.ME.vbstore_levtchn,
 	    avz_shared->dom_desc.u.ME.vbstore_revtchn);
 
 	INIT_LIST_HEAD(&vbs_state.reply_list);
@@ -935,9 +911,7 @@ void vbus_vbstore_init(void)
 	init_completion(&vbs_state.watch_wait);
 
 	/* Initialize the shared memory rings to talk to vbstore */
-	vbus_irq = bind_evtchn_to_irq_handler(
-		avz_shared->dom_desc.u.ME.vbstore_levtchn, vbus_vbstore_isr,
-		NULL, NULL);
+	vbus_irq = bind_evtchn_to_irq_handler(avz_shared->dom_desc.u.ME.vbstore_levtchn, vbus_vbstore_isr, NULL, NULL);
 	if (vbus_irq < 0) {
 		printk("VBus request irq failed %i\n", vbus_irq);
 		BUG();

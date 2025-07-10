@@ -83,17 +83,14 @@ void do_sync_dom(int domID, dc_event_t dc_event)
 
 	set_dc_event(domID, dc_event);
 
-	DBG("%s: notifying via evtchn %d...\n", __func__,
-	    avz_shared->dom_desc.u.ME.dc_evtchn);
+	DBG("%s: notifying via evtchn %d...\n", __func__, avz_shared->dom_desc.u.ME.dc_evtchn);
 	notify_remote_via_evtchn(avz_shared->dom_desc.u.ME.dc_evtchn);
 
 	/* Wait for the response from the outgoing domain */
-	DBG("%s: waiting for completion on dc_event %d...\n", __func__,
-	    dc_event);
+	DBG("%s: waiting for completion on dc_event %d...\n", __func__, dc_event);
 	wait_for_completion(&dc_stable_lock[dc_event]);
 
-	DBG("%s: all right, got the completion, resetting the barrier.\n",
-	    __func__);
+	DBG("%s: all right, got the completion, resetting the barrier.\n", __func__);
 
 	/* Now, reset the barrier. */
 	atomic_set(&dc_outgoing_domID[dc_event], -1);
@@ -159,10 +156,8 @@ void set_ME_state(ME_state_t state)
 	/* Be careful if the ME is in living state and suddently is set to killed.
 	 * Backends will be in a weird state.
 	 */
-	if ((state == ME_state_killed) &&
-	    (avz_shared->dom_desc.u.ME.state == ME_state_living))
-		lprintk("## WARNING ! ME %d is set to killed while living!\n",
-			ME_domID());
+	if ((state == ME_state_killed) && (avz_shared->dom_desc.u.ME.state == ME_state_living))
+		lprintk("## WARNING ! ME %d is set to killed while living!\n", ME_domID());
 
 	avz_shared->dom_desc.u.ME.state = state;
 }
@@ -203,8 +198,7 @@ void perform_task(dc_event_t dc_event)
 	case DC_RESUME:
 		DBG("resuming vbstore...\n");
 
-		BUG_ON((get_ME_state() != ME_state_resuming) &&
-		       (get_ME_state() != ME_state_awakened));
+		BUG_ON((get_ME_state() != ME_state_resuming) && (get_ME_state() != ME_state_awakened));
 
 		/* Giving a chance to perform actions before resuming devices */
 		args.cmd = CB_PRE_RESUME;
@@ -255,7 +249,7 @@ void perform_task(dc_event_t dc_event)
  */
 void do_soo_activity(void *arg)
 {
-	soo_domcall_arg_t *args = (soo_domcall_arg_t *)arg;
+	soo_domcall_arg_t *args = (soo_domcall_arg_t *) arg;
 
 	switch (args->cmd) {
 	case CB_PRE_SUSPEND: /* Called by perform_pre_suspend */
@@ -281,12 +275,12 @@ void do_soo_activity(void *arg)
 
 ME_desc_t *get_ME_desc(void)
 {
-	return (ME_desc_t *)&avz_shared->dom_desc.u.ME;
+	return (ME_desc_t *) &avz_shared->dom_desc.u.ME;
 }
 
 agency_desc_t *get_agency_desc(void)
 {
-	return (agency_desc_t *)&avz_shared->dom_desc.u.agency;
+	return (agency_desc_t *) &avz_shared->dom_desc.u.agency;
 }
 
 void soo_guest_activity_init(void)

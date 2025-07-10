@@ -30,15 +30,16 @@
 
 #ifdef __ASSEMBLY__
 
-.macro curdom rd, tmp
+.macro curdom rd,
+	tmp
 
 		// Compute the address of the stack bottom where cpu_info is located.
-		ldr	\rd, =(~(DOMAIN_STACK_SIZE - 1)) 
-		mov	\tmp, sp and	\rd, \tmp, \rd
+		ldr	\rd,
+	= (~(DOMAIN_STACK_SIZE - 1)) mov	\tmp, sp and	\rd, \tmp, \rd
 
-		// Get the address of the domain descriptor
-		ldr	\rd, [\rd]
-.endm
+						       // Get the address of the domain descriptor
+						       ldr	\rd,
+	[\rd].endm
 
 #else /* __ASSEMBLY__ */
 
@@ -88,8 +89,7 @@ struct domain {
 	addr_t event_callback;
 	addr_t domcall;
 
-	avz_shared_t
-		*avz_shared; /* shared data area between AVZ and the domain */
+	avz_shared_t *avz_shared; /* shared data area between AVZ and the domain */
 
 	/* Physical and virtual address of the page table used when the domain is bootstraping */
 	addr_t pagetable_paddr;
@@ -151,15 +151,13 @@ void machine_halt(void);
 
 void arch_domain_create(struct domain *d, int cpu_id);
 
-void initialize_hyp_dom_stack(struct domain *d, addr_t fdt_paddr,
-			      addr_t entry_addr);
+void initialize_hyp_dom_stack(struct domain *d, addr_t fdt_paddr, addr_t entry_addr);
 
 /*
  * setup_page_table_guestOS() is setting up the 1st-level and 2nd-level page tables within the domain.
  */
 
-void __setup_dom_pgtable(struct domain *d, addr_t ipa_start,
-			 unsigned long map_size);
+void __setup_dom_pgtable(struct domain *d, addr_t ipa_start, unsigned long map_size);
 
 void domain_unpause_by_systemcontroller(struct domain *d);
 

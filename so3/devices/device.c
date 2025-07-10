@@ -128,7 +128,7 @@ void parse_dtb(void *fdt_addr)
 	LOG_DEBUG("Now scanning the device tree to retrieve all devices...\n");
 
 	for (level = 0; level < INITCALLS_LEVELS; level++) {
-		dev = (dev_t *)malloc(sizeof(dev_t));
+		dev = (dev_t *) malloc(sizeof(dev_t));
 		ASSERT(dev != NULL);
 		memset(dev, 0, sizeof(dev_t));
 
@@ -138,7 +138,9 @@ void parse_dtb(void *fdt_addr)
 		while ((new_off = get_dev_info(fdt_addr, offset, "*", dev)) != -1) {
 			if (fdt_device_is_available(fdt_addr, new_off)) {
 				for (i = 0; i < drivers_count[level]; i++) {
-					if (!strcmp(dev->compatible, driver_entries[level][i].compatible)) {
+					if (!strcmp(dev->compatible,
+						    driver_entries[level][i]
+							    .compatible)) {
 						found = true;
 
 						LOG_DEBUG("Found compatible:    %s\n", driver_entries[level][i].compatible);
@@ -162,7 +164,7 @@ void parse_dtb(void *fdt_addr)
 
 			offset = new_off;
 
-			dev = (dev_t *)malloc(sizeof(dev_t));
+			dev = (dev_t *) malloc(sizeof(dev_t));
 			ASSERT(dev != NULL);
 			memset(dev, 0, sizeof(dev_t));
 
@@ -219,7 +221,7 @@ struct devclass *devclass_by_filename(const char *filename)
 	struct devclass *cur_dev;
 
 	/* Find the beginning of the device id string. */
-	dev_id_s = (char *)filename;
+	dev_id_s = (char *) filename;
 	while (*dev_id_s && !isdigit(*dev_id_s))
 		dev_id_s++;
 
@@ -233,7 +235,7 @@ struct devclass *devclass_by_filename(const char *filename)
 	 * TODO simple_strtox functions are deprecated.
 	 */
 	if (*dev_id_s)
-		dev_id = (uint32_t)simple_strtoul(dev_id_s, NULL, 10);
+		dev_id = (uint32_t) simple_strtoul(dev_id_s, NULL, 10);
 	else
 		dev_id = 0;
 

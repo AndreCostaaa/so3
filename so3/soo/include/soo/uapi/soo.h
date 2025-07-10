@@ -24,16 +24,16 @@
 /* This signature is used to check the coherency of the ME image, after a migration
  * or a restoration for example.
  */
-#define SOO_ME_SIGNATURE	"SooZ"
+#define SOO_ME_SIGNATURE "SooZ"
 
-#define MAX_ME_DOMAINS	5
+#define MAX_ME_DOMAINS 5
 
 /* We include the (non-RT & RT) agency domain */
-#define MAX_DOMAINS	    (2 + MAX_ME_DOMAINS)
+#define MAX_DOMAINS (2 + MAX_ME_DOMAINS)
 #endif /* __ASSEMBLY__ */
 
-#define AGENCY_CPU	 0
-#define AGENCY_RT_CPU	 1
+#define AGENCY_CPU 0
+#define AGENCY_RT_CPU 1
 
 #ifndef __ASSEMBLY__
 
@@ -58,19 +58,17 @@ typedef uint32_t grant_ref_t;
 #define GNTTAB_unmap_page       4
 
 struct gnttab_op {
+	/* Command to be processed in the hypercall */
+	uint32_t cmd;
 
-        /* Command to be processed in the hypercall */
-        uint32_t cmd;
+	/* Peer domain */
+	domid_t domid;
 
-        /* Peer domain */
-        domid_t domid;
+	/* pfn to be granted or pfn associated to an existing ref */
+	addr_t pfn;
 
-        /* pfn to be granted or pfn associated to an existing ref */
-        addr_t pfn;
-
-        /* Grant reference */
-        grant_ref_t ref;
-
+	/* Grant reference */
+	grant_ref_t ref;
 };
 typedef struct gnttab_op gnttab_op_t;
 
@@ -98,11 +96,11 @@ void do_gnttab(gnttab_op_t *args);
  */
 #define EVTCHNOP_alloc_unbound    6
 struct evtchn_alloc_unbound {
-    /* IN parameters */
-    domid_t dom, remote_dom;
-    /* OUT parameters */
-    uint32_t evtchn;
-    uint32_t use;
+	/* IN parameters */
+	domid_t dom, remote_dom;
+	/* OUT parameters */
+	uint32_t evtchn;
+	uint32_t use;
 };
 typedef struct evtchn_alloc_unbound evtchn_alloc_unbound_t;
 
@@ -120,21 +118,21 @@ typedef struct evtchn_alloc_unbound evtchn_alloc_unbound_t;
 #define EVTCHNOP_unbind_domain 		      12
 
 struct evtchn_bind_interdomain {
-    /* IN parameters. */
-    domid_t remote_dom;
-    uint32_t remote_evtchn;
-    uint32_t use;
-    /* OUT parameters. */
-    uint32_t local_evtchn;
+	/* IN parameters. */
+	domid_t remote_dom;
+	uint32_t remote_evtchn;
+	uint32_t use;
+	/* OUT parameters. */
+	uint32_t local_evtchn;
 };
 typedef struct evtchn_bind_interdomain evtchn_bind_interdomain_t;
 
-#define EVTCHNOP_bind_virq        1
+#define EVTCHNOP_bind_virq 1
 struct evtchn_bind_virq {
-    /* IN parameters. */
-    uint32_t virq;
-    /* OUT parameters. */
-    uint32_t evtchn;
+	/* IN parameters. */
+	uint32_t virq;
+	/* OUT parameters. */
+	uint32_t evtchn;
 };
 typedef struct evtchn_bind_virq evtchn_bind_virq_t;
 
@@ -143,10 +141,10 @@ typedef struct evtchn_bind_virq evtchn_bind_virq_t;
  * interdomain then the remote end is placed in the unbound state
  * (EVTCHNSTAT_unbound), awaiting a new connection.
  */
-#define EVTCHNOP_close            3
+#define EVTCHNOP_close 3
 struct evtchn_close {
-    /* IN parameters. */
-    uint32_t evtchn;
+	/* IN parameters. */
+	uint32_t evtchn;
 };
 typedef struct evtchn_close evtchn_close_t;
 
@@ -154,22 +152,22 @@ typedef struct evtchn_close evtchn_close_t;
  * EVTCHNOP_send: Send an event to the remote end of the channel whose local
  * endpoint is <evtchn>.
  */
-#define EVTCHNOP_send             4
+#define EVTCHNOP_send 4
 struct evtchn_send {
-    /* IN parameters. */
-    uint32_t evtchn;
+	/* IN parameters. */
+	uint32_t evtchn;
 };
 typedef struct evtchn_send evtchn_send_t;
 
 struct evtchn_op {
-    uint32_t cmd; /* EVTCHNOP_* */
-    union {
-        struct evtchn_alloc_unbound    alloc_unbound;
-        struct evtchn_bind_interdomain bind_interdomain;
-        struct evtchn_bind_virq        bind_virq;
-        struct evtchn_close            close;
-	struct evtchn_send             send;
-    } u;
+	uint32_t cmd; /* EVTCHNOP_* */
+	union {
+		struct evtchn_alloc_unbound alloc_unbound;
+		struct evtchn_bind_interdomain bind_interdomain;
+		struct evtchn_bind_virq bind_virq;
+		struct evtchn_close close;
+		struct evtchn_send send;
+	} u;
 };
 typedef struct evtchn_op evtchn_op_t;
  
@@ -178,17 +176,17 @@ typedef struct evtchn_op evtchn_op_t;
  * There are two main scheduling policies: the one used for normal (standard) ME, and
  * a second one used for realtime ME.
  */
-#define AVZ_SCHEDULER_FLIP	0
-#define AVZ_SCHEDULER_RT	1
+#define AVZ_SCHEDULER_FLIP 0
+#define AVZ_SCHEDULER_RT 1
 
 #define DOMCTL_pauseME       	1
 #define DOMCTL_unpauseME     	2
 #define DOMCTL_get_AVZ_shared	3
 
 struct domctl {
-    uint32_t cmd;
-    domid_t  domain;
-    addr_t avz_shared_paddr;    
+	uint32_t cmd;
+	domid_t domain;
+	addr_t avz_shared_paddr;
 };
 typedef struct domctl domctl_t;
 
@@ -209,7 +207,7 @@ typedef enum {
 	ME_state_suspended,
 	ME_state_hibernate,
 	ME_state_resuming,
-        ME_state_awakened,
+	ME_state_awakened,
 	ME_state_killed,
 	ME_state_terminated,
 	ME_state_dead
@@ -225,8 +223,8 @@ typedef enum {
 } ME_slotState_t;
 
 /* ME ID related information */
-#define ME_NAME_SIZE				40
-#define ME_SHORTDESC_SIZE			1024
+#define ME_NAME_SIZE 40
+#define ME_SHORTDESC_SIZE 1024
 
 /*
  * Definition of ME ID information used by functions which need
@@ -258,7 +256,7 @@ typedef enum {
 	DC_TRIGGER_DEV_PROBE,
 	DC_TRIGGER_LOCAL_COOPERATION,
 
-	DC_EVENT_MAX			/* Used to determine the number of DC events */
+	DC_EVENT_MAX /* Used to determine the number of DC events */
 } dc_event_t;
 
 /*
@@ -519,9 +517,8 @@ typedef struct {
 	void *val;
 } post_activate_args_t;
 
-
 typedef struct {
-	char	soo_name[SOO_NAME_SIZE];
+	char soo_name[SOO_NAME_SIZE];
 } soo_name_args_t;
 
 /*

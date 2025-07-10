@@ -115,10 +115,8 @@ void menu_add_entry(struct symbol *sym);
 void menu_end_entry(void);
 void menu_add_dep(struct expr *dep);
 void menu_add_visibility(struct expr *dep);
-struct property *menu_add_prop(enum prop_type type, char *prompt,
-			       struct expr *expr, struct expr *dep);
-struct property *menu_add_prompt(enum prop_type type, char *prompt,
-				 struct expr *dep);
+struct property *menu_add_prop(enum prop_type type, char *prompt, struct expr *expr, struct expr *dep);
+struct property *menu_add_prompt(enum prop_type type, char *prompt, struct expr *dep);
 void menu_add_expr(enum prop_type type, struct expr *expr, struct expr *dep);
 void menu_add_symbol(enum prop_type type, struct symbol *sym, struct expr *dep);
 void menu_add_option(int token, char *arg);
@@ -166,7 +164,7 @@ static inline tristate sym_get_tristate_value(struct symbol *sym)
 
 static inline struct symbol *sym_get_choice_value(struct symbol *sym)
 {
-	return (struct symbol *)sym->curr.val;
+	return (struct symbol *) sym->curr.val;
 }
 
 static inline bool sym_set_choice_value(struct symbol *ch, struct symbol *chval)

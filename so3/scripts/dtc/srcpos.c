@@ -154,8 +154,7 @@ FILE *srcfile_relative_open(const char *fname, char **fullnamep)
 	} else {
 		fullname = fopen_any_on_path(fname, &f);
 		if (!f)
-			die("Couldn't open \"%s\": %s\n", fname,
-			    strerror(errno));
+			die("Couldn't open \"%s\": %s\n", fname, strerror(errno));
 	}
 
 	if (depfile)
@@ -200,8 +199,7 @@ bool srcfile_pop(void)
 	current_srcfile = srcfile->prev;
 
 	if (fclose(srcfile->f))
-		die("Error closing \"%s\": %s\n", srcfile->name,
-		    strerror(errno));
+		die("Error closing \"%s\": %s\n", srcfile->name, strerror(errno));
 
 	/* FIXME: We allow the srcfile_state structure to leak,
 	 * because it could still be referenced from a location
@@ -292,20 +290,17 @@ char *srcpos_string(struct srcpos *pos)
 		fname = pos->file->name;
 
 	if (pos->first_line != pos->last_line)
-		xasprintf(&pos_str, "%s:%d.%d-%d.%d", fname, pos->first_line,
-			  pos->first_column, pos->last_line, pos->last_column);
+		xasprintf(&pos_str, "%s:%d.%d-%d.%d", fname, pos->first_line, pos->first_column, pos->last_line,
+			  pos->last_column);
 	else if (pos->first_column != pos->last_column)
-		xasprintf(&pos_str, "%s:%d.%d-%d", fname, pos->first_line,
-			  pos->first_column, pos->last_column);
+		xasprintf(&pos_str, "%s:%d.%d-%d", fname, pos->first_line, pos->first_column, pos->last_column);
 	else
-		xasprintf(&pos_str, "%s:%d.%d", fname, pos->first_line,
-			  pos->first_column);
+		xasprintf(&pos_str, "%s:%d.%d", fname, pos->first_line, pos->first_column);
 
 	return pos_str;
 }
 
-static char *srcpos_string_comment(struct srcpos *pos, bool first_line,
-				   int level)
+static char *srcpos_string_comment(struct srcpos *pos, bool first_line, int level)
 {
 	char *pos_str, *fname, *first, *rest;
 	bool fresh_fname = false;
@@ -334,11 +329,10 @@ static char *srcpos_string_comment(struct srcpos *pos, bool first_line,
 	}
 
 	if (level > 1)
-		xasprintf(&first, "%s:%d:%d-%d:%d", fname, pos->first_line,
-			  pos->first_column, pos->last_line, pos->last_column);
+		xasprintf(&first, "%s:%d:%d-%d:%d", fname, pos->first_line, pos->first_column, pos->last_line,
+			  pos->last_column);
 	else
-		xasprintf(&first, "%s:%d", fname,
-			  first_line ? pos->first_line : pos->last_line);
+		xasprintf(&first, "%s:%d", fname, first_line ? pos->first_line : pos->last_line);
 
 	if (fresh_fname)
 		free(fname);
@@ -365,8 +359,7 @@ char *srcpos_string_last(struct srcpos *pos, int level)
 	return srcpos_string_comment(pos, false, level);
 }
 
-void srcpos_verror(struct srcpos *pos, const char *prefix, const char *fmt,
-		   va_list va)
+void srcpos_verror(struct srcpos *pos, const char *prefix, const char *fmt, va_list va)
 {
 	char *srcstr;
 

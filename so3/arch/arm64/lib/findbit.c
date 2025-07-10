@@ -46,8 +46,7 @@ static inline int flsl(unsigned long x)
 /*
  * Find the next set bit in a memory region.
  */
-unsigned long _find_next_bit(const unsigned long *addr, unsigned long size,
-			     unsigned long offset)
+unsigned long _find_next_bit(const unsigned long *addr, unsigned long size, unsigned long offset)
 {
 	const unsigned long *p = addr + BIT_WORD(offset);
 	unsigned long result = offset & ~(BITS_PER_LONG - 1);
@@ -89,8 +88,7 @@ found_middle:
  * This implementation of find_{first,next}_zero_bit was stolen from
  * Linus' asm-alpha/bitops.h.
  */
-unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long size,
-				  unsigned long offset)
+unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long size, unsigned long offset)
 {
 	const unsigned long *p = addr + BIT_WORD(offset);
 	unsigned long result = offset & ~(BITS_PER_LONG - 1);
@@ -156,8 +154,7 @@ found:
 /*
  * Find the first cleared bit in a memory region.
  */
-unsigned long _find_first_zero_bit(const unsigned long *addr,
-				   unsigned long size)
+unsigned long _find_first_zero_bit(const unsigned long *addr, unsigned long size)
 {
 	const unsigned long *p = addr;
 	unsigned long result = 0;

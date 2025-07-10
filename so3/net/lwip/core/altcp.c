@@ -134,7 +134,7 @@ extern const struct altcp_functions altcp_tcp_functions;
  */
 struct altcp_pcb *altcp_alloc(void)
 {
-	struct altcp_pcb *ret = (struct altcp_pcb *)memp_malloc(MEMP_ALTCP_PCB);
+	struct altcp_pcb *ret = (struct altcp_pcb *) memp_malloc(MEMP_ALTCP_PCB);
 	if (ret != NULL) {
 		memset(ret, 0, sizeof(struct altcp_pcb));
 	}
@@ -299,8 +299,7 @@ err_t altcp_bind(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port)
  * @ingroup altcp
  * @see tcp_connect()
  */
-err_t altcp_connect(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port,
-		    altcp_connected_fn connected)
+err_t altcp_connect(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port, altcp_connected_fn connected)
 {
 	if (conn && conn->fns && conn->fns->connect) {
 		return conn->fns->connect(conn, ipaddr, port, connected);
@@ -312,8 +311,7 @@ err_t altcp_connect(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port,
  * @ingroup altcp
  * @see tcp_listen_with_backlog_and_err()
  */
-struct altcp_pcb *altcp_listen_with_backlog_and_err(struct altcp_pcb *conn,
-						    u8_t backlog, err_t *err)
+struct altcp_pcb *altcp_listen_with_backlog_and_err(struct altcp_pcb *conn, u8_t backlog, err_t *err)
 {
 	if (conn && conn->fns && conn->fns->listen) {
 		return conn->fns->listen(conn, backlog, err);
@@ -360,8 +358,7 @@ err_t altcp_shutdown(struct altcp_pcb *conn, int shut_rx, int shut_tx)
  * @ingroup altcp
  * @see tcp_write()
  */
-err_t altcp_write(struct altcp_pcb *conn, const void *dataptr, u16_t len,
-		  u8_t apiflags)
+err_t altcp_write(struct altcp_pcb *conn, const void *dataptr, u16_t len, u8_t apiflags)
 {
 	if (conn && conn->fns && conn->fns->write) {
 		return conn->fns->write(conn, dataptr, len, apiflags);
@@ -450,8 +447,7 @@ void altcp_setprio(struct altcp_pcb *conn, u8_t prio)
 	}
 }
 
-err_t altcp_get_tcp_addrinfo(struct altcp_pcb *conn, int local, ip_addr_t *addr,
-			     u16_t *port)
+err_t altcp_get_tcp_addrinfo(struct altcp_pcb *conn, int local, ip_addr_t *addr, u16_t *port)
 {
 	if (conn && conn->fns && conn->fns->addrinfo) {
 		return conn->fns->addrinfo(conn, local, addr, port);
@@ -483,8 +479,7 @@ void altcp_keepalive_disable(struct altcp_pcb *conn)
 	}
 }
 
-void altcp_keepalive_enable(struct altcp_pcb *conn, u32_t idle, u32_t intvl,
-			    u32_t count)
+void altcp_keepalive_enable(struct altcp_pcb *conn, u32_t idle, u32_t intvl, u32_t count)
 {
 	if (conn && conn->fns && conn->fns->keepalive_enable) {
 		conn->fns->keepalive_enable(conn, idle, intvl, count);
@@ -518,8 +513,7 @@ void altcp_default_recved(struct altcp_pcb *conn, u16_t len)
 	}
 }
 
-err_t altcp_default_bind(struct altcp_pcb *conn, const ip_addr_t *ipaddr,
-			 u16_t port)
+err_t altcp_default_bind(struct altcp_pcb *conn, const ip_addr_t *ipaddr, u16_t port)
 {
 	if (conn && conn->inner_conn) {
 		return altcp_bind(conn->inner_conn, ipaddr, port);
@@ -535,15 +529,13 @@ err_t altcp_default_shutdown(struct altcp_pcb *conn, int shut_rx, int shut_tx)
 			return conn->fns->close(conn);
 		}
 		if (conn->inner_conn) {
-			return altcp_shutdown(conn->inner_conn, shut_rx,
-					      shut_tx);
+			return altcp_shutdown(conn->inner_conn, shut_rx, shut_tx);
 		}
 	}
 	return ERR_VAL;
 }
 
-err_t altcp_default_write(struct altcp_pcb *conn, const void *dataptr,
-			  u16_t len, u8_t apiflags)
+err_t altcp_default_write(struct altcp_pcb *conn, const void *dataptr, u16_t len, u8_t apiflags)
 {
 	if (conn && conn->inner_conn) {
 		return altcp_write(conn->inner_conn, dataptr, len, apiflags);
@@ -618,12 +610,10 @@ void altcp_default_dealloc(struct altcp_pcb *conn)
 	/* nothing to do */
 }
 
-err_t altcp_default_get_tcp_addrinfo(struct altcp_pcb *conn, int local,
-				     ip_addr_t *addr, u16_t *port)
+err_t altcp_default_get_tcp_addrinfo(struct altcp_pcb *conn, int local, ip_addr_t *addr, u16_t *port)
 {
 	if (conn && conn->inner_conn) {
-		return altcp_get_tcp_addrinfo(conn->inner_conn, local, addr,
-					      port);
+		return altcp_get_tcp_addrinfo(conn->inner_conn, local, addr, port);
 	}
 	return ERR_VAL;
 }
@@ -652,8 +642,7 @@ void altcp_default_keepalive_disable(struct altcp_pcb *conn)
 	}
 }
 
-void altcp_default_keepalive_enable(struct altcp_pcb *conn, u32_t idle,
-				    u32_t intvl, u32_t count)
+void altcp_default_keepalive_enable(struct altcp_pcb *conn, u32_t idle, u32_t intvl, u32_t count)
 {
 	if (conn && conn->inner_conn) {
 		altcp_keepalive_enable(conn->inner_conn, idle, intvl, count);

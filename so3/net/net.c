@@ -111,8 +111,7 @@ struct sockaddr_in_usr {
  * @param usr
  * @param lwip
  */
-struct sockaddr *user_to_lwip_sockadd(struct sockaddr_in_usr *usr,
-				      struct sockaddr_in *lwip)
+struct sockaddr *user_to_lwip_sockadd(struct sockaddr_in_usr *usr, struct sockaddr_in *lwip)
 {
 	if (usr == NULL) {
 		return NULL;
@@ -125,7 +124,7 @@ struct sockaddr *user_to_lwip_sockadd(struct sockaddr_in_usr *usr,
 	lwip->sin_port = usr->sin_port;
 	lwip->sin_addr = usr->sin_addr;
 
-	return (struct sockaddr *)lwip;
+	return (struct sockaddr *) lwip;
 }
 
 int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
@@ -138,7 +137,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 	struct sockaddr_in *addr = NULL;
 
 	/* LwIP handeled the ioctl cmd */
-	if (!lwip_ioctl(lwip_fd, cmd, (void *)args)) {
+	if (!lwip_ioctl(lwip_fd, cmd, (void *) args)) {
 		return 0;
 	}
 
@@ -148,19 +147,17 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		id = ifreq->ifr_ifru.ifru_ivalue;
-		netif = netif_get_by_index((u8_t)id +
-					   1); /* LWIP index start a 1 */
+		netif = netif_get_by_index((u8_t) id + 1); /* LWIP index start a 1 */
 		if (netif == NULL) {
 			set_errno(EINVAL);
 			return -1;
 		}
 
 		/* Lwip netid name is always 2 chars followed by an id */
-		sprintf(ifreq->ifrn_name, "%c%c%d", netif->name[0],
-			netif->name[1], id);
+		sprintf(ifreq->ifrn_name, "%c%c%d", netif->name[0], netif->name[1], id);
 
 		return 0;
 
@@ -169,7 +166,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		index = netif_name_to_index(ifreq->ifrn_name);
 
@@ -186,7 +183,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -212,7 +209,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -223,7 +220,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 		ifreq->ifr_ifru.ifru_addr.sa_family = AF_INET;
 		ifreq->ifr_ifru.ifru_addr.sa_len = 4; /* IPV4 */
 
-		addr = (struct sockaddr_in *)&ifreq->ifr_ifru.ifru_addr;
+		addr = (struct sockaddr_in *) &ifreq->ifr_ifru.ifru_addr;
 		memcpy(&addr->sin_addr.s_addr, &netif->ip_addr.addr, 4);
 
 		return 0;
@@ -233,7 +230,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -241,10 +238,9 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			return -1;
 		}
 
-		addr = (struct sockaddr_in *)&ifreq->ifr_ifru.ifru_addr;
+		addr = (struct sockaddr_in *) &ifreq->ifr_ifru.ifru_addr;
 
-		netif_set_ipaddr(
-			netif, &(ip4_addr_t){ .addr = addr->sin_addr.s_addr });
+		netif_set_ipaddr(netif, &(ip4_addr_t) { .addr = addr->sin_addr.s_addr });
 
 		return 0;
 
@@ -253,7 +249,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -264,9 +260,8 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 		ifreq->ifr_ifru.ifru_addr.sa_family = AF_INET;
 		ifreq->ifr_ifru.ifru_addr.sa_len = 4; /* IPV4 */
 
-		addr = (struct sockaddr_in *)&ifreq->ifr_ifru.ifru_addr;
-		addr->sin_addr.s_addr = netif->ip_addr.addr |
-					~netif->netmask.addr;
+		addr = (struct sockaddr_in *) &ifreq->ifr_ifru.ifru_addr;
+		addr->sin_addr.s_addr = netif->ip_addr.addr | ~netif->netmask.addr;
 
 		return 0;
 	case SIOCSIFBRDADDR:
@@ -278,7 +273,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -289,7 +284,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 		ifreq->ifr_ifru.ifru_addr.sa_family = AF_INET;
 		ifreq->ifr_ifru.ifru_addr.sa_len = 4; /* IPV4 */
 
-		addr = (struct sockaddr_in *)&ifreq->ifr_ifru.ifru_addr;
+		addr = (struct sockaddr_in *) &ifreq->ifr_ifru.ifru_addr;
 		addr->sin_addr.s_addr = netif->netmask.addr;
 
 		return 0;
@@ -299,7 +294,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -307,15 +302,14 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			return -1;
 		}
 
-		addr = (struct sockaddr_in *)&ifreq->ifr_ifru.ifru_addr;
+		addr = (struct sockaddr_in *) &ifreq->ifr_ifru.ifru_addr;
 
 		if (!ip4_addr_netmask_valid(addr->sin_addr.s_addr)) {
 			set_errno(EINVAL);
 			return -1;
 		}
 
-		netif_set_netmask(
-			netif, &(ip4_addr_t){ .addr = addr->sin_addr.s_addr });
+		netif_set_netmask(netif, &(ip4_addr_t) { .addr = addr->sin_addr.s_addr });
 
 		return 0;
 
@@ -324,7 +318,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -341,7 +335,7 @@ int ioctl_sock(int fd, unsigned long cmd, unsigned long args)
 			set_errno(EINVAL);
 			return -1;
 		}
-		ifreq = (struct ifreq2 *)args;
+		ifreq = (struct ifreq2 *) args;
 
 		netif = netif_find(ifreq->ifrn_name);
 		if (netif == NULL) {
@@ -416,8 +410,7 @@ int do_connect(int sockfd, const struct sockaddr *addr, socklen_t namelen)
 
 	int lwip_fd = get_lwip_fd(sockfd);
 
-	addr_ptr = user_to_lwip_sockadd((struct sockaddr_in_usr *)addr,
-					&addr_lwip);
+	addr_ptr = user_to_lwip_sockadd((struct sockaddr_in_usr *) addr, &addr_lwip);
 
 	return lwip_connect(lwip_fd, addr_ptr, namelen);
 }
@@ -429,8 +422,7 @@ int do_bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 
 	int lwip_fd = get_lwip_fd(sockfd);
 
-	addr_ptr = user_to_lwip_sockadd((struct sockaddr_in_usr *)addr,
-					&addr_lwip);
+	addr_ptr = user_to_lwip_sockadd((struct sockaddr_in_usr *) addr, &addr_lwip);
 
 	return lwip_bind(lwip_fd, addr_ptr, addrlen);
 }
@@ -451,8 +443,7 @@ int do_accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
 
 	lwip_fd = get_lwip_fd(sockfd);
 
-	addr_ptr = user_to_lwip_sockadd((struct sockaddr_in_usr *)addr,
-					&addr_lwip);
+	addr_ptr = user_to_lwip_sockadd((struct sockaddr_in_usr *) addr, &addr_lwip);
 
 	fops = register_sock();
 
@@ -494,8 +485,7 @@ int do_recv(int sockfd, void *mem, size_t len, int flags)
 	return lwip_recv(lwip_fd, mem, len, flags);
 }
 
-int do_recvfrom(int sockfd, void *mem, size_t len, int flags,
-		struct sockaddr *from, socklen_t *fromlen)
+int do_recvfrom(int sockfd, void *mem, size_t len, int flags, struct sockaddr *from, socklen_t *fromlen)
 {
 	int lwip_fd = get_lwip_fd(sockfd);
 
@@ -509,20 +499,17 @@ int do_send(int sockfd, const void *dataptr, size_t size, int flags)
 	return lwip_send(lwip_fd, dataptr, size, flags);
 }
 
-int do_sendto(int sockfd, const void *dataptr, size_t size, int flags,
-	      const struct sockaddr *to, socklen_t tolen)
+int do_sendto(int sockfd, const void *dataptr, size_t size, int flags, const struct sockaddr *to, socklen_t tolen)
 {
 	struct sockaddr_in to_lwip;
 	int lwip_fd = get_lwip_fd(sockfd);
 
-	user_to_lwip_sockadd((struct sockaddr_in_usr *)to, &to_lwip);
+	user_to_lwip_sockadd((struct sockaddr_in_usr *) to, &to_lwip);
 
-	return lwip_sendto(lwip_fd, dataptr, size, flags,
-			   (struct sockaddr *)&to_lwip, tolen);
+	return lwip_sendto(lwip_fd, dataptr, size, flags, (struct sockaddr *) &to_lwip, tolen);
 }
 
-int do_setsockopt(int sockfd, int level, int optname, const void *optval,
-		  socklen_t optlen)
+int do_setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen)
 {
 	int lwip_fd = get_lwip_fd(sockfd);
 

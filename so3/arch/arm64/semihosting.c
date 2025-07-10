@@ -167,7 +167,7 @@ int semi_reportexc(int reason, int subcode)
 	args.subcode = subcode;
 	return __semi_call(SYS_REPORTEXC, &args);
 #else
-	return __semi_call(SYS_REPORTEXC, (void *)reason);
+	return __semi_call(SYS_REPORTEXC, (void *) reason);
 #endif
 }
 
@@ -229,7 +229,7 @@ int semi_load_file(void **dest, unsigned *size, char const *filename)
 	}
 
 	result = 0; /* success */
-	*dest = (char *)*dest + filesize;
+	*dest = (char *) *dest + filesize;
 
 out:
 	if (fd != -1)

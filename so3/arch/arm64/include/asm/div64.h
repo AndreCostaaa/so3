@@ -19,13 +19,13 @@
 #ifndef DIV64_H
 #define DIV64_H
 
-#define do_div(n, base)                           \
-	({                                        \
-		uint32_t __base = (base);         \
-		uint32_t __rem;                   \
-		__rem = ((uint64_t)(n)) % __base; \
-		(n) = ((uint64_t)(n)) / __base;   \
-		__rem;                            \
+#define do_div(n, base)                            \
+	({                                         \
+		uint32_t __base = (base);          \
+		uint32_t __rem;                    \
+		__rem = ((uint64_t) (n)) % __base; \
+		(n) = ((uint64_t) (n)) / __base;   \
+		__rem;                             \
 	})
 
 /* Wrapper for do_div(). Doesn't modify dividend and returns

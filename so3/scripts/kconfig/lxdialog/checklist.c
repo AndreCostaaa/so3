@@ -61,8 +61,7 @@ static void print_item(WINDOW *win, int choice, int selected)
 /*
  * Print the scroll indicators.
  */
-static void print_arrows(WINDOW *win, int choice, int item_no, int scroll,
-			 int y, int x, int height)
+static void print_arrows(WINDOW *win, int choice, int item_no, int scroll, int y, int x, int height)
 {
 	wmove(win, y, x);
 
@@ -113,8 +112,7 @@ static void print_buttons(WINDOW *dialog, int height, int width, int selected)
  * Display a dialog box with a list of options that can be turned on or off
  * in the style of radiolist (only one option turned on at a time).
  */
-int dialog_checklist(const char *title, const char *prompt, int height,
-		     int width, int list_height)
+int dialog_checklist(const char *title, const char *prompt, int height, int width, int list_height)
 {
 	int i, x, y, box_x, box_y;
 	int key = 0, button = 0, choice = 0, scroll = 0, max_choice;
@@ -166,14 +164,12 @@ do_resize:
 	box_x = (width - list_width) / 2 - 1;
 
 	/* create new window for the list */
-	list = subwin(dialog, list_height, list_width, y + box_y + 1,
-		      x + box_x + 1);
+	list = subwin(dialog, list_height, list_width, y + box_y + 1, x + box_x + 1);
 
 	keypad(list, TRUE);
 
 	/* draw a box around the list items */
-	draw_box(dialog, box_y, box_x, list_height + 2, list_width + 2,
-		 dlg.menubox_border.atr, dlg.menubox.atr);
+	draw_box(dialog, box_y, box_x, list_height + 2, list_width + 2, dlg.menubox_border.atr, dlg.menubox.atr);
 
 	/* Find length of longest item in order to center checklist */
 	check_x = 0;
@@ -194,8 +190,7 @@ do_resize:
 		print_item(list, i, i == choice);
 	}
 
-	print_arrows(dialog, choice, item_count(), scroll, box_y,
-		     box_x + check_x + 5, list_height);
+	print_arrows(dialog, choice, item_count(), scroll, box_y, box_x + check_x + 5, list_height);
 
 	print_buttons(dialog, height, width, 0);
 
@@ -212,8 +207,7 @@ do_resize:
 				break;
 		}
 
-		if (i < max_choice || key == KEY_UP || key == KEY_DOWN ||
-		    key == '+' || key == '-') {
+		if (i < max_choice || key == KEY_UP || key == KEY_DOWN || key == '+' || key == '-') {
 			if (key == KEY_UP || key == '-') {
 				if (!choice) {
 					if (!scroll)
@@ -230,9 +224,7 @@ do_resize:
 					scroll--;
 					item_set(scroll);
 					print_item(list, 0, TRUE);
-					print_arrows(dialog, choice,
-						     item_count(), scroll,
-						     box_y, box_x + check_x + 5,
+					print_arrows(dialog, choice, item_count(), scroll, box_y, box_x + check_x + 5,
 						     list_height);
 
 					wnoutrefresh(dialog);
@@ -248,10 +240,8 @@ do_resize:
 					/* Scroll list up */
 					if (list_height > 1) {
 						/* De-highlight current last item before scrolling up */
-						item_set(scroll + max_choice -
-							 1);
-						print_item(list, max_choice - 1,
-							   FALSE);
+						item_set(scroll + max_choice - 1);
+						print_item(list, max_choice - 1, FALSE);
 						scrollok(list, TRUE);
 						wscrl(list, 1);
 						scrollok(list, FALSE);
@@ -260,9 +250,7 @@ do_resize:
 					item_set(scroll + max_choice - 1);
 					print_item(list, max_choice - 1, TRUE);
 
-					print_arrows(dialog, choice,
-						     item_count(), scroll,
-						     box_y, box_x + check_x + 5,
+					print_arrows(dialog, choice, item_count(), scroll, box_y, box_x + check_x + 5,
 						     list_height);
 
 					wnoutrefresh(dialog);
@@ -304,9 +292,7 @@ do_resize:
 		case TAB:
 		case KEY_LEFT:
 		case KEY_RIGHT:
-			button = ((key == KEY_LEFT ? --button : ++button) < 0) ?
-					 1 :
-					 (button > 1 ? 0 : button);
+			button = ((key == KEY_LEFT ? --button : ++button) < 0) ? 1 : (button > 1 ? 0 : button);
 
 			print_buttons(dialog, height, width, button);
 			wrefresh(dialog);

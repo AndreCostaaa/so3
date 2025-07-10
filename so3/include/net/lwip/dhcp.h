@@ -63,10 +63,7 @@ extern "C" {
 #define DHCP_BOOT_FILE_LEN 128U
 
 /* AutoIP cooperation flags (struct dhcp.autoip_coop_state) */
-typedef enum {
-	DHCP_AUTOIP_COOP_STATE_OFF = 0,
-	DHCP_AUTOIP_COOP_STATE_ON = 1
-} dhcp_autoip_coop_state_enum_t;
+typedef enum { DHCP_AUTOIP_COOP_STATE_OFF = 0, DHCP_AUTOIP_COOP_STATE_ON = 1 } dhcp_autoip_coop_state_enum_t;
 
 struct dhcp {
 	/** transaction identifier of last sent request */
@@ -107,8 +104,7 @@ struct dhcp {
 
 void dhcp_set_struct(struct netif *netif, struct dhcp *dhcp);
 /** Remove a struct dhcp previously set to the netif using dhcp_set_struct() */
-#define dhcp_remove_struct(netif) \
-	netif_set_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP, NULL)
+#define dhcp_remove_struct(netif) netif_set_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP, NULL)
 void dhcp_cleanup(struct netif *netif);
 err_t dhcp_start(struct netif *netif);
 err_t dhcp_renew(struct netif *netif);
@@ -128,13 +124,10 @@ void dhcp_fine_tmr(void);
 /** This function must exist, in other to add offered NTP servers to
  * the NTP (or SNTP) engine.
  * See LWIP_DHCP_MAX_NTP_SERVERS */
-extern void dhcp_set_ntp_servers(u8_t num_ntp_servers,
-				 const ip4_addr_t *ntp_server_addrs);
+extern void dhcp_set_ntp_servers(u8_t num_ntp_servers, const ip4_addr_t *ntp_server_addrs);
 #endif /* LWIP_DHCP_GET_NTP_SRV */
 
-#define netif_dhcp_data(netif)                 \
-	((struct dhcp *)netif_get_client_data( \
-		netif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP))
+#define netif_dhcp_data(netif) ((struct dhcp *) netif_get_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP))
 
 #ifdef __cplusplus
 }

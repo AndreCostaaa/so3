@@ -57,27 +57,22 @@ enum netifapi_arp_entry {
 };
 
 /** @ingroup netifapi_arp */
-err_t netifapi_arp_add(const ip4_addr_t *ipaddr, struct eth_addr *ethaddr,
-		       enum netifapi_arp_entry type);
+err_t netifapi_arp_add(const ip4_addr_t *ipaddr, struct eth_addr *ethaddr, enum netifapi_arp_entry type);
 /** @ingroup netifapi_arp */
-err_t netifapi_arp_remove(const ip4_addr_t *ipaddr,
-			  enum netifapi_arp_entry type);
+err_t netifapi_arp_remove(const ip4_addr_t *ipaddr, enum netifapi_arp_entry type);
 #endif /* LWIP_ARP && LWIP_IPV4 */
 
 err_t netifapi_netif_add(struct netif *netif,
 #if LWIP_IPV4
-			 const ip4_addr_t *ipaddr, const ip4_addr_t *netmask,
-			 const ip4_addr_t *gw,
+			 const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw,
 #endif /* LWIP_IPV4 */
 			 void *state, netif_init_fn init, netif_input_fn input);
 
 #if LWIP_IPV4
-err_t netifapi_netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr,
-			      const ip4_addr_t *netmask, const ip4_addr_t *gw);
+err_t netifapi_netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw);
 #endif /* LWIP_IPV4*/
 
-err_t netifapi_netif_common(struct netif *netif, netifapi_void_fn voidfunc,
-			    netifapi_errt_fn errtfunc);
+err_t netifapi_netif_common(struct netif *netif, netifapi_void_fn voidfunc, netifapi_errt_fn errtfunc);
 
 /** @ingroup netifapi_netif */
 err_t netifapi_netif_name_to_index(const char *name, u8_t *index);
@@ -95,23 +90,19 @@ err_t netifapi_netif_index_to_name(u8_t index, char *name);
 /** @ingroup netifapi_netif
   * @see netif_set_down()
   */
-#define netifapi_netif_set_down(n) \
-	netifapi_netif_common(n, netif_set_down, NULL)
+#define netifapi_netif_set_down(n) netifapi_netif_common(n, netif_set_down, NULL)
 /** @ingroup netifapi_netif
   * @see netif_set_default()
   */
-#define netifapi_netif_set_default(n) \
-	netifapi_netif_common(n, netif_set_default, NULL)
+#define netifapi_netif_set_default(n) netifapi_netif_common(n, netif_set_default, NULL)
 /** @ingroup netifapi_netif
   * @see netif_set_link_up()
   */
-#define netifapi_netif_set_link_up(n) \
-	netifapi_netif_common(n, netif_set_link_up, NULL)
+#define netifapi_netif_set_link_up(n) netifapi_netif_common(n, netif_set_link_up, NULL)
 /** @ingroup netifapi_netif
   * @see netif_set_link_down()
   */
-#define netifapi_netif_set_link_down(n) \
-	netifapi_netif_common(n, netif_set_link_down, NULL)
+#define netifapi_netif_set_link_down(n) netifapi_netif_common(n, netif_set_link_down, NULL)
 
 /**
  * @defgroup netifapi_dhcp4 DHCPv4
@@ -143,8 +134,7 @@ err_t netifapi_netif_index_to_name(u8_t index, char *name);
 /** @ingroup netifapi_dhcp4
   * @see dhcp_release_and_stop()
   */
-#define netifapi_dhcp_release_and_stop(n) \
-	netifapi_netif_common(n, dhcp_release_and_stop, NULL)
+#define netifapi_dhcp_release_and_stop(n) netifapi_netif_common(n, dhcp_release_and_stop, NULL)
 
 /**
  * @defgroup netifapi_autoip AUTOIP

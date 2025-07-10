@@ -51,8 +51,7 @@
 extern "C" {
 #endif
 
-#if LWIP_NETCONN || \
-	LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
+#if LWIP_NETCONN || LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
 /* Note: Netconn API is always available when sockets are enabled -
  * sockets are implemented on top of them */
 

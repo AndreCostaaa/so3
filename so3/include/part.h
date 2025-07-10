@@ -36,22 +36,18 @@ typedef struct block_dev_desc {
 	char vendor[40 + 1]; /* IDE model, SCSI Vendor */
 	char product[20 + 1]; /* IDE Serial no, SCSI product */
 	char revision[8 + 1]; /* firmware revision */
-	unsigned long (*block_read)(int dev, lbaint_t start, lbaint_t blkcnt,
-				    void *buffer);
-	unsigned long (*block_write)(int dev, lbaint_t start, lbaint_t blkcnt,
-				     const void *buffer);
+	unsigned long (*block_read)(int dev, lbaint_t start, lbaint_t blkcnt, void *buffer);
+	unsigned long (*block_write)(int dev, lbaint_t start, lbaint_t blkcnt, const void *buffer);
 	unsigned long (*block_erase)(int dev, lbaint_t start, lbaint_t blkcnt);
 	void *priv; /* driver private struct pointer */
 } block_dev_desc_t;
 
 #define BLOCK_CNT(size, block_dev_desc) (PAD_COUNT(size, block_dev_desc->blksz))
-#define PAD_TO_BLOCKSIZE(size, block_dev_desc) \
-	(PAD_SIZE(size, block_dev_desc->blksz))
-#define LOG2(x)                                                    \
-	(((x & 0xaaaaaaaa) ? 1 : 0) + ((x & 0xcccccccc) ? 2 : 0) + \
-	 ((x & 0xf0f0f0f0) ? 4 : 0) + ((x & 0xff00ff00) ? 8 : 0) + \
+#define PAD_TO_BLOCKSIZE(size, block_dev_desc) (PAD_SIZE(size, block_dev_desc->blksz))
+#define LOG2(x)                                                                                                              \
+	(((x & 0xaaaaaaaa) ? 1 : 0) + ((x & 0xcccccccc) ? 2 : 0) + ((x & 0xf0f0f0f0) ? 4 : 0) + ((x & 0xff00ff00) ? 8 : 0) + \
 	 ((x & 0xffff0000) ? 16 : 0))
-#define LOG2_INVALID(type) ((type)((sizeof(type) << 3) - 1))
+#define LOG2_INVALID(type) ((type) ((sizeof(type) << 3) - 1))
 
 /* Interface types: */
 #define IF_TYPE_UNKNOWN 0
@@ -109,19 +105,15 @@ block_dev_desc_t *host_get_dev(int dev);
 int host_get_dev_err(int dev, block_dev_desc_t **blk_devp);
 
 /* disk/part.c */
-int get_partition_info(block_dev_desc_t *dev_desc, int part,
-		       disk_partition_t *info);
+int get_partition_info(block_dev_desc_t *dev_desc, int part, disk_partition_t *info);
 void print_part(block_dev_desc_t *dev_desc);
 void init_part(block_dev_desc_t *dev_desc);
 void dev_print(block_dev_desc_t *dev_desc);
-int get_device(const char *ifname, const char *dev_str,
-	       block_dev_desc_t **dev_desc);
-int get_device_and_partition(const char *ifname, const char *dev_part_str,
-			     block_dev_desc_t **dev_desc,
-			     disk_partition_t *info, int allow_whole_dev);
+int get_device(const char *ifname, const char *dev_str, block_dev_desc_t **dev_desc);
+int get_device_and_partition(const char *ifname, const char *dev_part_str, block_dev_desc_t **dev_desc, disk_partition_t *info,
+			     int allow_whole_dev);
 /* disk/part_dos.c */
-int get_partition_info_dos(block_dev_desc_t *dev_desc, int part,
-			   disk_partition_t *info);
+int get_partition_info_dos(block_dev_desc_t *dev_desc, int part, disk_partition_t *info);
 void print_part_dos(block_dev_desc_t *dev_desc);
 int test_part_dos(block_dev_desc_t *dev_desc);
 

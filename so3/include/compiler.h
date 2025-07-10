@@ -68,7 +68,7 @@ typedef long int intptr_t;
 	({                                            \
 		unsigned long __ptr;                  \
 		__asm__("" : "=r"(__ptr) : "0"(ptr)); \
-		(typeof(ptr))(__ptr + (off));         \
+		(typeof(ptr)) (__ptr + (off));        \
 	})
 
 /*
@@ -77,26 +77,26 @@ typedef long int intptr_t;
  */
 #define uninitialized_var(x) x = x
 
-#define __READ_ONCE_SIZE                                                      \
-	({                                                                    \
-		switch (size) {                                               \
-		case 1:                                                       \
-			*(__u8 *)res = *(volatile __u8 *)p;                   \
-			break;                                                \
-		case 2:                                                       \
-			*(__u16 *)res = *(volatile __u16 *)p;                 \
-			break;                                                \
-		case 4:                                                       \
-			*(__u32 *)res = *(volatile __u32 *)p;                 \
-			break;                                                \
-		case 8:                                                       \
-			*(__u64 *)res = *(volatile __u64 *)p;                 \
-			break;                                                \
-		default:                                                      \
-			barrier();                                            \
-			__builtin_memcpy((void *)res, (const void *)p, size); \
-			barrier();                                            \
-		}                                                             \
+#define __READ_ONCE_SIZE                                                        \
+	({                                                                      \
+		switch (size) {                                                 \
+		case 1:                                                         \
+			*(__u8 *) res = *(volatile __u8 *) p;                   \
+			break;                                                  \
+		case 2:                                                         \
+			*(__u16 *) res = *(volatile __u16 *) p;                 \
+			break;                                                  \
+		case 4:                                                         \
+			*(__u32 *) res = *(volatile __u32 *) p;                 \
+			break;                                                  \
+		case 8:                                                         \
+			*(__u64 *) res = *(volatile __u64 *) p;                 \
+			break;                                                  \
+		default:                                                        \
+			barrier();                                              \
+			__builtin_memcpy((void *) res, (const void *) p, size); \
+			barrier();                                              \
+		}                                                               \
 	})
 
 static inline void __read_once_size(const volatile void *p, void *res, int size)
@@ -108,20 +108,20 @@ static inline void __write_once_size(volatile void *p, void *res, int size)
 {
 	switch (size) {
 	case 1:
-		*(volatile __u8 *)p = *(__u8 *)res;
+		*(volatile __u8 *) p = *(__u8 *) res;
 		break;
 	case 2:
-		*(volatile __u16 *)p = *(__u16 *)res;
+		*(volatile __u16 *) p = *(__u16 *) res;
 		break;
 	case 4:
-		*(volatile __u32 *)p = *(__u32 *)res;
+		*(volatile __u32 *) p = *(__u32 *) res;
 		break;
 	case 8:
-		*(volatile __u64 *)p = *(__u64 *)res;
+		*(volatile __u64 *) p = *(__u64 *) res;
 		break;
 	default:
 		barrier();
-		__builtin_memcpy((void *)p, (const void *)res, size);
+		__builtin_memcpy((void *) p, (const void *) res, size);
 		barrier();
 	}
 }
@@ -158,14 +158,14 @@ static inline void __write_once_size(volatile void *p, void *res, int size)
 		__u.__val;                                  \
 	})
 
-#define WRITE_ONCE(x, val)                                     \
-	({                                                     \
-		union {                                        \
-			typeof(x) __val;                       \
-			char __c[1];                           \
-		} __u = { .__val = (__force typeof(x))(val) }; \
-		__write_once_size(&(x), __u.__c, sizeof(x));   \
-		__u.__val;                                     \
+#define WRITE_ONCE(x, val)                                      \
+	({                                                      \
+		union {                                         \
+			typeof(x) __val;                        \
+			char __c[1];                            \
+		} __u = { .__val = (__force typeof(x)) (val) }; \
+		__write_once_size(&(x), __u.__c, sizeof(x));    \
+		__u.__val;                                      \
 	})
 
 #endif /* COMPILER_H */

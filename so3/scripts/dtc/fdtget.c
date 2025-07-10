@@ -53,7 +53,7 @@ static void report_error(const char *where, int err)
 static int show_data(struct display_info *disp, const char *data, int len)
 {
 	int i, size;
-	const uint8_t *p = (const uint8_t *)data;
+	const uint8_t *p = (const uint8_t *) data;
 	const char *s;
 	int value;
 	int is_string;
@@ -63,8 +63,7 @@ static int show_data(struct display_info *disp, const char *data, int len)
 	if (len == 0)
 		return 0;
 
-	is_string = (disp->type) == 's' ||
-		    (!disp->type && util_is_printable_string(data, len));
+	is_string = (disp->type) == 's' || (!disp->type && util_is_printable_string(data, len));
 	if (is_string) {
 		if (data[len - 1] != '\0') {
 			fprintf(stderr, "Unterminated string\n");
@@ -73,7 +72,7 @@ static int show_data(struct display_info *disp, const char *data, int len)
 		for (s = data; s - data < len; s += strlen(s) + 1) {
 			if (s != data)
 				printf(" ");
-			printf("%s", (const char *)s);
+			printf("%s", (const char *) s);
 		}
 		return 0;
 	}
@@ -91,9 +90,7 @@ static int show_data(struct display_info *disp, const char *data, int len)
 	for (i = 0; i < len; i += size, p += size) {
 		if (i)
 			printf(" ");
-		value = size == 4 ? fdt32_to_cpu(*(const uint32_t *)p) :
-			size == 2 ? (*p << 8) | p[1] :
-				    *p;
+		value = size == 4 ? fdt32_to_cpu(*(const uint32_t *) p) : size == 2 ? (*p << 8) | p[1] : *p;
 		printf(fmt, value);
 	}
 	return 0;
@@ -190,8 +187,7 @@ static int list_subnodes(const void *blob, int node)
  * @param property	Name of property to display, or NULL if none
  * @return 0 if ok, -ve on error
  */
-static int show_data_for_item(const void *blob, struct display_info *disp,
-			      int node, const char *property)
+static int show_data_for_item(const void *blob, struct display_info *disp, int node, const char *property)
 {
 	const void *value = NULL;
 	int len, err = 0;
@@ -234,8 +230,7 @@ static int show_data_for_item(const void *blob, struct display_info *disp,
  * @param arg_count	Number of arguments
  * @param return 0 if ok, -ve on error
  */
-static int do_fdtget(struct display_info *disp, const char *filename,
-		     char **arg, int arg_count, int args_per_step)
+static int do_fdtget(struct display_info *disp, const char *filename, char **arg, int arg_count, int args_per_step)
 {
 	char *blob;
 	const char *prop;
@@ -264,20 +259,19 @@ static int do_fdtget(struct display_info *disp, const char *filename,
 	return 0;
 }
 
-static const char *usage_msg =
-	"fdtget - read values from device tree\n"
-	"\n"
-	"Each value is printed on a new line.\n\n"
-	"Usage:\n"
-	"	fdtget <options> <dt file> [<node> <property>]...\n"
-	"	fdtget -p <options> <dt file> [<node> ]...\n"
-	"Options:\n"
-	"\t-t <type>\tType of data\n"
-	"\t-p\t\tList properties for each node\n"
-	"\t-l\t\tList subnodes for each node\n"
-	"\t-d\t\tDefault value to display when the property is "
-	"missing\n"
-	"\t-h\t\tPrint this help\n\n" USAGE_TYPE_MSG;
+static const char *usage_msg = "fdtget - read values from device tree\n"
+			       "\n"
+			       "Each value is printed on a new line.\n\n"
+			       "Usage:\n"
+			       "	fdtget <options> <dt file> [<node> <property>]...\n"
+			       "	fdtget -p <options> <dt file> [<node> ]...\n"
+			       "Options:\n"
+			       "\t-t <type>\tType of data\n"
+			       "\t-p\t\tList properties for each node\n"
+			       "\t-l\t\tList subnodes for each node\n"
+			       "\t-d\t\tDefault value to display when the property is "
+			       "missing\n"
+			       "\t-h\t\tPrint this help\n\n" USAGE_TYPE_MSG;
 
 static void usage(const char *msg)
 {

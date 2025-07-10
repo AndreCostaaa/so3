@@ -76,8 +76,7 @@ static unsigned int allocate_memslot(unsigned int order)
 {
 	int pos;
 
-	pos = bitmap_find_free_region((unsigned long *)&memchunk_bitmap,
-				      ME_MEMCHUNK_NR, order);
+	pos = bitmap_find_free_region((unsigned long *) &memchunk_bitmap, ME_MEMCHUNK_NR, order);
 	if (pos < 0)
 		return 0;
 
@@ -91,7 +90,7 @@ static void release_memslot(unsigned int addr, unsigned int order)
 	pos = addr - memslot[1].base_paddr - memslot[1].size;
 	pos /= ME_MEMCHUNK_SIZE;
 
-	bitmap_release_region((unsigned long *)&memchunk_bitmap, pos, order);
+	bitmap_release_region((unsigned long *) &memchunk_bitmap, pos, order);
 }
 
 /*
@@ -112,7 +111,7 @@ void switch_mm_domain(struct domain *d)
 
 	set_current_domain(d);
 
-	__mmu_switch_kernel((void *)d->pagetable_paddr, true);
+	__mmu_switch_kernel((void *) d->pagetable_paddr, true);
 }
 
 /**
@@ -138,7 +137,7 @@ int get_ME_free_slot(unsigned int size, int slotID)
 
 		if (slotID == MEMSLOT_NR)
 			return -1;
-			
+
 	} else if (memslot[slotID].busy)
 		return -1;
 
@@ -156,16 +155,13 @@ int get_ME_free_slot(unsigned int size, int slotID)
 	/* Determine the phys/virt start addresses of the guest */
 
 	memslot[slotID].base_paddr = addr;
-	memslot[slotID].base_vaddr =
-		ME_BASE + ((addr_t)(slotID - 1) << ME_ID_SHIFT);
+	memslot[slotID].base_vaddr = ME_BASE + ((addr_t) (slotID - 1) << ME_ID_SHIFT);
 
-	memslot[slotID].size =
-		(1 << order) * ME_MEMCHUNK_SIZE; /* Readjust size */
+	memslot[slotID].size = (1 << order) * ME_MEMCHUNK_SIZE; /* Readjust size */
 	memslot[slotID].busy = true;
 
 	/* Map the L2 virtual address space of ME #(slotID-1) to the physical RAM */
-	create_mapping(NULL, memslot[slotID].base_vaddr,
-		       memslot[slotID].base_paddr, memslot[slotID].size, false);
+	create_mapping(NULL, memslot[slotID].base_vaddr, memslot[slotID].base_paddr, memslot[slotID].size, false);
 
 	/* Create a domain context including the ME descriptor before the ME gets injected. */
 	domains[slotID] = domain_create(slotID, ME_CPU);
@@ -181,9 +177,7 @@ void put_ME_slot(unsigned int slotID)
 	release_mapping(NULL, memslot[slotID].base_vaddr, memslot[slotID].size);
 
 	/* Release the allocated memchunks */
-	release_memslot(memslot[slotID].base_paddr,
-			get_power_from_size(DIV_ROUND_UP(memslot[slotID].size,
-							 ME_MEMCHUNK_SIZE)));
+	release_memslot(memslot[slotID].base_paddr, get_power_from_size(DIV_ROUND_UP(memslot[slotID].size, ME_MEMCHUNK_SIZE)));
 
 	memslot[slotID].busy = false;
 }
@@ -200,8 +194,7 @@ void dump_page(unsigned int pfn)
 	for (i = 0; i < PAGE_SIZE; i += 16) {
 		printk(" [%x]: ", i);
 		for (j = 0; j < 16; j++) {
-			printk("%02x ",
-			       *((unsigned char *)__xva(MEMSLOT_AVZ, addr)));
+			printk("%02x ", *((unsigned char *) __xva(MEMSLOT_AVZ, addr)));
 			addr++;
 		}
 		printk("\n");

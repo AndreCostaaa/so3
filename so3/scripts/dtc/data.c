@@ -93,8 +93,7 @@ struct data data_copy_file(FILE *f, size_t maxlen)
 		ret = fread(d.val + d.len, 1, chunksize, f);
 
 		if (ferror(f))
-			die("Error reading file into data: %s",
-			    strerror(errno));
+			die("Error reading file into data: %s", strerror(errno));
 
 		if (d.len + ret < d.len)
 			die("Overflow reading file into data\n");
@@ -113,8 +112,7 @@ struct data data_append_data(struct data d, const void *p, int len)
 	return d;
 }
 
-struct data data_insert_at_marker(struct data d, struct marker *m,
-				  const void *p, int len)
+struct data data_insert_at_marker(struct data d, struct marker *m, const void *p, int len)
 {
 	d = data_grow_for(d, len);
 	memmove(d.val + m->offset + len, d.val + m->offset, d.len - m->offset);

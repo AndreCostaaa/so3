@@ -159,7 +159,7 @@ void elf_load_sections(elf_img_info_t *elf_img_info)
 		elf_img_info->section_names[i] =
 			(char *)malloc(section_name_len + 1);
 		if (!elf_img_info->section_names[i]) {
-			LOG_CRITICAL("%s: failed to allocate memory\n", __func__);
+			printk("%s: failed to allocate memory\n", __func__);
 			kernel_panic();
 		}
 
@@ -203,7 +203,6 @@ void elf_load_segments(elf_img_info_t *elf_img_info)
 	LOG_DEBUG("%d segments\n", elf_img_info->header->e_phnum);
 	LOG_DEBUG("segment table is at offset 0x%08x (%d bytes/section)\n",
 	    elf_img_info->header->e_phoff, elf_img_info->header->e_phentsize);
-
 #ifdef CONFIG_ARCH_ARM32
 	LOG_DEBUG("sizeof(struct elf32_phdr): %d bytes\n", sizeof(struct elf32_phdr));
 #else

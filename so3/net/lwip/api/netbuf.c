@@ -63,7 +63,7 @@ struct netbuf *netbuf_new(void)
 {
 	struct netbuf *buf;
 
-	buf = (struct netbuf *)memp_malloc(MEMP_NETBUF);
+	buf = (struct netbuf *) memp_malloc(MEMP_NETBUF);
 	if (buf != NULL) {
 		memset(buf, 0, sizeof(struct netbuf));
 	}
@@ -108,8 +108,7 @@ void *netbuf_alloc(struct netbuf *buf, u16_t size)
 	if (buf->p == NULL) {
 		return NULL;
 	}
-	LWIP_ASSERT("check that first pbuf can hold size",
-		    (buf->p->len >= size));
+	LWIP_ASSERT("check that first pbuf can hold size", (buf->p->len >= size));
 	buf->ptr = buf->p;
 	return buf->p->payload;
 }
@@ -154,7 +153,7 @@ err_t netbuf_ref(struct netbuf *buf, const void *dataptr, u16_t size)
 		buf->ptr = NULL;
 		return ERR_MEM;
 	}
-	((struct pbuf_rom *)buf->p)->payload = dataptr;
+	((struct pbuf_rom *) buf->p)->payload = dataptr;
 	buf->p->len = buf->p->tot_len = size;
 	buf->ptr = buf->p;
 	return ERR_OK;
@@ -189,8 +188,7 @@ void netbuf_chain(struct netbuf *head, struct netbuf *tail)
 err_t netbuf_data(struct netbuf *buf, void **dataptr, u16_t *len)
 {
 	LWIP_ERROR("netbuf_data: invalid buf", (buf != NULL), return ERR_ARG;);
-	LWIP_ERROR("netbuf_data: invalid dataptr", (dataptr != NULL),
-		   return ERR_ARG;);
+	LWIP_ERROR("netbuf_data: invalid dataptr", (dataptr != NULL), return ERR_ARG;);
 	LWIP_ERROR("netbuf_data: invalid len", (len != NULL), return ERR_ARG;);
 
 	if (buf->ptr == NULL) {

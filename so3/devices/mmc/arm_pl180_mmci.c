@@ -48,8 +48,7 @@ static int wait_for_command_end(struct mmc *dev, struct mmc_cmd *cmd)
 	if (hoststatus & SDI_STA_CTIMEOUT) {
 		DBG("CMD%d time out\n", cmd->cmdidx);
 		return TIMEOUT;
-	} else if ((hoststatus & SDI_STA_CCRCFAIL) &&
-		   (cmd->resp_type & MMC_RSP_CRC)) {
+	} else if ((hoststatus & SDI_STA_CCRCFAIL) && (cmd->resp_type & MMC_RSP_CRC)) {
 		printk("CMD%d CRC error\n", cmd->cmdidx);
 		return -EILSEQ;
 	}
@@ -61,8 +60,7 @@ static int wait_for_command_end(struct mmc *dev, struct mmc_cmd *cmd)
 		cmd->response[3] = ioread32(&host->base->response3);
 		DBG("CMD%d response[0]:0x%08X, response[1]:0x%08X, "
 		    "response[2]:0x%08X, response[3]:0x%08X\n",
-		    cmd->cmdidx, cmd->response[0], cmd->response[1],
-		    cmd->response[2], cmd->response[3]);
+		    cmd->cmdidx, cmd->response[0], cmd->response[1], cmd->response[2], cmd->response[3]);
 	}
 
 	return 0;
@@ -83,7 +81,7 @@ static int do_command(struct mmc *dev, struct mmc_cmd *cmd)
 			sdi_cmd |= SDI_CMD_LONGRESP;
 	}
 
-	iowrite32(&host->base->argument, (u32)cmd->cmdarg);
+	iowrite32(&host->base->argument, (u32) cmd->cmdarg);
 	udelay(COMMAND_REG_DELAY);
 	iowrite32(&host->base->command, sdi_cmd);
 	result = wait_for_command_end(dev, cmd);
@@ -111,8 +109,7 @@ static int read_bytes(struct mmc *dev, u32 *dest, u32 blkcount, u32 blksize)
 	DBG("read_bytes: blkcount=%u blksize=%u\n", blkcount, blksize);
 
 	status = ioread32(&host->base->status);
-	status_err = status &
-		     (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_RXOVERR);
+	status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_RXOVERR);
 	while ((!status_err) && (xfercount >= sizeof(u32))) {
 		if (status & SDI_STA_RXDAVL) {
 			*(tempbuff) = ioread32(&host->base->fifo);
@@ -120,21 +117,17 @@ static int read_bytes(struct mmc *dev, u32 *dest, u32 blkcount, u32 blksize)
 			xfercount -= sizeof(u32);
 		}
 		status = ioread32(&host->base->status);
-		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT |
-				       SDI_STA_RXOVERR);
+		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_RXOVERR);
 	}
 
-	status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT |
-			       SDI_STA_DBCKEND | SDI_STA_RXOVERR);
+	status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_DBCKEND | SDI_STA_RXOVERR);
 	while (!status_err) {
 		status = ioread32(&host->base->status);
-		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT |
-				       SDI_STA_DBCKEND | SDI_STA_RXOVERR);
+		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_DBCKEND | SDI_STA_RXOVERR);
 	}
 
 	if (status & SDI_STA_DTIMEOUT) {
-		printk("Read data timed out, xfercount: %llu, status: 0x%08X\n",
-		       xfercount, status);
+		printk("Read data timed out, xfercount: %llu, status: 0x%08X\n", xfercount, status);
 		return -ETIMEDOUT;
 	} else if (status & SDI_STA_DCRCFAIL) {
 		printk("Read data bytes CRC error: 0x%x\n", status);
@@ -170,15 +163,13 @@ static int write_bytes(struct mmc *dev, u32 *src, u32 blkcount, u32 blksize)
 		if (status & SDI_STA_TXFIFOBW) {
 			if (xfercount >= SDI_FIFO_BURST_SIZE * sizeof(u32)) {
 				for (i = 0; i < SDI_FIFO_BURST_SIZE; i++)
-					iowrite32(&host->base->fifo,
-						  *(tempbuff + i));
+					iowrite32(&host->base->fifo, *(tempbuff + i));
 
 				tempbuff += SDI_FIFO_BURST_SIZE;
 				xfercount -= SDI_FIFO_BURST_SIZE * sizeof(u32);
 			} else {
 				while (xfercount >= sizeof(u32)) {
-					iowrite32(&host->base->fifo,
-						  *(tempbuff));
+					iowrite32(&host->base->fifo, *(tempbuff));
 					tempbuff++;
 					xfercount -= sizeof(u32);
 				}
@@ -188,17 +179,14 @@ static int write_bytes(struct mmc *dev, u32 *src, u32 blkcount, u32 blksize)
 		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT);
 	}
 
-	status_err = status &
-		     (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_DBCKEND);
+	status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_DBCKEND);
 	while (!status_err) {
 		status = ioread32(&host->base->status);
-		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT |
-				       SDI_STA_DBCKEND);
+		status_err = status & (SDI_STA_DCRCFAIL | SDI_STA_DTIMEOUT | SDI_STA_DBCKEND);
 	}
 
 	if (status & SDI_STA_DTIMEOUT) {
-		printk("Write data timed out, xfercount:%llu,status:0x%08X\n",
-		       xfercount, status);
+		printk("Write data timed out, xfercount:%llu,status:0x%08X\n", xfercount, status);
 		return -ETIMEDOUT;
 	} else if (status & SDI_STA_DCRCFAIL) {
 		printk("Write data CRC error\n");
@@ -215,14 +203,13 @@ static int write_bytes(struct mmc *dev, u32 *src, u32 blkcount, u32 blksize)
 	return 0;
 }
 
-static int do_data_transfer(struct mmc *dev, struct mmc_cmd *cmd,
-			    struct mmc_data *data)
+static int do_data_transfer(struct mmc *dev, struct mmc_cmd *cmd, struct mmc_data *data)
 {
 	int error = -ETIMEDOUT;
 	struct pl180_mmc_host *host = dev->priv;
 	u32 blksz = 0;
 	u32 data_ctrl = 0;
-	u32 data_len = (u32)(data->blocks * data->blocksize);
+	u32 data_len = (u32) (data->blocks * data->blocksize);
 
 	if (!host->version2) {
 		blksz = find_first_bit(&data->blocksize, BITS_PER_INT);
@@ -245,23 +232,20 @@ static int do_data_transfer(struct mmc *dev, struct mmc_cmd *cmd,
 		if (error)
 			return error;
 
-		error = read_bytes(dev, (u32 *)data->dest, (u32)data->blocks,
-				   (u32)data->blocksize);
+		error = read_bytes(dev, (u32 *) data->dest, (u32) data->blocks, (u32) data->blocksize);
 	} else if (data->flags & MMC_DATA_WRITE) {
 		error = do_command(dev, cmd);
 		if (error)
 			return error;
 
 		iowrite32(&host->base->datactrl, data_ctrl);
-		error = write_bytes(dev, (u32 *)data->src, (u32)data->blocks,
-				    (u32)data->blocksize);
+		error = write_bytes(dev, (u32 *) data->src, (u32) data->blocks, (u32) data->blocksize);
 	}
 
 	return error;
 }
 
-static int host_request(struct mmc *dev, struct mmc_cmd *cmd,
-			struct mmc_data *data)
+static int host_request(struct mmc *dev, struct mmc_cmd *cmd, struct mmc_data *data)
 {
 	int result;
 
@@ -367,13 +351,11 @@ static int arm_pl180_mmci_init(dev_t *dev, int fdt_offset)
 	BUG_ON(prop_len != 2 * sizeof(unsigned long));
 
 #ifdef CONFIG_ARCH_ARM32
-	mmc_host.base = (struct sdi_registers *)io_map(
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-		fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	mmc_host.base = (struct sdi_registers *) io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]),
+							fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 #else
-	mmc_host.base = (struct sdi_registers *)io_map(
-		fdt64_to_cpu(((const fdt64_t *)prop->data)[0]),
-		fdt64_to_cpu(((const fdt64_t *)prop->data)[1]));
+	mmc_host.base = (struct sdi_registers *) io_map(fdt64_to_cpu(((const fdt64_t *) prop->data)[0]),
+							fdt64_to_cpu(((const fdt64_t *) prop->data)[1]));
 #endif
 
 	mmc_host.pwr_init = fdt_get_int(__fdt_addr, dev, "power");

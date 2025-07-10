@@ -53,8 +53,7 @@
 
 #include "lwip/opt.h"
 
-#if LWIP_IPV6 && \
-	LWIP_IPV6_MLD /* don't build if not configured for use in lwipopts.h */
+#if LWIP_IPV6 && LWIP_IPV6_MLD /* don't build if not configured for use in lwipopts.h */
 
 #include "lwip/mld6.h"
 #include "lwip/prot/mld6.h"
@@ -81,8 +80,7 @@
 #define MLD6_GROUP_IDLE_MEMBER 2
 
 /* Forward declarations. */
-static struct mld_group *mld6_new_group(struct netif *ifp,
-					const ip6_addr_t *addr);
+static struct mld_group *mld6_new_group(struct netif *ifp, const ip6_addr_t *addr);
 static err_t mld6_remove_group(struct netif *netif, struct mld_group *group);
 static void mld6_delayed_report(struct mld_group *group, u16_t maxresp);
 static void mld6_send(struct netif *netif, struct mld_group *group, u8_t type);
@@ -99,13 +97,11 @@ err_t mld6_stop(struct netif *netif)
 	netif_set_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_MLD6, NULL);
 
 	while (group != NULL) {
-		struct mld_group *next =
-			group->next; /* avoid use-after-free below */
+		struct mld_group *next = group->next; /* avoid use-after-free below */
 
 		/* disable the group at the MAC level */
 		if (netif->mld_mac_filter != NULL) {
-			netif->mld_mac_filter(netif, &(group->group_address),
-					      NETIF_DEL_MAC_FILTER);
+			netif->mld_mac_filter(netif, &(group->group_address), NETIF_DEL_MAC_FILTER);
 		}
 
 		/* free group */
@@ -162,12 +158,11 @@ struct mld_group *mld6_lookfor_group(struct netif *ifp, const ip6_addr_t *addr)
  * @return a struct mld_group*,
  *         NULL on memory error.
  */
-static struct mld_group *mld6_new_group(struct netif *ifp,
-					const ip6_addr_t *addr)
+static struct mld_group *mld6_new_group(struct netif *ifp, const ip6_addr_t *addr)
 {
 	struct mld_group *group;
 
-	group = (struct mld_group *)memp_malloc(MEMP_MLD6_GROUP);
+	group = (struct mld_group *) memp_malloc(MEMP_MLD6_GROUP);
 	if (group != NULL) {
 		ip6_addr_set(&(group->group_address), addr);
 		group->timer = 0; /* Not running */
@@ -176,8 +171,7 @@ static struct mld_group *mld6_new_group(struct netif *ifp,
 		group->use = 0;
 		group->next = netif_mld6_data(ifp);
 
-		netif_set_client_data(ifp, LWIP_NETIF_CLIENT_DATA_INDEX_MLD6,
-				      group);
+		netif_set_client_data(ifp, LWIP_NETIF_CLIENT_DATA_INDEX_MLD6, group);
 	}
 
 	return group;
@@ -195,13 +189,11 @@ static err_t mld6_remove_group(struct netif *netif, struct mld_group *group)
 
 	/* Is it the first group? */
 	if (netif_mld6_data(netif) == group) {
-		netif_set_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_MLD6,
-				      group->next);
+		netif_set_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_MLD6, group->next);
 	} else {
 		/* look for group further down the list */
 		struct mld_group *tmpGroup;
-		for (tmpGroup = netif_mld6_data(netif); tmpGroup != NULL;
-		     tmpGroup = tmpGroup->next) {
+		for (tmpGroup = netif_mld6_data(netif); tmpGroup != NULL; tmpGroup = tmpGroup->next) {
 			if (tmpGroup->next == group) {
 				tmpGroup->next = group->next;
 				break;
@@ -238,25 +230,19 @@ void mld6_input(struct pbuf *p, struct netif *inp)
 		return;
 	}
 
-	mld_hdr = (struct mld_header *)p->payload;
+	mld_hdr = (struct mld_header *) p->payload;
 
 	switch (mld_hdr->type) {
 	case ICMP6_TYPE_MLQ: /* Multicast listener query. */
 		/* Is it a general query? */
-		if (ip6_addr_isallnodes_linklocal(ip6_current_dest_addr()) &&
-		    ip6_addr_isany(&(mld_hdr->multicast_address))) {
+		if (ip6_addr_isallnodes_linklocal(ip6_current_dest_addr()) && ip6_addr_isany(&(mld_hdr->multicast_address))) {
 			MLD6_STATS_INC(mld6.rx_general);
 			/* Report all groups, except all nodes group, and if-local groups. */
 			group = netif_mld6_data(inp);
 			while (group != NULL) {
-				if ((!(ip6_addr_ismulticast_iflocal(
-					    &(group->group_address)))) &&
-				    (!(ip6_addr_isallnodes_linklocal(
-					    &(group->group_address))))) {
-					mld6_delayed_report(
-						group,
-						lwip_ntohs(
-							mld_hdr->max_resp_delay));
+				if ((!(ip6_addr_ismulticast_iflocal(&(group->group_address)))) &&
+				    (!(ip6_addr_isallnodes_linklocal(&(group->group_address))))) {
+					mld6_delayed_report(group, lwip_ntohs(mld_hdr->max_resp_delay));
 				}
 				group = group->next;
 			}
@@ -265,13 +251,10 @@ void mld6_input(struct pbuf *p, struct netif *inp)
        * We use IP6 destination address to have a memory aligned copy.
        * mld_hdr->multicast_address should be the same. */
 			MLD6_STATS_INC(mld6.rx_group);
-			group = mld6_lookfor_group(inp,
-						   ip6_current_dest_addr());
+			group = mld6_lookfor_group(inp, ip6_current_dest_addr());
 			if (group != NULL) {
 				/* Schedule a report. */
-				mld6_delayed_report(
-					group,
-					lwip_ntohs(mld_hdr->max_resp_delay));
+				mld6_delayed_report(group, lwip_ntohs(mld_hdr->max_resp_delay));
 			}
 		}
 		break; /* ICMP6_TYPE_MLQ */
@@ -328,8 +311,7 @@ err_t mld6_joingroup(const ip6_addr_t *srcaddr, const ip6_addr_t *groupaddr)
 	NETIF_FOREACH(netif)
 	{
 		/* Should we join this interface ? */
-		if (ip6_addr_isany(srcaddr) ||
-		    netif_get_ip6_addr_match(netif, srcaddr) >= 0) {
+		if (ip6_addr_isany(srcaddr) || netif_get_ip6_addr_match(netif, srcaddr) >= 0) {
 			err = mld6_joingroup_netif(netif, groupaddr);
 			if (err != ERR_OK) {
 				return err;
@@ -379,8 +361,7 @@ err_t mld6_joingroup_netif(struct netif *netif, const ip6_addr_t *groupaddr)
 
 		/* Activate this address on the MAC layer. */
 		if (netif->mld_mac_filter != NULL) {
-			netif->mld_mac_filter(netif, groupaddr,
-					      NETIF_ADD_MAC_FILTER);
+			netif->mld_mac_filter(netif, groupaddr, NETIF_ADD_MAC_FILTER);
 		}
 
 		/* Report our membership. */
@@ -417,8 +398,7 @@ err_t mld6_leavegroup(const ip6_addr_t *srcaddr, const ip6_addr_t *groupaddr)
 	NETIF_FOREACH(netif)
 	{
 		/* Should we leave this interface ? */
-		if (ip6_addr_isany(srcaddr) ||
-		    netif_get_ip6_addr_match(netif, srcaddr) >= 0) {
+		if (ip6_addr_isany(srcaddr) || netif_get_ip6_addr_match(netif, srcaddr) >= 0) {
 			err_t res = mld6_leavegroup_netif(netif, groupaddr);
 			if (err != ERR_OK) {
 				/* Store this result if we have not yet gotten a success */
@@ -472,8 +452,7 @@ err_t mld6_leavegroup_netif(struct netif *netif, const ip6_addr_t *groupaddr)
 
 			/* Disable the group at the MAC level */
 			if (netif->mld_mac_filter != NULL) {
-				netif->mld_mac_filter(netif, groupaddr,
-						      NETIF_DEL_MAC_FILTER);
+				netif->mld_mac_filter(netif, groupaddr, NETIF_DEL_MAC_FILTER);
 			}
 
 			/* free group struct */
@@ -510,13 +489,10 @@ void mld6_tmr(void)
 				group->timer--;
 				if (group->timer == 0) {
 					/* If the state is MLD6_GROUP_DELAYING_MEMBER then we send a report for this group */
-					if (group->group_state ==
-					    MLD6_GROUP_DELAYING_MEMBER) {
+					if (group->group_state == MLD6_GROUP_DELAYING_MEMBER) {
 						MLD6_STATS_INC(mld6.tx_report);
-						mld6_send(netif, group,
-							  ICMP6_TYPE_MLR);
-						group->group_state =
-							MLD6_GROUP_IDLE_MEMBER;
+						mld6_send(netif, group, ICMP6_TYPE_MLR);
+						group->group_state = MLD6_GROUP_IDLE_MEMBER;
 					}
 				}
 			}
@@ -542,7 +518,7 @@ static void mld6_delayed_report(struct mld_group *group, u16_t maxresp_in)
 
 #ifdef LWIP_RAND
 	/* Randomize maxresp. (if LWIP_RAND is supported) */
-	maxresp = (u16_t)(LWIP_RAND() % maxresp);
+	maxresp = (u16_t) (LWIP_RAND() % maxresp);
 	if (maxresp == 0) {
 		maxresp = 1;
 	}
@@ -550,8 +526,7 @@ static void mld6_delayed_report(struct mld_group *group, u16_t maxresp_in)
 
 	/* Apply timer value if no report has been scheduled already. */
 	if ((group->group_state == MLD6_GROUP_IDLE_MEMBER) ||
-	    ((group->group_state == MLD6_GROUP_DELAYING_MEMBER) &&
-	     ((group->timer == 0) || (maxresp < group->timer)))) {
+	    ((group->group_state == MLD6_GROUP_DELAYING_MEMBER) && ((group->timer == 0) || (maxresp < group->timer)))) {
 		group->timer = maxresp;
 		group->group_state = MLD6_GROUP_DELAYING_MEMBER;
 	}
@@ -573,8 +548,7 @@ static void mld6_send(struct netif *netif, struct mld_group *group, u8_t type)
 	const ip6_addr_t *src_addr;
 
 	/* Allocate a packet. Size is MLD header + IPv6 Hop-by-hop options header. */
-	p = pbuf_alloc(PBUF_IP, sizeof(struct mld_header) + MLD6_HBH_HLEN,
-		       PBUF_RAM);
+	p = pbuf_alloc(PBUF_IP, sizeof(struct mld_header) + MLD6_HBH_HLEN, PBUF_RAM);
 	if (p == NULL) {
 		MLD6_STATS_INC(mld6.memerr);
 		return;
@@ -598,7 +572,7 @@ static void mld6_send(struct netif *netif, struct mld_group *group, u8_t type)
 	}
 
 	/* MLD message header pointer. */
-	mld_hdr = (struct mld_header *)p->payload;
+	mld_hdr = (struct mld_header *) p->payload;
 
 	/* Set fields. */
 	mld_hdr->type = type;
@@ -606,15 +580,12 @@ static void mld6_send(struct netif *netif, struct mld_group *group, u8_t type)
 	mld_hdr->chksum = 0;
 	mld_hdr->max_resp_delay = 0;
 	mld_hdr->reserved = 0;
-	ip6_addr_copy_to_packed(mld_hdr->multicast_address,
-				group->group_address);
+	ip6_addr_copy_to_packed(mld_hdr->multicast_address, group->group_address);
 
 #if CHECKSUM_GEN_ICMP6
 	IF__NETIF_CHECKSUM_ENABLED(netif, NETIF_CHECKSUM_GEN_ICMP6)
 	{
-		mld_hdr->chksum = ip6_chksum_pseudo(p, IP6_NEXTH_ICMP6, p->len,
-						    src_addr,
-						    &(group->group_address));
+		mld_hdr->chksum = ip6_chksum_pseudo(p, IP6_NEXTH_ICMP6, p->len, src_addr, &(group->group_address));
 	}
 #endif /* CHECKSUM_GEN_ICMP6 */
 
@@ -628,8 +599,7 @@ static void mld6_send(struct netif *netif, struct mld_group *group, u8_t type)
 
 	/* Send the packet out. */
 	MLD6_STATS_INC(mld6.xmit);
-	ip6_output_if(p, (ip6_addr_isany(src_addr)) ? NULL : src_addr,
-		      &(group->group_address), MLD6_HL, 0, IP6_NEXTH_HOPBYHOP,
+	ip6_output_if(p, (ip6_addr_isany(src_addr)) ? NULL : src_addr, &(group->group_address), MLD6_HL, 0, IP6_NEXTH_HOPBYHOP,
 		      netif);
 	pbuf_free(p);
 }

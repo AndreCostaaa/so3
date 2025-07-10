@@ -42,7 +42,7 @@
 bool vdevfront_processing_begin(struct vbus_device *vdev)
 {
 	void *priv = dev_get_drvdata(vdev->dev);
-	vdevfront_t *vdevfront = (vdevfront_t *)priv;
+	vdevfront_t *vdevfront = (vdevfront_t *) priv;
 
 	/* Could be still being initialized... */
 	if (vdev->state != VbusStateConnected)
@@ -69,7 +69,7 @@ bool vdevfront_processing_begin(struct vbus_device *vdev)
 void vdevfront_processing_end(struct vbus_device *vdev)
 {
 	void *priv = dev_get_drvdata(vdev->dev);
-	vdevfront_t *vdevfront = (vdevfront_t *)priv;
+	vdevfront_t *vdevfront = (vdevfront_t *) priv;
 
 	atomic_dec(&vdevfront->processing_count);
 
@@ -87,7 +87,7 @@ void vdevfront_processing_end(struct vbus_device *vdev)
 static void __probe(struct vbus_device *vdev)
 {
 	void *priv = dev_get_drvdata(vdev->dev);
-	vdevfront_t *vdevfront = (vdevfront_t *)priv;
+	vdevfront_t *vdevfront = (vdevfront_t *) priv;
 	vdrvfront_t *vdrvfront = to_vdrvfront(vdev);
 
 	DBG("%s: SOO dummy frontend driver for testing\n", __func__);
@@ -104,15 +104,13 @@ static void __probe(struct vbus_device *vdev)
 /**
  * State machine by the frontend's side.
  */
-static void __otherend_changed(struct vbus_device *vdev,
-			       enum vbus_state backend_state)
+static void __otherend_changed(struct vbus_device *vdev, enum vbus_state backend_state)
 {
 	void *priv = dev_get_drvdata(vdev->dev);
-	vdevfront_t *vdevfront = (vdevfront_t *)priv;
+	vdevfront_t *vdevfront = (vdevfront_t *) priv;
 	vdrvfront_t *vdrvfront = to_vdrvfront(vdev);
 
-	DBG("SOO vdummy frontend, backend %s changed its state to %d.\n",
-	    vdev->nodename, backend_state);
+	DBG("SOO vdummy frontend, backend %s changed its state to %d.\n", vdev->nodename, backend_state);
 
 	switch (backend_state) {
 	case VbusStateReconfiguring:
@@ -169,8 +167,8 @@ static void __otherend_changed(struct vbus_device *vdev,
 
 	case VbusStateUnknown:
 	default:
-		lprintk("%s - line %d: Unknown state %d (backend) for device %s\n",
-			__func__, __LINE__, backend_state, vdev->nodename);
+		lprintk("%s - line %d: Unknown state %d (backend) for device %s\n", __func__, __LINE__, backend_state,
+			vdev->nodename);
 		BUG();
 	}
 }

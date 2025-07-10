@@ -87,24 +87,21 @@ void ll_time_end(uint32_t index)
 
 s64 get_time_delay(int index)
 {
-	return compute_delay(delay_timestamp_begin[index],
-			     delay_timestamp_end[index]);
+	return compute_delay(delay_timestamp_begin[index], delay_timestamp_end[index]);
 }
 
 int collect_delay(uint32_t index, s64 *delay)
 {
 	int ret = 0;
 
-	delay_samples[index][delay_samples_count[index]] =
-		get_time_delay(index);
+	delay_samples[index][delay_samples_count[index]] = get_time_delay(index);
 
 	*delay = delay_samples[index][delay_samples_count[index]];
 
 	if (unlikely(delay_samples_count[index] == N_DELAY_SAMPLES - 1))
 		ret = 1;
 
-	delay_samples_count[index] =
-		(delay_samples_count[index] + 1) % N_DELAY_SAMPLES;
+	delay_samples_count[index] = (delay_samples_count[index] + 1) % N_DELAY_SAMPLES;
 
 	return ret;
 }
@@ -127,7 +124,7 @@ void ll_time_collect_delay_show(char *pre, uint32_t index, char *post)
 	if (current_delay) {
 		lprintk(pre);
 		for (i = 0; i < N_DELAY_SAMPLES; i++)
-			lprintk("%u ", (uint32_t)(delay_samples[index][i]));
+			lprintk("%u ", (uint32_t) (delay_samples[index][i]));
 		lprintk(post);
 		lprintk("\n");
 	}
@@ -180,8 +177,7 @@ void ll_time_reset_timestamps(uint32_t index)
 s64 get_time_period(int index, int count)
 {
 	s64 timestamp = ll_time_get();
-	s64 ret =
-		compute_delay(period_prev_timestamps[index][count], timestamp);
+	s64 ret = compute_delay(period_prev_timestamps[index][count], timestamp);
 
 	period_prev_timestamps[index][count] = timestamp;
 
@@ -192,8 +188,7 @@ int collect_period(uint32_t index, s64 *period)
 {
 	int ret = 0;
 
-	periods[index][periods_count[index]] =
-		get_time_period(index, periods_count[index]);
+	periods[index][periods_count[index]] = get_time_period(index, periods_count[index]);
 
 	*period = periods[index][periods_count[index]];
 
@@ -223,7 +218,7 @@ void ll_time_collect_period_show(char *pre, uint32_t index, char *post)
 	if (current_period) {
 		lprintk(pre);
 		for (i = 0; i < N_DELAY_SAMPLES; i++)
-			lprintk("%u ", (uint32_t)(periods[index][i]));
+			lprintk("%u ", (uint32_t) (periods[index][i]));
 		lprintk(post);
 		lprintk("\n");
 	}

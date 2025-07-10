@@ -5,24 +5,43 @@ set -e
 ROOTFS_PATH="/persistence/rootfs.fat.$PLATFORM"
 FILESYSTEM_PATH="/persistence/sdcard.img.$PLATFORM"
 
+mount_loop_partition() {
+  image_path="$1"
+  mount_point="$2"
+  max_count=100 # times 10 ms
+  
+  mkdir -p "$mount_point"
+  device=$(losetup --partscan --find --show "$image_path")
+  
+  count=0
+  while [ ! -e "${device}p1" ] && [ $count -lt $max_count ]; do
+    sleep 0.01
+    count=$((count + 1))
+  done
+  sleep 0.1
+  
+  if [ ! -e "${device}p1" ]; then
+    echo "Timeout waiting for ${device}p1 to appear" >&2
+    losetup -d "$device"  
+    exit 1
+  fi
+  
+  mount "${device}p1" "$mount_point"
+}
+
 mount_rootfs() {
-  mkdir -p rootfs/fs
-  device=$(losetup --partscan --find --show $ROOTFS_PATH)
-  mount ${device}p1 rootfs/fs
+  mount_loop_partition "$ROOTFS_PATH" "rootfs/fs"
+}
+
+mount_filesystem() {
+  rm -rf filesystem/fs/*
+  mount_loop_partition "$FILESYSTEM_PATH" "filesystem/fs"
 }
 
 umount_rootfs() {
   umount rootfs/fs
   losetup -D
   rm -rf rootfs/fs
-}
-
-mount_filesystem() {
-  rm -rf filesystem/fs/*
-  mkdir -p filesystem/fs
-
-  devname=$(losetup --partscan --find --show $FILESYSTEM_PATH)
-  mount ${devname}p1 filesystem/fs 
 }
 
 umount_filesystem() {

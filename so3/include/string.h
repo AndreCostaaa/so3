@@ -66,8 +66,7 @@ char *kasprintf(const char *fmt, ...);
 
 unsigned long simple_strtoul(const char *cp, char **endp, unsigned int base);
 long simple_strtol(const char *cp, char **endp, unsigned int base);
-unsigned long long simple_strtoull(const char *cp, char **endp,
-				   unsigned int base);
+unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base);
 long long simple_strtoll(const char *cp, char **endp, unsigned int base);
 
 char *strrchr(const char *s, int c);

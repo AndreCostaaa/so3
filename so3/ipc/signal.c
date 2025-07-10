@@ -53,19 +53,14 @@ __sigaction_t *sig_check(void)
 
 	for (i = 1; i < _NSIG; i++) {
 		/* Check the signal bit for each signals */
-		if (current()->pcb->sigset_map.sigmap[(i - 1) /
-						      (8 * sizeof(long))] &
-		    (1UL << (i - 1) % (8 * sizeof(long)))) {
+		if (current()->pcb->sigset_map.sigmap[(i - 1) / (8 * sizeof(long))] & (1UL << (i - 1) % (8 * sizeof(long)))) {
 			/* Check if a handler was specified for this signal */
 
 			if (current()->pcb->sa[i].sa_handler != NULL) {
-				current()->pcb->__sa[i].sa =
-					&current()->pcb->sa[i];
+				current()->pcb->__sa[i].sa = &current()->pcb->sa[i];
 				current()->pcb->__sa[i].signum = i;
 
-				current()
-					->pcb->sigset_map
-					.sigmap[(i - 1) / (8 * sizeof(long))] &=
+				current()->pcb->sigset_map.sigmap[(i - 1) / (8 * sizeof(long))] &=
 					~(1UL << (i - 1) % (8 * sizeof(long)));
 
 				return &current()->pcb->__sa[i];
@@ -149,8 +144,7 @@ int do_kill(int pid, int sig)
 
 	if (proc->state != PROC_STATE_ZOMBIE) {
 		/* Set the corresponding bit in the pcb signals bitmap */
-		proc->sigset_map.sigmap[(sig - 1) / (8 * sizeof(long))] |=
-			1UL << (sig - 1) % (8 * sizeof(long));
+		proc->sigset_map.sigmap[(sig - 1) / (8 * sizeof(long))] |= 1UL << (sig - 1) % (8 * sizeof(long));
 
 		/* Depending on the scheduling policy, the signal handler will be processed soon. */
 		raise_softirq(SCHEDULE_SOFTIRQ);

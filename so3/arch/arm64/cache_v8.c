@@ -41,8 +41,7 @@ void mmu_setup(void *pgtable)
 {
 	u64 attr, tcr;
 
-	tcr = TCR_CACHE_FLAGS | TCR_SMP_FLAGS | TCR_TG_FLAGS | TCR_ASID16 |
-	      TCR_A1;
+	tcr = TCR_CACHE_FLAGS | TCR_SMP_FLAGS | TCR_TG_FLAGS | TCR_ASID16 | TCR_A1;
 
 #ifdef CONFIG_VA_BITS_48
 	tcr |= TCR_TxSZ(48) | (TCR_PS_BITS_256TB << TCR_IPS_SHIFT);
@@ -56,8 +55,7 @@ void mmu_setup(void *pgtable)
 	asm volatile("msr tcr_el2, %0" : : "r"(tcr) : "memory");
 
 	/* Prepare the stage-2 configuration */
-	tcr = VTCR_T0SZ_VAL(48) | VTCR_SL0_L0 | TCR_PS_BITS_256TB |
-	      (TCR_ORGN0_WBWA << TCR_IRGN0_SHIFT) |
+	tcr = VTCR_T0SZ_VAL(48) | VTCR_SL0_L0 | TCR_PS_BITS_256TB | (TCR_ORGN0_WBWA << TCR_IRGN0_SHIFT) |
 	      (TCR_ORGN0_WBWA << TCR_ORGN0_SHIFT) | TCR_SH0_INNER | VTCR_RES1;
 
 	asm volatile("msr vtcr_el2, %0" : : "r"(tcr) : "memory");
@@ -154,7 +152,7 @@ void flush_dcache_range(unsigned long start, unsigned long end)
 void flush_pte_entry(addr_t va, u64 *pte)
 {
 	__asm_invalidate_tlb(va);
-	invalidate_dcache_range((u64)pte, (u64)(pte + 1));
+	invalidate_dcache_range((u64) pte, (u64) (pte + 1));
 }
 
 void dcache_enable(void)

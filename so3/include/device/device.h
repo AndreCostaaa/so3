@@ -66,8 +66,7 @@ struct devclass {
 	dev_t *dev; /* Reference to the device */
 	char *class; /* device class */
 
-	uint32_t id_start,
-		id_end; /* Range of device associated to this device */
+	uint32_t id_start, id_end; /* Range of device associated to this device */
 
 	uint32_t type; /* vfs type */
 	struct file_operations *fops; /* the device's fops */
@@ -106,8 +105,7 @@ static inline void *devclass_get_priv(struct devclass *dev)
 }
 
 void devclass_register(dev_t *dev, struct devclass *devclass);
-struct file_operations *devclass_get_fops(const char *filename,
-					  uint32_t *vfs_type);
+struct file_operations *devclass_get_fops(const char *filename, uint32_t *vfs_type);
 
 struct devclass *devclass_get_by_index(size_t index);
 struct devclass *devclass_by_filename(const char *filename);

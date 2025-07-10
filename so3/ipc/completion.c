@@ -66,8 +66,7 @@ void complete(completion_t *completion)
 	completion->count++;
 
 	if (!list_empty(&completion->tcb_list)) {
-		curr = list_first_entry(&completion->tcb_list, queue_thread_t,
-					list);
+		curr = list_first_entry(&completion->tcb_list, queue_thread_t, list);
 		ready(curr->tcb);
 		list_del(&curr->list);
 	}

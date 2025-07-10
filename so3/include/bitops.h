@@ -26,15 +26,10 @@
 #define __BIT_MASK(nr) (1UL << ((nr) % BITS_PER_INT))
 #define BIT_WORD(nr) ((nr) / BITS_PER_INT)
 
-extern unsigned long _find_first_zero_bit(const unsigned long *p,
-					  unsigned long size);
-extern unsigned long _find_next_zero_bit(const unsigned long *p,
-					 unsigned long size,
-					 unsigned long offset);
-extern unsigned long _find_first_bit(const unsigned long *p,
-				     unsigned long size);
-extern unsigned long _find_next_bit(const unsigned long *p, unsigned long size,
-				    unsigned long offset);
+extern unsigned long _find_first_zero_bit(const unsigned long *p, unsigned long size);
+extern unsigned long _find_next_zero_bit(const unsigned long *p, unsigned long size, unsigned long offset);
+extern unsigned long _find_first_bit(const unsigned long *p, unsigned long size);
+extern unsigned long _find_next_bit(const unsigned long *p, unsigned long size, unsigned long offset);
 
 #define find_first_zero_bit(p, sz) _find_first_zero_bit(p, sz)
 #define find_next_zero_bit(p, sz, off) _find_next_zero_bit(p, sz, off)
@@ -46,8 +41,7 @@ extern unsigned long _find_next_bit(const unsigned long *p, unsigned long size,
  *
  * First, the atomic bitops. These use native endian.
  */
-static inline void ____atomic_set_bit(unsigned int bit,
-				      volatile unsigned long *p)
+static inline void ____atomic_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -59,8 +53,7 @@ static inline void ____atomic_set_bit(unsigned int bit,
 	local_irq_restore(flags);
 }
 
-static inline void ____atomic_clear_bit(unsigned int bit,
-					volatile unsigned long *p)
+static inline void ____atomic_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -80,7 +73,7 @@ extern void change_bit(int nr, volatile void *addr);
 static inline void __change_bit(int nr, volatile void *addr)
 {
 	unsigned long mask = __BIT_MASK(nr);
-	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
+	unsigned long *p = ((unsigned long *) addr) + BIT_WORD(nr);
 
 	*p ^= mask;
 }
@@ -88,7 +81,7 @@ static inline void __change_bit(int nr, volatile void *addr)
 static inline int __test_and_set_bit(int nr, volatile void *addr)
 {
 	unsigned long mask = __BIT_MASK(nr);
-	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
+	unsigned long *p = ((unsigned long *) addr) + BIT_WORD(nr);
 	unsigned long old = *p;
 
 	*p = old | mask;
@@ -110,7 +103,7 @@ static inline int test_and_set_bit(int nr, volatile void *addr)
 static inline int __test_and_clear_bit(int nr, volatile void *addr)
 {
 	unsigned long mask = __BIT_MASK(nr);
-	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
+	unsigned long *p = ((unsigned long *) addr) + BIT_WORD(nr);
 	unsigned long old = *p;
 
 	*p = old & ~mask;
@@ -134,7 +127,7 @@ extern int test_and_change_bit(int nr, volatile void *addr);
 static inline int __test_and_change_bit(int nr, volatile void *addr)
 {
 	unsigned long mask = __BIT_MASK(nr);
-	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
+	unsigned long *p = ((unsigned long *) addr) + BIT_WORD(nr);
 	unsigned long old = *p;
 
 	*p = old ^ mask;
@@ -146,7 +139,7 @@ static inline int __test_and_change_bit(int nr, volatile void *addr)
  */
 static inline int test_bit(int nr, const volatile void *addr)
 {
-	return ((unsigned char *)addr)[nr >> 3] & (1U << (nr & 7));
+	return ((unsigned char *) addr)[nr >> 3] & (1U << (nr & 7));
 }
 
 #endif /* BITOPS_H */

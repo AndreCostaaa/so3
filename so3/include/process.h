@@ -40,13 +40,7 @@
 #define FD_MAX 64
 #define N_MUTEX 5
 
-typedef enum {
-	PROC_STATE_NEW,
-	PROC_STATE_READY,
-	PROC_STATE_RUNNING,
-	PROC_STATE_WAITING,
-	PROC_STATE_ZOMBIE
-} proc_state_t;
+typedef enum { PROC_STATE_NEW, PROC_STATE_READY, PROC_STATE_RUNNING, PROC_STATE_WAITING, PROC_STATE_ZOMBIE } proc_state_t;
 typedef unsigned int thread_t;
 
 #define PROC_NAME_LEN 80

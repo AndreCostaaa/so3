@@ -35,7 +35,7 @@
 #define AMBA_ISR_PASS_LIMIT 256
 #define SERIAL_BUFFER_SIZE 80
 
-volatile void *__uart_vaddr = (void *)CONFIG_UART_LL_PADDR;
+volatile void *__uart_vaddr = (void *) CONFIG_UART_LL_PADDR;
 
 static volatile char serial_buffer[SERIAL_BUFFER_SIZE];
 static volatile uint32_t prod = 0, cons = 0;
@@ -105,13 +105,10 @@ static irq_return_t pl011_int(int irq, void *dummy)
 	status = ioread16(pl011.base + UART011_MIS);
 	if (status) {
 		do {
-			iowrite16(pl011.base + UART011_ICR,
-				  status & ~(UART011_TXIS | UART011_RTIS |
-					     UART011_RXIS));
+			iowrite16(pl011.base + UART011_ICR, status & ~(UART011_TXIS | UART011_RTIS | UART011_RXIS));
 
 			if (status & (UART011_RTIS | UART011_RXIS)) {
-				serial_buffer[prod] =
-					ioread16(pl011.base + UART01x_DR);
+				serial_buffer[prod] = ioread16(pl011.base + UART01x_DR);
 
 				/* Check for SIGINT to be raised on Ctrl^C */
 				if (serial_buffer[prod] == 3) {
@@ -122,8 +119,7 @@ static irq_return_t pl011_int(int irq, void *dummy)
 
 #ifdef CONFIG_IPC_SIGNAL
 					if (current()->pcb != NULL)
-						do_kill(current()->pcb->pid,
-							SIGINT);
+						do_kill(current()->pcb->pid, SIGINT);
 #endif
 				}
 
@@ -171,11 +167,9 @@ static int pl011_init(dev_t *dev, int fdt_offset)
 	BUG_ON(prop_len != 2 * sizeof(unsigned long));
 
 #ifdef CONFIG_ARCH_ARM32
-	pl011.base = io_map(fdt32_to_cpu(((const fdt32_t *)prop->data)[0]),
-			    fdt32_to_cpu(((const fdt32_t *)prop->data)[1]));
+	pl011.base = io_map(fdt32_to_cpu(((const fdt32_t *) prop->data)[0]), fdt32_to_cpu(((const fdt32_t *) prop->data)[1]));
 #else
-	pl011.base = io_map(fdt64_to_cpu(((const fdt64_t *)prop->data)[0]),
-			    fdt64_to_cpu(((const fdt64_t *)prop->data)[1]));
+	pl011.base = io_map(fdt64_to_cpu(((const fdt64_t *) prop->data)[0]), fdt64_to_cpu(((const fdt64_t *) prop->data)[1]));
 #endif
 
 	fdt_interrupt_node(fdt_offset, &pl011.irq_def);

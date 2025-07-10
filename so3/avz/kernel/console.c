@@ -54,7 +54,7 @@ void serial_puts(const char *s)
  */
 void console_init_post(void)
 {
-	__uart_vaddr = (addr_t)io_map(CONFIG_UART_LL_PADDR, PAGE_SIZE);
+	__uart_vaddr = (addr_t) io_map(CONFIG_UART_LL_PADDR, PAGE_SIZE);
 	BUG_ON(!__uart_vaddr);
 }
 
@@ -117,7 +117,7 @@ void printk(const char *fmt, ...)
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
-	(void)vsnprintf(buf, sizeof(buf), fmt, args);
+	(void) vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
 	__printk(buf);
@@ -134,7 +134,7 @@ void lprintk(char *fmt, ...)
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
-	(void)vsnprintf(buf, sizeof(buf), fmt, args);
+	(void) vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
 	__printk(buf);
@@ -150,7 +150,7 @@ void printk_buffer(void *buffer, uint32_t n)
 	uint32_t i;
 
 	for (i = 0; i < n; i++)
-		printk("%02x ", ((char *)buffer)[i]);
+		printk("%02x ", ((char *) buffer)[i]);
 	printk("\n");
 }
 
@@ -159,6 +159,6 @@ void printk_buffer_separator(void *buffer, int n, char separator)
 	int i;
 
 	for (i = 0; i < n; i++)
-		printk("%02x%c", ((char *)buffer)[i], separator);
+		printk("%02x%c", ((char *) buffer)[i], separator);
 	printk("\n");
 }

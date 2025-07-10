@@ -229,13 +229,9 @@ typedef union {
  * #define Storeinc(a,b,c) (*a++ = b << 16 | c & 0xffff)
  */
 #if defined(IEEE_8087)
-#define Storeinc(a, b, c)                              \
-	(((unsigned short *)a)[1] = (unsigned short)b, \
-	 ((unsigned short *)a)[0] = (unsigned short)c, a++)
+#define Storeinc(a, b, c) (((unsigned short *) a)[1] = (unsigned short) b, ((unsigned short *) a)[0] = (unsigned short) c, a++)
 #else
-#define Storeinc(a, b, c)                              \
-	(((unsigned short *)a)[0] = (unsigned short)b, \
-	 ((unsigned short *)a)[1] = (unsigned short)c, a++)
+#define Storeinc(a, b, c) (((unsigned short *) a)[0] = (unsigned short) b, ((unsigned short *) a)[1] = (unsigned short) c, a++)
 #endif
 
 /* #define P DBL_MANT_DIG */
@@ -380,14 +376,12 @@ static Bigint *Balloc(int k)
 		freelist[k] = rv->next;
 	else {
 		x = 1 << k;
-		len = (sizeof(Bigint) + (x - 1) * sizeof(ULong) +
-		       sizeof(double) - 1) /
-		      sizeof(double);
+		len = (sizeof(Bigint) + (x - 1) * sizeof(ULong) + sizeof(double) - 1) / sizeof(double);
 		if (k <= Kmax && pmem_next - private_mem + len <= PRIVATE_mem) {
-			rv = (Bigint *)pmem_next;
+			rv = (Bigint *) pmem_next;
 			pmem_next += len;
 		} else {
-			rv = (Bigint *)MALLOC(len * sizeof(double));
+			rv = (Bigint *) MALLOC(len * sizeof(double));
 			if (rv == NULL)
 				return NULL;
 		}
@@ -404,7 +398,7 @@ static void Bfree(Bigint *v)
 {
 	if (v) {
 		if (v->k > Kmax)
-			FREE((void *)v);
+			FREE((void *) v);
 		else {
 			v->next = freelist[v->k];
 			freelist[v->k] = v;
@@ -428,10 +422,9 @@ static Bigint *Balloc(int k)
 	unsigned int len;
 
 	x = 1 << k;
-	len = (sizeof(Bigint) + (x - 1) * sizeof(ULong) + sizeof(double) - 1) /
-	      sizeof(double);
+	len = (sizeof(Bigint) + (x - 1) * sizeof(ULong) + sizeof(double) - 1) / sizeof(double);
 
-	rv = (Bigint *)MALLOC(len * sizeof(double));
+	rv = (Bigint *) MALLOC(len * sizeof(double));
 	if (rv == NULL)
 		return NULL;
 
@@ -446,15 +439,13 @@ static Bigint *Balloc(int k)
 static void Bfree(Bigint *v)
 {
 	if (v) {
-		FREE((void *)v);
+		FREE((void *) v);
 	}
 }
 
 #endif /* SPHINXBASE_USING_MEMORY_DEBUGGER */
 
-#define Bcopy(x, y)                                \
-	memcpy((char *)&x->sign, (char *)&y->sign, \
-	       y->wds * sizeof(Long) + 2 * sizeof(int))
+#define Bcopy(x, y) memcpy((char *) &x->sign, (char *) &y->sign, y->wds * sizeof(Long) + 2 * sizeof(int))
 
 /* Multiply a Bigint b by m and add a.  Either modifies b in place and returns
    a pointer to the modified b, or Bfrees b and returns a pointer to a copy.
@@ -478,9 +469,9 @@ static Bigint *multadd(Bigint *b, int m, int a) /* multiply by m and add a */
 	carry = a;
 	do {
 #ifdef ULLong
-		y = *x * (ULLong)m + carry;
+		y = *x * (ULLong) m + carry;
 		carry = y >> 32;
-		*x++ = (ULong)(y & FFFFFFFF);
+		*x++ = (ULong) (y & FFFFFFFF);
 #else
 		xi = *x;
 		y = (xi & 0xffff) * m + carry;
@@ -500,7 +491,7 @@ static Bigint *multadd(Bigint *b, int m, int a) /* multiply by m and add a */
 			Bfree(b);
 			b = b1;
 		}
-		b->x[wds++] = (ULong)carry;
+		b->x[wds++] = (ULong) carry;
 		b->wds = wds;
 	}
 	return b;
@@ -687,11 +678,11 @@ static Bigint *mult(Bigint *a, Bigint *b)
 			xc = xc0;
 			carry = 0;
 			do {
-				z = *x++ * (ULLong)y + *xc + carry;
+				z = *x++ * (ULLong) y + *xc + carry;
 				carry = z >> 32;
-				*xc++ = (ULong)(z & FFFFFFFF);
+				*xc++ = (ULong) (z & FFFFFFFF);
 			} while (x < xae);
-			*xc = (ULong)carry;
+			*xc = (ULong) carry;
 		}
 	}
 #else
@@ -965,14 +956,14 @@ static Bigint *diff(Bigint *a, Bigint *b)
 	borrow = 0;
 #ifdef ULLong
 	do {
-		y = (ULLong)*xa++ - *xb++ - borrow;
-		borrow = y >> 32 & (ULong)1;
-		*xc++ = (ULong)(y & FFFFFFFF);
+		y = (ULLong) *xa++ - *xb++ - borrow;
+		borrow = y >> 32 & (ULong) 1;
+		*xc++ = (ULong) (y & FFFFFFFF);
 	} while (xb < xbe);
 	while (xa < xae) {
 		y = *xa++ - borrow;
-		borrow = y >> 32 & (ULong)1;
-		*xc++ = (ULong)(y & FFFFFFFF);
+		borrow = y >> 32 & (ULong) 1;
+		*xc++ = (ULong) (y & FFFFFFFF);
 	}
 #else
 	do {
@@ -1079,7 +1070,7 @@ static Bigint *sd2b(U *d, int scale, int *e)
 	b->wds = 2;
 	b->x[0] = word1(d);
 	b->x[1] = word0(d) & Frac_mask;
-	*e = Etiny - 1 + (int)((word0(d) & Exp_mask) >> Exp_shift);
+	*e = Etiny - 1 + (int) ((word0(d) & Exp_mask) >> Exp_shift);
 	if (*e < Etiny)
 		*e = Etiny;
 	else
@@ -1105,8 +1096,7 @@ static Bigint *sd2b(U *d, int scale, int *e)
 			if (scale) {
 				/* The bits shifted out should all be zero. */
 				BUG_ON(!(b->x[0] << (32 - scale) == 0));
-				b->x[0] = (b->x[0] >> scale) |
-					  (b->x[1] << (32 - scale));
+				b->x[0] = (b->x[0] >> scale) | (b->x[1] << (32 - scale));
 				b->x[1] >>= scale;
 			}
 		}
@@ -1141,7 +1131,7 @@ static Bigint *d2b(U *d, int *e, int *bits)
 
 	z = word0(d) & Frac_mask;
 	word0(d) &= 0x7fffffff; /* clear sign bit, which we ignore */
-	if ((de = (int)(word0(d) >> Exp_shift)))
+	if ((de = (int) (word0(d) >> Exp_shift)))
 		z |= Exp_msk1;
 	if ((y = word1(d))) {
 		if ((k = lo0bits(&y))) {
@@ -1186,9 +1176,8 @@ static double ratio(Bigint *a, Bigint *b)
 	return dval(&da) / dval(&db);
 }
 
-static const double tens[] = { 1e0,  1e1,  1e2,	 1e3,  1e4,  1e5,  1e6,	 1e7,
-			       1e8,  1e9,  1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
-			       1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22 };
+static const double tens[] = { 1e0,  1e1,  1e2,	 1e3,  1e4,  1e5,  1e6,	 1e7,  1e8,  1e9,  1e10, 1e11,
+			       1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22 };
 
 static const double bigtens[] = { 1e16, 1e32, 1e64, 1e128, 1e256 };
 static const double tinytens[] = {
@@ -1248,11 +1237,11 @@ static int quorem(Bigint *b, Bigint *S)
 		carry = 0;
 		do {
 #ifdef ULLong
-			ys = *sx++ * (ULLong)q + carry;
+			ys = *sx++ * (ULLong) q + carry;
 			carry = ys >> 32;
 			y = *bx - (ys & FFFFFFFF) - borrow;
-			borrow = y >> 32 & (ULong)1;
-			*bx++ = (ULong)(y & FFFFFFFF);
+			borrow = y >> 32 & (ULong) 1;
+			*bx++ = (ULong) (y & FFFFFFFF);
 #else
 			si = *sx++;
 			ys = (si & 0xffff) * q + carry;
@@ -1283,8 +1272,8 @@ static int quorem(Bigint *b, Bigint *S)
 			ys = *sx++ + carry;
 			carry = ys >> 32;
 			y = *bx - (ys & FFFFFFFF) - borrow;
-			borrow = y >> 32 & (ULong)1;
-			*bx++ = (ULong)(y & FFFFFFFF);
+			borrow = y >> 32 & (ULong) 1;
+			*bx++ = (ULong) (y & FFFFFFFF);
 #else
 			si = *sx++;
 			ys = (si & 0xffff) + carry;
@@ -1318,8 +1307,7 @@ static double sulp(U *x, BCinfo *bc)
 {
 	U u;
 
-	if (bc->scale &&
-	    2 * P + 1 > (int)((word0(x) & Exp_mask) >> Exp_shift)) {
+	if (bc->scale && 2 * P + 1 > (int) ((word0(x) & Exp_mask) >> Exp_shift)) {
 		/* rv/2^bc->scale is subnormal */
 		word0(&u) = (P + 2) * Exp_msk1;
 		word1(&u) = 0;
@@ -1578,7 +1566,7 @@ double strtod(const char *s00, char **se)
        valid input must have at least one digit. */
 	if (!ndigits && !lz) {
 		if (se)
-			*se = (char *)s00;
+			*se = (char *) s00;
 		goto parse_error;
 	}
 
@@ -1586,11 +1574,11 @@ double strtod(const char *s00, char **se)
        computed with them, can safely fit in an int. */
 	if (ndigits > MAX_DIGITS || fraclen > MAX_DIGITS) {
 		if (se)
-			*se = (char *)s00;
+			*se = (char *) s00;
 		goto parse_error;
 	}
-	nd = (int)ndigits;
-	nd0 = (int)ndigits - (int)fraclen;
+	nd = (int) ndigits;
+	nd0 = (int) ndigits - (int) fraclen;
 
 	/* Parse exponent. */
 	e = 0;
@@ -1626,9 +1614,9 @@ double strtod(const char *s00, char **se)
            there are at most 9 significant exponent digits then overflow is
            impossible. */
 		if (s - s1 > 9 || abs_exp > MAX_ABS_EXP)
-			e = (int)MAX_ABS_EXP;
+			e = (int) MAX_ABS_EXP;
 		else
-			e = (int)abs_exp;
+			e = (int) abs_exp;
 		if (esign)
 			e = -e;
 
@@ -1644,7 +1632,7 @@ double strtod(const char *s00, char **se)
 
 	/* Finished parsing.  Set se to indicate how far we parsed */
 	if (se)
-		*se = (char *)s;
+		*se = (char *) s;
 
 	/* If all digits were zero, exit with return value +-0.0.  Otherwise,
        strip trailing zeros: scan back until we hit a nonzero digit. */
@@ -1757,8 +1745,7 @@ double strtod(const char *s00, char **se)
 			/* The last multiplication could overflow. */
 			word0(&rv) -= P * Exp_msk1;
 			dval(&rv) *= bigtens[j];
-			if ((z = word0(&rv) & Exp_mask) >
-			    Exp_msk1 * (DBL_MAX_EXP + Bias - P))
+			if ((z = word0(&rv) & Exp_mask) > Exp_msk1 * (DBL_MAX_EXP + Bias - P))
 				goto ovfl;
 			if (z > Exp_msk1 * (DBL_MAX_EXP + Bias - 1 - P)) {
 				/* set to largest number */
@@ -1790,17 +1777,14 @@ double strtod(const char *s00, char **se)
 			for (j = 0; e1 > 0; j++, e1 >>= 1)
 				if (e1 & 1)
 					dval(&rv) *= tinytens[j];
-			if (bc.scale &&
-			    (j = 2 * P + 1 -
-				 ((word0(&rv) & Exp_mask) >> Exp_shift)) > 0) {
+			if (bc.scale && (j = 2 * P + 1 - ((word0(&rv) & Exp_mask) >> Exp_shift)) > 0) {
 				/* scaled rv is denormal; clear j low bits */
 				if (j >= 32) {
 					word1(&rv) = 0;
 					if (j >= 53)
 						word0(&rv) = (P + 2) * Exp_msk1;
 					else
-						word0(&rv) &= 0xffffffff
-							      << (j - 32);
+						word0(&rv) &= 0xffffffff << (j - 32);
 				} else
 					word1(&rv) &= 0xffffffff << j;
 			}
@@ -2033,7 +2017,7 @@ double strtod(const char *s00, char **se)
 			if (!word1(&rv) && !(word0(&rv) & Bndry_mask)) {
 				/* rv can't be 0, since it's an overestimate for some
                    nonzero value.  So rv is a normal power of 2. */
-				j = (int)(word0(&rv) & Exp_mask) >> Exp_shift;
+				j = (int) (word0(&rv) & Exp_mask) >> Exp_shift;
 				/* rv / 2^bc.scale = 2^(j - 1023 - bc.scale); use bigcomp if
                    rv / 2^bc.scale >= 2^-1021. */
 				if (j - bc.scale >= 2) {
@@ -2076,18 +2060,11 @@ double strtod(const char *s00, char **se)
 			/* exactly half-way between */
 			if (dsign) {
 				if ((word0(&rv) & Bndry_mask1) == Bndry_mask1 &&
-				    word1(&rv) ==
-					    ((bc.scale &&
-					      (y = word0(&rv) & Exp_mask) <=
-						      2 * P * Exp_msk1) ?
-						     (0xffffffff &
-						      (0xffffffff
-						       << (2 * P + 1 -
-							   (y >> Exp_shift)))) :
-						     0xffffffff)) {
+				    word1(&rv) == ((bc.scale && (y = word0(&rv) & Exp_mask) <= 2 * P * Exp_msk1) ?
+							   (0xffffffff & (0xffffffff << (2 * P + 1 - (y >> Exp_shift)))) :
+							   0xffffffff)) {
 					/*boundary case -- increment exponent*/
-					word0(&rv) = (word0(&rv) & Exp_mask) +
-						     Exp_msk1;
+					word0(&rv) = (word0(&rv) & Exp_mask) + Exp_msk1;
 					word1(&rv) = 0;
 					/* dsign = 0; */
 					break;
@@ -2164,10 +2141,8 @@ drop_down:
 			word0(&rv) -= P * Exp_msk1;
 			adj.d = aadj1 * ulp(&rv);
 			dval(&rv) += adj.d;
-			if ((word0(&rv) & Exp_mask) >=
-			    Exp_msk1 * (DBL_MAX_EXP + Bias - P)) {
-				if (word0(&rv0) == Big0 &&
-				    word1(&rv0) == Big1) {
+			if ((word0(&rv) & Exp_mask) >= Exp_msk1 * (DBL_MAX_EXP + Bias - P)) {
+				if (word0(&rv0) == Big0 && word1(&rv0) == Big1) {
 					Bfree(bb);
 					Bfree(bd);
 					Bfree(bs);
@@ -2183,7 +2158,7 @@ drop_down:
 		} else {
 			if (bc.scale && y <= 2 * P * Exp_msk1) {
 				if (aadj <= 0x7fffffff) {
-					if ((z = (ULong)aadj) <= 0)
+					if ((z = (ULong) aadj) <= 0)
 						z = 1;
 					aadj = z;
 					aadj1 = dsign ? aadj : -aadj;
@@ -2200,13 +2175,11 @@ drop_down:
 			if (!bc.scale)
 				if (y == z) {
 					/* Can we stop now? */
-					L = (Long)aadj;
+					L = (Long) aadj;
 					aadj -= L;
 					/* The tolerances below are conservative. */
-					if (dsign || word1(&rv) ||
-					    word0(&rv) & Bndry_mask) {
-						if (aadj < .4999999 ||
-						    aadj > .5000001)
+					if (dsign || word1(&rv) || word0(&rv) & Bndry_mask) {
+						if (aadj < .4999999 || aadj > .5000001)
 							break;
 					} else if (aadj < .4999999 / FLT_RADIX)
 						break;
@@ -2261,15 +2234,13 @@ static char *rv_alloc(int i)
 	int j, k, *r;
 
 	j = sizeof(ULong);
-	for (k = 0;
-	     sizeof(Bigint) - sizeof(ULong) - sizeof(int) + j <= (unsigned)i;
-	     j <<= 1)
+	for (k = 0; sizeof(Bigint) - sizeof(ULong) - sizeof(int) + j <= (unsigned) i; j <<= 1)
 		k++;
-	r = (int *)Balloc(k);
+	r = (int *) Balloc(k);
 	if (r == NULL)
 		return NULL;
 	*r = k;
-	return (char *)(r + 1);
+	return (char *) (r + 1);
 }
 
 static char *nrv_alloc(char *s, char **rve, int n)
@@ -2295,8 +2266,8 @@ static char *nrv_alloc(char *s, char **rve, int n)
 
 void freedtoa(char *s)
 {
-	Bigint *b = (Bigint *)((int *)s - 1);
-	b->maxwds = 1 << (b->k = *(int *)b);
+	Bigint *b = (Bigint *) ((int *) s - 1);
+	b->maxwds = 1 << (b->k = *(int *) b);
 	Bfree(b);
 }
 
@@ -2338,8 +2309,7 @@ void freedtoa(char *s)
    leakage, a successful call to sb_dtoa should always be matched by a
    call to sb_freedtoa. */
 
-char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
-	     char **rve)
+char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign, char **rve)
 {
 	/*  Arguments ndigits, decpt, sign are similar to those
         of ecvt and fcvt; trailing zeros are suppressed from
@@ -2375,8 +2345,8 @@ char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
         to hold the suppressed trailing zeros.
     */
 
-	int bbits, b2, b5, be, dig, i, ieps, ilim, ilim0, ilim1, j, j1, k, k0,
-		k_check, leftright, m2, m5, s2, s5, spec_case, try_quick;
+	int bbits, b2, b5, be, dig, i, ieps, ilim, ilim0, ilim1, j, j1, k, k0, k_check, leftright, m2, m5, s2, s5, spec_case,
+		try_quick;
 	Long L;
 	int denorm;
 	ULong x;
@@ -2416,7 +2386,7 @@ char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
 	b = d2b(&u, &be, &bbits);
 	if (b == NULL)
 		goto failed_malloc;
-	if ((i = (int)(word0(&u) >> Exp_shift1 & (Exp_mask >> Exp_shift1)))) {
+	if ((i = (int) (word0(&u) >> Exp_shift1 & (Exp_mask >> Exp_shift1)))) {
 		dval(&d2) = dval(&u);
 		word0(&d2) &= Frac_mask1;
 		word0(&d2) |= Exp_11;
@@ -2449,16 +2419,14 @@ char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
 		/* d is denormalized */
 
 		i = bbits + be + (Bias + (P - 1) - 1);
-		x = i > 32 ? word0(&u) << (64 - i) | word1(&u) >> (i - 32) :
-			     word1(&u) << (32 - i);
+		x = i > 32 ? word0(&u) << (64 - i) | word1(&u) >> (i - 32) : word1(&u) << (32 - i);
 		dval(&d2) = x;
 		word0(&d2) -= 31 * Exp_msk1; /* adjust exponent */
 		i -= (Bias + (P - 1) - 1) + 1;
 		denorm = 1;
 	}
-	ds = (dval(&d2) - 1.5) * 0.289529654602168 + 0.1760912590558 +
-	     i * 0.301029995663981;
-	k = (int)ds;
+	ds = (dval(&d2) - 1.5) * 0.289529654602168 + 0.1760912590558 + i * 0.301029995663981;
+	k = (int) ds;
 	if (ds < 0. && ds != k)
 		k--; /* want k = floor(ds) */
 	k_check = 1;
@@ -2581,9 +2549,9 @@ char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
              */
 			dval(&eps) = 0.5 / tens[ilim - 1] - dval(&eps);
 			for (i = 0;;) {
-				L = (Long)dval(&u);
+				L = (Long) dval(&u);
 				dval(&u) -= L;
-				*s++ = '0' + (int)L;
+				*s++ = '0' + (int) L;
 				if (dval(&u) < dval(&eps))
 					goto ret1;
 				if (1. - dval(&u) < dval(&eps))
@@ -2597,10 +2565,10 @@ char *__dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
 			/* Generate ilim digits, then fix them up. */
 			dval(&eps) *= tens[ilim - 1];
 			for (i = 1;; i++, dval(&u) *= 10.) {
-				L = (Long)(dval(&u));
+				L = (Long) (dval(&u));
 				if (!(dval(&u) -= L))
 					ilim = i;
-				*s++ = '0' + (int)L;
+				*s++ = '0' + (int) L;
 				if (i == ilim) {
 					if (dval(&u) > 0.5 + dval(&eps))
 						goto bump_up;
@@ -2633,16 +2601,15 @@ fast_failed:
 			goto one_digit;
 		}
 		for (i = 1;; i++, dval(&u) *= 10.) {
-			L = (Long)(dval(&u) / ds);
+			L = (Long) (dval(&u) / ds);
 			dval(&u) -= L * ds;
-			*s++ = '0' + (int)L;
+			*s++ = '0' + (int) L;
 			if (!dval(&u)) {
 				break;
 			}
 			if (i == ilim) {
 				dval(&u) += dval(&u);
-				if (dval(&u) > ds ||
-				    (dval(&u) == ds && L & 1)) {
+				if (dval(&u) > ds || (dval(&u) == ds && L & 1)) {
 bump_up:
 					while (*--s == '9')
 						if (s == s0) {
@@ -2710,8 +2677,7 @@ bump_up:
 
 	spec_case = 0;
 	if ((mode < 2 || leftright)) {
-		if (!word1(&u) && !(word0(&u) & Bndry_mask) &&
-		    word0(&u) & (Exp_mask & ~Exp_msk1)) {
+		if (!word1(&u) && !(word0(&u) & Bndry_mask) && word0(&u) & (Exp_mask & ~Exp_msk1)) {
 			/* The special case */
 			b2 += Log2P;
 			s2 += Log2P;
@@ -2814,8 +2780,7 @@ one_digit:
 				*s++ = dig;
 				goto ret;
 			}
-			if (j < 0 ||
-			    (j == 0 && mode != 1 && !(word1(&u) & 1))) {
+			if (j < 0 || (j == 0 && mode != 1 && !(word1(&u) & 1))) {
 				if (!b->x[0] && b->wds <= 1) {
 					goto accept_dig;
 				}
@@ -2824,8 +2789,7 @@ one_digit:
 					if (b == NULL)
 						goto failed_malloc;
 					j1 = cmp(b, S);
-					if ((j1 > 0 || (j1 == 0 && dig & 1)) &&
-					    dig++ == '9')
+					if ((j1 > 0 || (j1 == 0 && dig & 1)) && dig++ == '9')
 						goto round_9_up;
 				}
 accept_dig:

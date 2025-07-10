@@ -43,7 +43,7 @@ irqdesc_t *irq_to_desc(uint32_t irq)
 void *__irq_deferred_fn(void *args)
 {
 	int *ret;
-	uint32_t irq = *((uint32_t *)args);
+	uint32_t irq = *((uint32_t *) args);
 
 	while (atomic_read(&irqdesc[irq].deferred_pending)) {
 		atomic_set(&irqdesc[irq].deferred_pending, 0);
@@ -51,8 +51,7 @@ void *__irq_deferred_fn(void *args)
 		local_irq_enable();
 
 		/* Perform the deferred processing bound to this IRQ */
-		ret = (int *)irqdesc[irq].irq_deferred_fn(irq,
-							  irqdesc[irq].data);
+		ret = (int *) irqdesc[irq].irq_deferred_fn(irq, irqdesc[irq].data);
 
 		local_irq_disable();
 
@@ -130,8 +129,7 @@ void irq_set_irq_ops(int irq, irq_ops_t *irq_ops)
 /*
  * Bind a IRQ number with a specific top half handler and bottom half if any.
  */
-void irq_bind(int irq, irq_handler_t handler, irq_handler_t irq_deferred_fn,
-	      void *data)
+void irq_bind(int irq, irq_handler_t handler, irq_handler_t irq_deferred_fn, void *data)
 {
 	LOG_DEBUG("Binding irq %d with action at %x\n", irq, handler);
 

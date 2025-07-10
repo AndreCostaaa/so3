@@ -256,7 +256,7 @@ void dialog_clear(void)
 		int i;
 
 		wattrset(stdscr, dlg.screen.atr);
-		mvwaddstr(stdscr, 0, 1, (char *)dlg.backtitle);
+		mvwaddstr(stdscr, 0, 1, (char *) dlg.backtitle);
 		wmove(stdscr, 1, 1);
 		for (i = 1; i < COLS - 1; i++)
 			waddch(stdscr, ACS_HLINE);
@@ -361,10 +361,8 @@ void print_autowrap(WINDOW *win, const char *prompt, int width, int y, int x)
 			   short, and the next word does not fit. */
 			room = width - cur_x;
 			wlen = strlen(word);
-			if (wlen > room || (newl && wlen < 4 && sp &&
-					    wlen + 1 + strlen(sp) > room &&
-					    (!(sp2 = strchr(sp, ' ')) ||
-					     wlen + 1 + (sp2 - sp) > room))) {
+			if (wlen > room || (newl && wlen < 4 && sp && wlen + 1 + strlen(sp) > room &&
+					    (!(sp2 = strchr(sp, ' ')) || wlen + 1 + (sp2 - sp) > room))) {
 				cur_y++;
 				cur_x = x;
 			}
@@ -392,23 +390,18 @@ void print_button(WINDOW *win, const char *label, int y, int x, int selected)
 	int i, temp;
 
 	wmove(win, y, x);
-	wattrset(win,
-		 selected ? dlg.button_active.atr : dlg.button_inactive.atr);
+	wattrset(win, selected ? dlg.button_active.atr : dlg.button_inactive.atr);
 	waddstr(win, "<");
 	temp = strspn(label, " ");
 	label += temp;
-	wattrset(win, selected ? dlg.button_label_active.atr :
-				 dlg.button_label_inactive.atr);
+	wattrset(win, selected ? dlg.button_label_active.atr : dlg.button_label_inactive.atr);
 	for (i = 0; i < temp; i++)
 		waddch(win, ' ');
-	wattrset(win, selected ? dlg.button_key_active.atr :
-				 dlg.button_key_inactive.atr);
+	wattrset(win, selected ? dlg.button_key_active.atr : dlg.button_key_inactive.atr);
 	waddch(win, label[0]);
-	wattrset(win, selected ? dlg.button_label_active.atr :
-				 dlg.button_label_inactive.atr);
-	waddstr(win, (char *)label + 1);
-	wattrset(win,
-		 selected ? dlg.button_active.atr : dlg.button_inactive.atr);
+	wattrset(win, selected ? dlg.button_label_active.atr : dlg.button_label_inactive.atr);
+	waddstr(win, (char *) label + 1);
+	wattrset(win, selected ? dlg.button_active.atr : dlg.button_inactive.atr);
 	waddstr(win, ">");
 	wmove(win, y, x + temp + 1);
 }
@@ -416,8 +409,7 @@ void print_button(WINDOW *win, const char *label, int y, int x, int selected)
 /*
  * Draw a rectangular box with line drawing characters
  */
-void draw_box(WINDOW *win, int y, int x, int height, int width, chtype box,
-	      chtype border)
+void draw_box(WINDOW *win, int y, int x, int height, int width, chtype box, chtype border)
 {
 	int i, j;
 
@@ -570,8 +562,7 @@ void item_add_str(const char *fmt, ...)
 	avail = sizeof(item_cur->node.str) - strlen(item_cur->node.str);
 
 	va_start(ap, fmt);
-	vsnprintf(item_cur->node.str + strlen(item_cur->node.str), avail, fmt,
-		  ap);
+	vsnprintf(item_cur->node.str + strlen(item_cur->node.str), avail, fmt, ap);
 	item_cur->node.str[sizeof(item_cur->node.str) - 1] = '\0';
 	va_end(ap);
 }

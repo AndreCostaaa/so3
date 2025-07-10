@@ -31,19 +31,14 @@
 
 #define ARM_SMCCC_FUNC_MASK 0xFFFF
 
-#define ARM_SMCCC_IS_FAST_CALL(smc_val) \
-	((smc_val) & (ARM_SMCCC_FAST_CALL << ARM_SMCCC_TYPE_SHIFT))
-#define ARM_SMCCC_IS_64(smc_val) \
-	((smc_val) & (ARM_SMCCC_SMC_64 << ARM_SMCCC_CALL_CONV_SHIFT))
+#define ARM_SMCCC_IS_FAST_CALL(smc_val) ((smc_val) & (ARM_SMCCC_FAST_CALL << ARM_SMCCC_TYPE_SHIFT))
+#define ARM_SMCCC_IS_64(smc_val) ((smc_val) & (ARM_SMCCC_SMC_64 << ARM_SMCCC_CALL_CONV_SHIFT))
 #define ARM_SMCCC_FUNC_NUM(smc_val) ((smc_val) & ARM_SMCCC_FUNC_MASK)
-#define ARM_SMCCC_OWNER_NUM(smc_val) \
-	(((smc_val) >> ARM_SMCCC_OWNER_SHIFT) & ARM_SMCCC_OWNER_MASK)
+#define ARM_SMCCC_OWNER_NUM(smc_val) (((smc_val) >> ARM_SMCCC_OWNER_SHIFT) & ARM_SMCCC_OWNER_MASK)
 
-#define ARM_SMCCC_CALL_VAL(type, calling_convention, owner, func_num)  \
-	(((type) << ARM_SMCCC_TYPE_SHIFT) |                            \
-	 ((calling_convention) << ARM_SMCCC_CALL_CONV_SHIFT) |         \
-	 (((owner) & ARM_SMCCC_OWNER_MASK) << ARM_SMCCC_OWNER_SHIFT) | \
-	 ((func_num) & ARM_SMCCC_FUNC_MASK))
+#define ARM_SMCCC_CALL_VAL(type, calling_convention, owner, func_num)                             \
+	(((type) << ARM_SMCCC_TYPE_SHIFT) | ((calling_convention) << ARM_SMCCC_CALL_CONV_SHIFT) | \
+	 (((owner) & ARM_SMCCC_OWNER_MASK) << ARM_SMCCC_OWNER_SHIFT) | ((func_num) & ARM_SMCCC_FUNC_MASK))
 
 #define ARM_SMCCC_OWNER_ARCH 0
 #define ARM_SMCCC_OWNER_CPU 1
@@ -64,31 +59,23 @@
 #define ARM_SMCCC_VERSION_1_1 0x10001
 #define ARM_SMCCC_VERSION_1_2 0x10002
 
-#define ARM_SMCCC_VERSION_FUNC_ID \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 0)
+#define ARM_SMCCC_VERSION_FUNC_ID ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 0)
 
-#define ARM_SMCCC_ARCH_FEATURES_FUNC_ID \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 1)
+#define ARM_SMCCC_ARCH_FEATURES_FUNC_ID ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 1)
 
-#define ARM_SMCCC_ARCH_SOC_ID \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 2)
+#define ARM_SMCCC_ARCH_SOC_ID ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 2)
 
-#define ARM_SMCCC_ARCH_WORKAROUND_1 \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 0x8000)
+#define ARM_SMCCC_ARCH_WORKAROUND_1 ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 0x8000)
 
-#define ARM_SMCCC_ARCH_WORKAROUND_2 \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 0x7fff)
+#define ARM_SMCCC_ARCH_WORKAROUND_2 ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_32, 0, 0x7fff)
 
 #define SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED 1
 
 /* Paravirtualised time calls (defined by ARM DEN0057A) */
-#define ARM_SMCCC_HV_PV_TIME_FEATURES                             \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_64, \
-			   ARM_SMCCC_OWNER_STANDARD_HYP, 0x20)
+#define ARM_SMCCC_HV_PV_TIME_FEATURES \
+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_64, ARM_SMCCC_OWNER_STANDARD_HYP, 0x20)
 
-#define ARM_SMCCC_HV_PV_TIME_ST                                   \
-	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_64, \
-			   ARM_SMCCC_OWNER_STANDARD_HYP, 0x21)
+#define ARM_SMCCC_HV_PV_TIME_ST ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL, ARM_SMCCC_SMC_64, ARM_SMCCC_OWNER_STANDARD_HYP, 0x21)
 
 /*
  * Return codes defined in ARM DEN 0070A
@@ -168,10 +155,8 @@ struct arm_smccc_quirk {
  * from register 0 to 3 on return from the SMC instruction.  An optional
  * quirk structure provides vendor specific behavior.
  */
-void __arm_smccc_smc(unsigned long a0, unsigned long a1, unsigned long a2,
-		     unsigned long a3, unsigned long a4, unsigned long a5,
-		     unsigned long a6, unsigned long a7,
-		     struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
+void __arm_smccc_smc(unsigned long a0, unsigned long a1, unsigned long a2, unsigned long a3, unsigned long a4, unsigned long a5,
+		     unsigned long a6, unsigned long a7, struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
 
 /**
  * __arm_smccc_hvc() - make HVC calls
@@ -185,10 +170,8 @@ void __arm_smccc_smc(unsigned long a0, unsigned long a1, unsigned long a2,
  * the content from register 0 to 3 on return from the HVC instruction.  An
  * optional quirk structure provides vendor specific behavior.
  */
-void __arm_smccc_hvc(unsigned long a0, unsigned long a1, unsigned long a2,
-		     unsigned long a3, unsigned long a4, unsigned long a5,
-		     unsigned long a6, unsigned long a7,
-		     struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
+void __arm_smccc_hvc(unsigned long a0, unsigned long a1, unsigned long a2, unsigned long a3, unsigned long a4, unsigned long a5,
+		     unsigned long a6, unsigned long a7, struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
 
 #define arm_smccc_smc(...) __arm_smccc_smc(__VA_ARGS__, NULL)
 
@@ -218,30 +201,30 @@ void __arm_smccc_hvc(unsigned long a0, unsigned long a1, unsigned long a2,
 
 #define __declare_arg_0(a0, res)            \
 	struct arm_smccc_res *___res = res; \
-	register unsigned long arg0 asm("r0") = (u32)a0
+	register unsigned long arg0 asm("r0") = (u32) a0
 
-#define __declare_arg_1(a0, a1, res)                     \
-	typeof(a1) __a1 = a1;                            \
-	struct arm_smccc_res *___res = res;              \
-	register unsigned long arg0 asm("r0") = (u32)a0; \
+#define __declare_arg_1(a0, a1, res)                      \
+	typeof(a1) __a1 = a1;                             \
+	struct arm_smccc_res *___res = res;               \
+	register unsigned long arg0 asm("r0") = (u32) a0; \
 	register typeof(a1) arg1 asm("r1") = __a1
 
-#define __declare_arg_2(a0, a1, a2, res)                 \
-	typeof(a1) __a1 = a1;                            \
-	typeof(a2) __a2 = a2;                            \
-	struct arm_smccc_res *___res = res;              \
-	register unsigned long arg0 asm("r0") = (u32)a0; \
-	register typeof(a1) arg1 asm("r1") = __a1;       \
+#define __declare_arg_2(a0, a1, a2, res)                  \
+	typeof(a1) __a1 = a1;                             \
+	typeof(a2) __a2 = a2;                             \
+	struct arm_smccc_res *___res = res;               \
+	register unsigned long arg0 asm("r0") = (u32) a0; \
+	register typeof(a1) arg1 asm("r1") = __a1;        \
 	register typeof(a2) arg2 asm("r2") = __a2
 
-#define __declare_arg_3(a0, a1, a2, a3, res)             \
-	typeof(a1) __a1 = a1;                            \
-	typeof(a2) __a2 = a2;                            \
-	typeof(a3) __a3 = a3;                            \
-	struct arm_smccc_res *___res = res;              \
-	register unsigned long arg0 asm("r0") = (u32)a0; \
-	register typeof(a1) arg1 asm("r1") = __a1;       \
-	register typeof(a2) arg2 asm("r2") = __a2;       \
+#define __declare_arg_3(a0, a1, a2, a3, res)              \
+	typeof(a1) __a1 = a1;                             \
+	typeof(a2) __a2 = a2;                             \
+	typeof(a3) __a3 = a3;                             \
+	struct arm_smccc_res *___res = res;               \
+	register unsigned long arg0 asm("r0") = (u32) a0; \
+	register typeof(a1) arg1 asm("r1") = __a1;        \
+	register typeof(a2) arg2 asm("r2") = __a2;        \
 	register typeof(a3) arg3 asm("r3") = __a3
 
 #define __declare_arg_4(a0, a1, a2, a3, a4, res) \
@@ -277,19 +260,16 @@ void __arm_smccc_hvc(unsigned long a0, unsigned long a1, unsigned long a2,
  * entitled to optimise the whole sequence away. "volatile" is what
  * makes it stick.
  */
-#define __arm_smccc_1_1(inst, ...)                                           \
-	do {                                                                 \
-		register unsigned long r0 asm("r0");                         \
-		register unsigned long r1 asm("r1");                         \
-		register unsigned long r2 asm("r2");                         \
-		register unsigned long r3 asm("r3");                         \
-		__declare_args(__count_args(__VA_ARGS__), __VA_ARGS__);      \
-		asm volatile(                                                \
-			inst "\n"                                            \
-			: "=r"(r0), "=r"(r1), "=r"(r2),                      \
-			  "=r"(r3)__constraints(__count_args(__VA_ARGS__))); \
-		if (___res)                                                  \
-			*___res = (typeof(*___res)){ r0, r1, r2, r3 };       \
+#define __arm_smccc_1_1(inst, ...)                                                                                         \
+	do {                                                                                                               \
+		register unsigned long r0 asm("r0");                                                                       \
+		register unsigned long r1 asm("r1");                                                                       \
+		register unsigned long r2 asm("r2");                                                                       \
+		register unsigned long r3 asm("r3");                                                                       \
+		__declare_args(__count_args(__VA_ARGS__), __VA_ARGS__);                                                    \
+		asm volatile(inst "\n" : "=r"(r0), "=r"(r1), "=r"(r2), "=r"(r3) __constraints(__count_args(__VA_ARGS__))); \
+		if (___res)                                                                                                \
+			*___res = (typeof(*___res)) { r0, r1, r2, r3 };                                                    \
 	} while (0)
 
 /*

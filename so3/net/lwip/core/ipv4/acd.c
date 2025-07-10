@@ -71,8 +71,7 @@
 #include "lwip/acd.h"
 #include "lwip/prot/acd.h"
 
-#define ACD_FOREACH(acd, acd_list) \
-	for ((acd) = acd_list; (acd) != NULL; (acd) = (acd)->next)
+#define ACD_FOREACH(acd, acd_list) for ((acd) = acd_list; (acd) != NULL; (acd) = (acd)->next)
 
 #define ACD_TICKS_PER_SECOND (1000 / ACD_TMR_INTERVAL)
 
@@ -82,25 +81,19 @@
 #else /* LWIP_RAND */
 #ifdef LWIP_AUTOIP_RAND
 #include "lwip/autoip.h"
-#define LWIP_ACD_RAND(netif, acd) \
-	LWIP_AUTOIP_RAND(netif) /* for backwards compatibility */
+#define LWIP_ACD_RAND(netif, acd) LWIP_AUTOIP_RAND(netif) /* for backwards compatibility */
 #else
-#define LWIP_ACD_RAND(netif, acd)                      \
-	((((u32_t)((netif->hwaddr[5]) & 0xff) << 24) | \
-	  ((u32_t)((netif->hwaddr[3]) & 0xff) << 16) | \
-	  ((u32_t)((netif->hwaddr[2]) & 0xff) << 8) |  \
-	  ((u32_t)((netif->hwaddr[4]) & 0xff))) +      \
+#define LWIP_ACD_RAND(netif, acd)                                                                     \
+	((((u32_t) ((netif->hwaddr[5]) & 0xff) << 24) | ((u32_t) ((netif->hwaddr[3]) & 0xff) << 16) | \
+	  ((u32_t) ((netif->hwaddr[2]) & 0xff) << 8) | ((u32_t) ((netif->hwaddr[4]) & 0xff))) +       \
 	 (acd->sent_num))
 #endif /* LWIP_AUTOIP_RAND */
 #endif /* LWIP_RAND */
 
-#define ACD_RANDOM_PROBE_WAIT(netif, acd) \
-	(LWIP_ACD_RAND(netif, acd) % (PROBE_WAIT * ACD_TICKS_PER_SECOND))
+#define ACD_RANDOM_PROBE_WAIT(netif, acd) (LWIP_ACD_RAND(netif, acd) % (PROBE_WAIT * ACD_TICKS_PER_SECOND))
 
-#define ACD_RANDOM_PROBE_INTERVAL(netif, acd)                 \
-	((LWIP_ACD_RAND(netif, acd) %                         \
-	  ((PROBE_MAX - PROBE_MIN) * ACD_TICKS_PER_SECOND)) + \
-	 (PROBE_MIN * ACD_TICKS_PER_SECOND))
+#define ACD_RANDOM_PROBE_INTERVAL(netif, acd) \
+	((LWIP_ACD_RAND(netif, acd) % ((PROBE_MAX - PROBE_MIN) * ACD_TICKS_PER_SECOND)) + (PROBE_MIN * ACD_TICKS_PER_SECOND))
 
 /* Function definitions */
 static void acd_restart(struct netif *netif, struct acd *acd);
@@ -117,22 +110,19 @@ static void acd_put_in_passive_mode(struct netif *netif, struct acd *acd);
  * @param acd_conflict_callback callback to be called when conflict information
  *                              is available
  */
-err_t acd_add(struct netif *netif, struct acd *acd,
-	      acd_conflict_callback_t acd_conflict_callback)
+err_t acd_add(struct netif *netif, struct acd *acd, acd_conflict_callback_t acd_conflict_callback)
 {
 	struct acd *acd2;
 
 	/* Set callback */
 	LWIP_ASSERT_CORE_LOCKED();
-	LWIP_ASSERT("acd_conflict_callback != NULL",
-		    acd_conflict_callback != NULL);
+	LWIP_ASSERT("acd_conflict_callback != NULL", acd_conflict_callback != NULL);
 	acd->acd_conflict_callback = acd_conflict_callback;
 
 	/* Check if the acd struct is already added */
 	for (acd2 = netif->acd_list; acd2 != NULL; acd2 = acd2->next) {
 		if (acd2 == acd) {
-			LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-				    ("acd_add(): acd already added to list\n"));
+			LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("acd_add(): acd already added to list\n"));
 			return ERR_OK;
 		}
 	}
@@ -157,9 +147,8 @@ err_t acd_start(struct netif *netif, struct acd *acd, ip4_addr_t ipaddr)
 	err_t result = ERR_OK;
 
 	LWIP_UNUSED_ARG(netif);
-	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-		    ("acd_start(netif=%p) %c%c%" U16_F "\n", (void *)netif,
-		     netif->name[0], netif->name[1], (u16_t)netif->num));
+	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("acd_start(netif=%p) %c%c%" U16_F "\n", (void *) netif,
+								  netif->name[0], netif->name[1], (u16_t) netif->num));
 
 	/* init probing state */
 	acd->sent_num = 0;
@@ -167,7 +156,7 @@ err_t acd_start(struct netif *netif, struct acd *acd, ip4_addr_t ipaddr)
 	ip4_addr_copy(acd->ipaddr, ipaddr);
 	acd->state = ACD_STATE_PROBE_WAIT;
 
-	acd->ttw = (u16_t)(ACD_RANDOM_PROBE_WAIT(netif, acd));
+	acd->ttw = (u16_t) (ACD_RANDOM_PROBE_WAIT(netif, acd));
 
 	return result;
 }
@@ -180,8 +169,7 @@ err_t acd_start(struct netif *netif, struct acd *acd, ip4_addr_t ipaddr)
  */
 err_t acd_stop(struct acd *acd)
 {
-	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-		    ("acd_stop\n"));
+	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("acd_stop\n"));
 
 	if (acd != NULL) {
 		acd->state = ACD_STATE_OFF;
@@ -222,9 +210,7 @@ void acd_tmr(void)
 			}
 
 			LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE,
-				    ("acd_tmr() ACD-State: %" U16_F
-				     ", ttw=%" U16_F "\n",
-				     (u16_t)(acd->state), acd->ttw));
+				    ("acd_tmr() ACD-State: %" U16_F ", ttw=%" U16_F "\n", (u16_t) (acd->state), acd->ttw));
 
 			if (acd->ttw > 0) {
 				acd->ttw--;
@@ -236,26 +222,19 @@ void acd_tmr(void)
 				if (acd->ttw == 0) {
 					acd->state = ACD_STATE_PROBING;
 					etharp_acd_probe(netif, &acd->ipaddr);
-					LWIP_DEBUGF(
-						ACD_DEBUG | LWIP_DBG_TRACE,
-						("acd_tmr() PROBING Sent Probe\n"));
+					LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE, ("acd_tmr() PROBING Sent Probe\n"));
 					acd->sent_num++;
 					if (acd->sent_num >= PROBE_NUM) {
 						/* Switch to ANNOUNCE_WAIT: last probe is sent*/
-						acd->state =
-							ACD_STATE_ANNOUNCE_WAIT;
+						acd->state = ACD_STATE_ANNOUNCE_WAIT;
 
 						acd->sent_num = 0;
 
 						/* calculate time to wait before announcing */
-						acd->ttw =
-							(u16_t)(ANNOUNCE_WAIT *
-								ACD_TICKS_PER_SECOND);
+						acd->ttw = (u16_t) (ANNOUNCE_WAIT * ACD_TICKS_PER_SECOND);
 					} else {
 						/* calculate time to wait to next probe */
-						acd->ttw =
-							(u16_t)(ACD_RANDOM_PROBE_INTERVAL(
-								netif, acd));
+						acd->ttw = (u16_t) (ACD_RANDOM_PROBE_INTERVAL(netif, acd));
 					}
 				}
 				break;
@@ -264,61 +243,35 @@ void acd_tmr(void)
 			case ACD_STATE_ANNOUNCING:
 				if (acd->ttw == 0) {
 					if (acd->sent_num == 0) {
-						acd->state =
-							ACD_STATE_ANNOUNCING;
+						acd->state = ACD_STATE_ANNOUNCING;
 
 						/* reset conflict count to ensure fast re-probing after announcing */
 						acd->num_conflicts = 0;
 
-						LWIP_DEBUGF(
-							ACD_DEBUG |
-								LWIP_DBG_TRACE |
-								LWIP_DBG_STATE,
-							("acd_tmr(): changing state to ANNOUNCING: %" U16_F
-							 ".%" U16_F ".%" U16_F
-							 ".%" U16_F "\n",
-							 ip4_addr1_16(
-								 &acd->ipaddr),
-							 ip4_addr2_16(
-								 &acd->ipaddr),
-							 ip4_addr3_16(
-								 &acd->ipaddr),
-							 ip4_addr4_16(
-								 &acd->ipaddr)));
+						LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
+							    ("acd_tmr(): changing state to ANNOUNCING: %" U16_F ".%" U16_F
+							     ".%" U16_F ".%" U16_F "\n",
+							     ip4_addr1_16(&acd->ipaddr), ip4_addr2_16(&acd->ipaddr),
+							     ip4_addr3_16(&acd->ipaddr), ip4_addr4_16(&acd->ipaddr)));
 					}
 
-					etharp_acd_announce(netif,
-							    &acd->ipaddr);
-					LWIP_DEBUGF(
-						ACD_DEBUG | LWIP_DBG_TRACE,
-						("acd_tmr() ANNOUNCING Sent Announce\n"));
-					acd->ttw = ANNOUNCE_INTERVAL *
-						   ACD_TICKS_PER_SECOND;
+					etharp_acd_announce(netif, &acd->ipaddr);
+					LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE, ("acd_tmr() ANNOUNCING Sent Announce\n"));
+					acd->ttw = ANNOUNCE_INTERVAL * ACD_TICKS_PER_SECOND;
 					acd->sent_num++;
 
 					if (acd->sent_num >= ANNOUNCE_NUM) {
 						acd->state = ACD_STATE_ONGOING;
 						acd->sent_num = 0;
 						acd->ttw = 0;
-						LWIP_DEBUGF(
-							ACD_DEBUG |
-								LWIP_DBG_TRACE |
-								LWIP_DBG_STATE,
-							("acd_tmr(): changing state to ONGOING: %" U16_F
-							 ".%" U16_F ".%" U16_F
-							 ".%" U16_F "\n",
-							 ip4_addr1_16(
-								 &acd->ipaddr),
-							 ip4_addr2_16(
-								 &acd->ipaddr),
-							 ip4_addr3_16(
-								 &acd->ipaddr),
-							 ip4_addr4_16(
-								 &acd->ipaddr)));
+						LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
+							    ("acd_tmr(): changing state to ONGOING: %" U16_F ".%" U16_F
+							     ".%" U16_F ".%" U16_F "\n",
+							     ip4_addr1_16(&acd->ipaddr), ip4_addr2_16(&acd->ipaddr),
+							     ip4_addr3_16(&acd->ipaddr), ip4_addr4_16(&acd->ipaddr)));
 
 						/* finally, let acd user know that the address is good and can be used */
-						acd->acd_conflict_callback(
-							netif, ACD_IP_OK);
+						acd->acd_conflict_callback(netif, ACD_IP_OK);
 					}
 				}
 				break;
@@ -330,8 +283,7 @@ void acd_tmr(void)
 					/* let the acd user (after rate limit interval) know that their is
              * a conflict detected. So it can restart the address acquiring
              * process.*/
-					acd->acd_conflict_callback(
-						netif, ACD_RESTART_CLIENT);
+					acd->acd_conflict_callback(netif, ACD_RESTART_CLIENT);
 				}
 				break;
 
@@ -360,11 +312,9 @@ static void acd_restart(struct netif *netif, struct acd *acd)
    * acquiring and probing addresses. compliant to RFC 5227 Section 2.1.1 */
 	if (acd->num_conflicts >= MAX_CONFLICTS) {
 		acd->state = ACD_STATE_RATE_LIMIT;
-		acd->ttw = (u16_t)(RATE_LIMIT_INTERVAL * ACD_TICKS_PER_SECOND);
-		LWIP_DEBUGF(
-			ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE |
-				LWIP_DBG_LEVEL_WARNING,
-			("acd_restart(): rate limiting initiated. too many conflicts\n"));
+		acd->ttw = (u16_t) (RATE_LIMIT_INTERVAL * ACD_TICKS_PER_SECOND);
+		LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
+			    ("acd_restart(): rate limiting initiated. too many conflicts\n"));
 	} else {
 		/* acd should be stopped because ipaddr isn't valid any more */
 		acd_stop(acd);
@@ -416,14 +366,10 @@ void acd_arp_reply(struct netif *netif, struct etharp_hdr *hdr)
          * ip.dst == ipaddr && hw.src != own hwaddr (someone else is probing it)
          */
 			if ((ip4_addr_cmp(&sipaddr, &acd->ipaddr)) ||
-			    (ip4_addr_isany_val(sipaddr) &&
-			     ip4_addr_cmp(&dipaddr, &acd->ipaddr) &&
+			    (ip4_addr_isany_val(sipaddr) && ip4_addr_cmp(&dipaddr, &acd->ipaddr) &&
 			     !eth_addr_cmp(&netifaddr, &hdr->shwaddr))) {
-				LWIP_DEBUGF(
-					ACD_DEBUG | LWIP_DBG_TRACE |
-						LWIP_DBG_STATE |
-						LWIP_DBG_LEVEL_WARNING,
-					("acd_arp_reply(): Probe Conflict detected\n"));
+				LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
+					    ("acd_arp_reply(): Probe Conflict detected\n"));
 				acd_restart(netif, acd);
 			}
 			break;
@@ -435,13 +381,9 @@ void acd_arp_reply(struct netif *netif, struct etharp_hdr *hdr)
          * in any state we have a conflict if
          * ip.src == ipaddr && hw.src != own hwaddr (someone is using our address)
          */
-			if (ip4_addr_cmp(&sipaddr, &acd->ipaddr) &&
-			    !eth_addr_cmp(&netifaddr, &hdr->shwaddr)) {
-				LWIP_DEBUGF(
-					ACD_DEBUG | LWIP_DBG_TRACE |
-						LWIP_DBG_STATE |
-						LWIP_DBG_LEVEL_WARNING,
-					("acd_arp_reply(): Conflicting ARP-Packet detected\n"));
+			if (ip4_addr_cmp(&sipaddr, &acd->ipaddr) && !eth_addr_cmp(&netifaddr, &hdr->shwaddr)) {
+				LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
+					    ("acd_arp_reply(): Conflicting ARP-Packet detected\n"));
 				acd_handle_arp_conflict(netif, acd);
 			}
 			break;
@@ -473,28 +415,24 @@ static void acd_handle_arp_conflict(struct netif *netif, struct acd *acd)
 
 	if (acd->state == ACD_STATE_PASSIVE_ONGOING) {
 		/* Immediately back off on a conflict. */
-		LWIP_DEBUGF(
-			ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-			("acd_handle_arp_conflict(): conflict when we are in passive mode -> back off\n"));
+		LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
+			    ("acd_handle_arp_conflict(): conflict when we are in passive mode -> back off\n"));
 		acd_stop(acd);
 		acd->acd_conflict_callback(netif, ACD_DECLINE);
 	} else {
 		if (acd->lastconflict > 0) {
 			/* retreat, there was a conflicting ARP in the last DEFEND_INTERVAL seconds */
-			LWIP_DEBUGF(
-				ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-				("acd_handle_arp_conflict(): conflict within DEFEND_INTERVAL -> retreating\n"));
+			LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
+				    ("acd_handle_arp_conflict(): conflict within DEFEND_INTERVAL -> retreating\n"));
 
 			/* Active TCP sessions are aborted when removing the ip address but a bad
        * connection was inevitable anyway with conflicting hosts */
 			acd_restart(netif, acd);
 		} else {
-			LWIP_DEBUGF(
-				ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-				("acd_handle_arp_conflict(): we are defending, send ARP Announce\n"));
+			LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
+				    ("acd_handle_arp_conflict(): we are defending, send ARP Announce\n"));
 			etharp_acd_announce(netif, &acd->ipaddr);
-			acd->lastconflict =
-				DEFEND_INTERVAL * ACD_TICKS_PER_SECOND;
+			acd->lastconflict = DEFEND_INTERVAL * ACD_TICKS_PER_SECOND;
 		}
 	}
 }
@@ -522,8 +460,7 @@ static void acd_put_in_passive_mode(struct netif *netif, struct acd *acd)
 	case ACD_STATE_ANNOUNCING:
 	case ACD_STATE_ONGOING:
 		acd->state = ACD_STATE_PASSIVE_ONGOING;
-		LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-			    ("acd_put_in_passive_mode()\n"));
+		LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("acd_put_in_passive_mode()\n"));
 		break;
 	}
 }
@@ -536,20 +473,16 @@ static void acd_put_in_passive_mode(struct netif *netif, struct acd *acd)
  * @param old_addr  old ip address
  * @param new_addr  new ip address
  */
-void acd_netif_ip_addr_changed(struct netif *netif, const ip_addr_t *old_addr,
-			       const ip_addr_t *new_addr)
+void acd_netif_ip_addr_changed(struct netif *netif, const ip_addr_t *old_addr, const ip_addr_t *new_addr)
 {
 	struct acd *acd;
 
-	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-		    ("acd_netif_ip_addr_changed(): Address changed\n"));
+	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("acd_netif_ip_addr_changed(): Address changed\n"));
 
 	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-		    ("acd_netif_ip_addr_changed(): old address = %s\n",
-		     ipaddr_ntoa(old_addr)));
+		    ("acd_netif_ip_addr_changed(): old address = %s\n", ipaddr_ntoa(old_addr)));
 	LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
-		    ("acd_netif_ip_addr_changed(): new address = %s\n",
-		     ipaddr_ntoa(new_addr)));
+		    ("acd_netif_ip_addr_changed(): new address = %s\n", ipaddr_ntoa(new_addr)));
 
 	/* If we change from ANY to an IP or from an IP to ANY we do nothing */
 	if (ip_addr_isany(old_addr) || ip_addr_isany(new_addr)) {
@@ -561,12 +494,9 @@ void acd_netif_ip_addr_changed(struct netif *netif, const ip_addr_t *old_addr,
 		/* Find ACD module of old address */
 		if (ip4_addr_cmp(&acd->ipaddr, ip_2_ip4(old_addr))) {
 			/* Did we change from a LL address to a routable address? */
-			if (ip_addr_islinklocal(old_addr) &&
-			    !ip_addr_islinklocal(new_addr)) {
-				LWIP_DEBUGF(
-					ACD_DEBUG | LWIP_DBG_TRACE |
-						LWIP_DBG_STATE,
-					("acd_netif_ip_addr_changed(): changed from LL to routable address\n"));
+			if (ip_addr_islinklocal(old_addr) && !ip_addr_islinklocal(new_addr)) {
+				LWIP_DEBUGF(ACD_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE,
+					    ("acd_netif_ip_addr_changed(): changed from LL to routable address\n"));
 				/* Put the module in passive conflict detection mode */
 				acd_put_in_passive_mode(netif, acd);
 			}

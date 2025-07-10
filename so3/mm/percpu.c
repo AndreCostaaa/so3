@@ -26,9 +26,8 @@
 extern char __per_cpu_start[], __per_cpu_data_end[], __per_cpu_end[];
 unsigned long __per_cpu_offset[CONFIG_NR_CPUS];
 
-#define INVALID_PERCPU_AREA (-(long)__per_cpu_start)
-#define PERCPU_ORDER \
-	(get_order_from_bytes(__per_cpu_data_end - __per_cpu_start))
+#define INVALID_PERCPU_AREA (-(long) __per_cpu_start)
+#define PERCPU_ORDER (get_order_from_bytes(__per_cpu_data_end - __per_cpu_start))
 
 void percpu_init_areas(void)
 {

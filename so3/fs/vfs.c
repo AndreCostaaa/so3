@@ -212,7 +212,7 @@ int vfs_open(const char *filename, struct file_operations *fops, uint32_t type)
 		goto vfs_open_failed;
 	}
 
-	open_fds[gfd] = (struct fd *)malloc(sizeof(struct fd));
+	open_fds[gfd] = (struct fd *) malloc(sizeof(struct fd));
 
 	if (!open_fds[gfd]) {
 		printk("%s: failed to allocate memory\n", __func__);
@@ -625,8 +625,7 @@ void do_close(int fd)
 	/* Free only when no one is using the file descriptor */
 
 	if (!open_fds[gfd]->ref_count) {
-		ASSERT(gfd >
-		       STDERR); /* Abnormal situation if we attempt to remove the std* file descriptors */
+		ASSERT(gfd > STDERR); /* Abnormal situation if we attempt to remove the std* file descriptors */
 
 		/* The close() callback operation in the sub-layers must NOT suspend. */
 		if (open_fds[gfd]->fops->close)
@@ -847,9 +846,9 @@ static void vfs_gfd_init(void)
 	memset(open_fds, 0, MAX_FDS * sizeof(struct fd *));
 
 	/* Basic file descriptors */
-	open_fds[STDIN] = (struct fd *)malloc(sizeof(struct fd));
-	open_fds[STDOUT] = (struct fd *)malloc(sizeof(struct fd));
-	open_fds[STDERR] = (struct fd *)malloc(sizeof(struct fd));
+	open_fds[STDIN] = (struct fd *) malloc(sizeof(struct fd));
+	open_fds[STDOUT] = (struct fd *) malloc(sizeof(struct fd));
+	open_fds[STDERR] = (struct fd *) malloc(sizeof(struct fd));
 
 	if (!open_fds[STDIN] || !open_fds[STDOUT] || !open_fds[STDERR]) {
 		printk("%s: failed to allocate memory\n", __func__);

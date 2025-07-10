@@ -48,14 +48,11 @@ extern "C" {
 #define PROBE_MAX 2 /* seconds (maximum delay till repeated probe)       */
 #define PROBE_NUM 3 /*         (number of probe packets)                 */
 #define ANNOUNCE_NUM 2 /*         (number of announcement packets)          */
-#define ANNOUNCE_INTERVAL \
-	2 /* seconds (time between announcement packets)       */
+#define ANNOUNCE_INTERVAL 2 /* seconds (time between announcement packets)       */
 #define ANNOUNCE_WAIT 2 /* seconds (delay before announcing)                 */
 #define MAX_CONFLICTS 10 /*         (max conflicts before rate limiting)      */
-#define RATE_LIMIT_INTERVAL \
-	60 /* seconds (delay between successive attempts)       */
-#define DEFEND_INTERVAL \
-	10 /* seconds (minimum interval between defensive ARPs) */
+#define RATE_LIMIT_INTERVAL 60 /* seconds (delay between successive attempts)       */
+#define DEFEND_INTERVAL 10 /* seconds (minimum interval between defensive ARPs) */
 
 /* ACD states */
 typedef enum {

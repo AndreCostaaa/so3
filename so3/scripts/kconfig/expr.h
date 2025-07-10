@@ -24,17 +24,7 @@ struct file {
 
 typedef enum tristate { no, mod, yes } tristate;
 
-enum expr_type {
-	E_NONE,
-	E_OR,
-	E_AND,
-	E_NOT,
-	E_EQUAL,
-	E_UNEQUAL,
-	E_LIST,
-	E_SYMBOL,
-	E_RANGE
-};
+enum expr_type { E_NONE, E_OR, E_AND, E_NOT, E_EQUAL, E_UNEQUAL, E_LIST, E_SYMBOL, E_RANGE };
 
 union expr_data {
 	struct expr *expr;
@@ -50,8 +40,7 @@ struct expr {
 #define EXPR_AND(dep1, dep2) (((dep1) < (dep2)) ? (dep1) : (dep2))
 #define EXPR_NOT(dep) (2 - (dep))
 
-#define expr_list_for_each_sym(l, e, s) \
-	for (e = (l); e && (s = e->right.sym); e = e->left.expr)
+#define expr_list_for_each_sym(l, e, s) for (e = (l); e && (s = e->right.sym); e = e->left.expr)
 
 struct expr_value {
 	struct expr *expr;
@@ -63,15 +52,7 @@ struct symbol_value {
 	tristate tri;
 };
 
-enum symbol_type {
-	S_UNKNOWN,
-	S_BOOLEAN,
-	S_TRISTATE,
-	S_INT,
-	S_HEX,
-	S_STRING,
-	S_OTHER
-};
+enum symbol_type { S_UNKNOWN, S_BOOLEAN, S_TRISTATE, S_INT, S_HEX, S_STRING, S_OTHER };
 
 /* enum values are used as index to symbol.def[] */
 enum {
@@ -199,10 +180,8 @@ extern struct symbol *sym_defconfig_list;
 extern int cdebug;
 struct expr *expr_alloc_symbol(struct symbol *sym);
 struct expr *expr_alloc_one(enum expr_type type, struct expr *ce);
-struct expr *expr_alloc_two(enum expr_type type, struct expr *e1,
-			    struct expr *e2);
-struct expr *expr_alloc_comp(enum expr_type type, struct symbol *s1,
-			     struct symbol *s2);
+struct expr *expr_alloc_two(enum expr_type type, struct expr *e1, struct expr *e2);
+struct expr *expr_alloc_comp(enum expr_type type, struct symbol *s1, struct symbol *s2);
 struct expr *expr_alloc_and(struct expr *e1, struct expr *e2);
 struct expr *expr_alloc_or(struct expr *e1, struct expr *e2);
 struct expr *expr_copy(const struct expr *org);
@@ -218,10 +197,8 @@ int expr_contains_symbol(struct expr *dep, struct symbol *sym);
 bool expr_depends_symbol(struct expr *dep, struct symbol *sym);
 struct expr *expr_extract_eq_and(struct expr **ep1, struct expr **ep2);
 struct expr *expr_extract_eq_or(struct expr **ep1, struct expr **ep2);
-void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1,
-		     struct expr **ep2);
-struct expr *expr_trans_compare(struct expr *e, enum expr_type type,
-				struct symbol *sym);
+void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1, struct expr **ep2);
+struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symbol *sym);
 struct expr *expr_simplify_unmet_dep(struct expr *e1, struct expr *e2);
 
 void expr_fprint(struct expr *e, FILE *out);

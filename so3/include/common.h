@@ -96,10 +96,10 @@ extern addr_t pseudo_usr_mode[];
  * @member:     the name of the member within the struct.
  *
  */
-#define container_of(ptr, type, member)                            \
-	({                                                         \
-		typeof(((type *)0)->member) *__mptr = (ptr);       \
-		(type *)((char *)__mptr - offsetof(type, member)); \
+#define container_of(ptr, type, member)                              \
+	({                                                           \
+		typeof(((type *) 0)->member) *__mptr = (ptr);        \
+		(type *) ((char *) __mptr - offsetof(type, member)); \
 	})
 
 void kernel_panic(void);
@@ -111,15 +111,14 @@ static inline void panic(const char *fmt, ...)
 	static char buf[128];
 
 	va_start(args, fmt);
-	(void)vsnprintf(buf, sizeof(buf), fmt, args);
+	(void) vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
 	printk("%s", buf);
 	kernel_panic();
 }
 
-extern void panic(const char *format, ...)
-	__attribute__((format(printf, 1, 2)));
+extern void panic(const char *format, ...) __attribute__((format(printf, 1, 2)));
 
 #define BUG() _bug(__FILE__, __LINE__)
 #define BUG_ON(p)                \
@@ -128,11 +127,10 @@ extern void panic(const char *format, ...)
 			BUG();   \
 	} while (0)
 
-#define assert_failed(p)                                                        \
-	do {                                                                    \
-		lprintk("Assertion '%s' failed on CPU #%d, line %d, file %s\n", \
-			p, smp_processor_id(), __LINE__, __FILE__);             \
-		kernel_panic();                                                 \
+#define assert_failed(p)                                                                                                    \
+	do {                                                                                                                \
+		lprintk("Assertion '%s' failed on CPU #%d, line %d, file %s\n", p, smp_processor_id(), __LINE__, __FILE__); \
+		kernel_panic();                                                                                             \
 	} while (0)
 
 #define ASSERT(p)                          \
@@ -180,12 +178,12 @@ extern void __backtrace(void);
  * Check at compile time that something is of a particular type.
  * Always evaluates to 1 so you may use it easily in comparisons.
  */
-#define typecheck(type, x)                     \
-	({                                     \
-		type __dummy;                  \
-		typeof(x) __dummy2;            \
-		(void)(&__dummy == &__dummy2); \
-		1;                             \
+#define typecheck(type, x)                      \
+	({                                      \
+		type __dummy;                   \
+		typeof(x) __dummy2;             \
+		(void) (&__dummy == &__dummy2); \
+		1;                              \
 	})
 
 /*
@@ -194,7 +192,7 @@ extern void __backtrace(void);
  * as wide as the result!), and we want to evaluate the macro
  * arguments just once each.
  */
-#define __round_mask(x, y) ((__typeof__(x))((y) - 1))
+#define __round_mask(x, y) ((__typeof__(x)) ((y) - 1))
 /**
  * round_up - round up to next specified power of 2
  * @x: the value to round

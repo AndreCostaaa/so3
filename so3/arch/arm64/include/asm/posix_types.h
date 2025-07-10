@@ -34,19 +34,16 @@ typedef struct {
 #if defined(__KERNEL__) || !defined(__GLIBC__) || (__GLIBC__ < 2)
 
 #undef __FD_SET
-#define __FD_SET(fd, fdsetp) \
-	(((fd_set *)fdsetp)->fds_bits[fd >> 5] |= (1 << (fd & 31)))
+#define __FD_SET(fd, fdsetp) (((fd_set *) fdsetp)->fds_bits[fd >> 5] |= (1 << (fd & 31)))
 
 #undef __FD_CLR
-#define __FD_CLR(fd, fdsetp) \
-	(((fd_set *)fdsetp)->fds_bits[fd >> 5] &= ~(1 << (fd & 31)))
+#define __FD_CLR(fd, fdsetp) (((fd_set *) fdsetp)->fds_bits[fd >> 5] &= ~(1 << (fd & 31)))
 
 #undef __FD_ISSET
-#define __FD_ISSET(fd, fdsetp) \
-	((((fd_set *)fdsetp)->fds_bits[fd >> 5] & (1 << (fd & 31))) != 0)
+#define __FD_ISSET(fd, fdsetp) ((((fd_set *) fdsetp)->fds_bits[fd >> 5] & (1 << (fd & 31))) != 0)
 
 #undef __FD_ZERO
-#define __FD_ZERO(fdsetp) (memset(fdsetp, 0, sizeof(*(fd_set *)fdsetp)))
+#define __FD_ZERO(fdsetp) (memset(fdsetp, 0, sizeof(*(fd_set *) fdsetp)))
 
 #endif
 

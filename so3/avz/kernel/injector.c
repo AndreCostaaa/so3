@@ -15,9 +15,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-#define CONFIG_LOG_LEVEL LOG_LEVEL_DEBUG
 
-#include <common.h>
 #include <heap.h>
 #include <memory.h>
 #include <crc.h>
@@ -65,12 +63,12 @@ void inject_capsule(avz_hyp_t *args)
 
 	BUG_ON(local_irq_is_enabled());
 
-	itb_vaddr = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr);
+	itb_vaddr = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_inject_capsule_args.itb_paddr);
 
-	LOG_DEBUG("%s: ITB vaddr: %lx\n", __func__, itb_vaddr);
+	DBG("%s: ITB vaddr: %lx\n", __func__, itb_vaddr);
 
 	/* Retrieve the domain size of this ME through its device tree. */
-	fit_image_get_data_and_size(itb_vaddr, fit_image_get_node(itb_vaddr, "fdt"), (const void **)&fdt_vaddr, &fdt_size);
+	fit_image_get_data_and_size(itb_vaddr, fit_image_get_node(itb_vaddr, "fdt"), (const void **) &fdt_vaddr, &fdt_size);
 	if (!fdt_vaddr) {
 		printk("### %s: wrong device tree.\n", __func__);
 		BUG();
@@ -94,7 +92,7 @@ void inject_capsule(avz_hyp_t *args)
 	__current = current_domain;
 
 	/* Clear the RAM allocated to this capsule */
-	memset((void *)__xva(slotID, memslot[slotID].base_paddr), 0, memslot[slotID].size);
+	memset((void *) __xva(slotID, memslot[slotID].base_paddr), 0, memslot[slotID].size);
 
 	loadME(slotID, itb_vaddr);
 
@@ -178,7 +176,7 @@ static void build_domain_context(unsigned int ME_slotID, struct domain *me, stru
 	domctxt->vcpu = me->vcpu;
 
 	/* Store the stack frame of this domain */
-	memcpy(&domctxt->stack_frame, (void *)(me->domain_stack + DOMAIN_STACK_SIZE - sizeof(struct cpu_regs)),
+	memcpy(&domctxt->stack_frame, (void *) (me->domain_stack + DOMAIN_STACK_SIZE - sizeof(struct cpu_regs)),
 	       sizeof(struct cpu_regs));
 }
 
@@ -192,7 +190,7 @@ void read_ME_snapshot(avz_hyp_t *args)
 {
 	unsigned int slotID = args->u.avz_snapshot_args.slotID;
 	struct domain *domME = domains[slotID];
-	void *snapshot_buffer = (void *)ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
+	void *snapshot_buffer = (void *) ipa_to_va(MEMSLOT_AGENCY, args->u.avz_snapshot_args.snapshot_paddr);
 
 	/* If the size is 0, we return the snapshot size. */
 	if (args->u.avz_snapshot_args.size == 0) {
@@ -200,16 +198,13 @@ void read_ME_snapshot(avz_hyp_t *args)
 		return;
 	}
 
-	/* If the capsule is living, it will be put in ME_state_suspended state by Linux
-	 * before being entering this function.  
-	*/
 	if (domME->avz_shared->dom_desc.u.ME.state == ME_state_suspended) {
 		/* Pause the capsule */
 		domain_pause_by_systemcontroller(domME);
 	}
 
 	/* Gather all the info we need into structures */
-	/* This will put the capsule snapshot in HIBERNATE state */
+	/* This will put the capsule in state HIBERNATE */
 	build_domain_context(slotID, domME, &domain_context);
 
 	/* Copy the size of the payload which is made of the dom_info structure and the capsule */
@@ -222,7 +217,7 @@ void read_ME_snapshot(avz_hyp_t *args)
 	memcpy(snapshot_buffer + sizeof(uint32_t), &domain_context, sizeof(domain_context));
 
 	/* Finally copy the ME */
-	memcpy(snapshot_buffer + sizeof(uint32_t) + sizeof(domain_context), (void *)__xva(slotID, memslot[slotID].base_paddr),
+	memcpy(snapshot_buffer + sizeof(uint32_t) + sizeof(domain_context), (void *) __xva(slotID, memslot[slotID].base_paddr),
 	       memslot[slotID].size);
 
 	if (domME->avz_shared->dom_desc.u.ME.state == ME_state_suspended) {
@@ -318,6 +313,7 @@ void write_ME_snapshot(avz_hyp_t *args)
 		args->u.avz_snapshot_args.slotID = slotID;
 	else
 		return;
+	}
 
 	LOG_DEBUG("Available slotID: %d\n", args->u.avz_snapshot_args.slotID);
 
@@ -327,14 +323,12 @@ void write_ME_snapshot(avz_hyp_t *args)
 	domME = domains[slotID];
 	domctxt = (struct dom_context *) (snapshot_buffer + sizeof(uint32_t));
 
-	LOG_DEBUG("Restoring the domain context...\n");
 	restore_domain_context(slotID, domME, domctxt);
 
-	LOG_DEBUG("Set up the page tables...\n");
 	__setup_dom_pgtable(domME, memslot[slotID].base_paddr, memslot[slotID].size);
 
 	/* Copy the ME content */
-	memcpy((void *)__xva(slotID, memslot[slotID].base_paddr),
+	memcpy((void *) __xva(slotID, memslot[slotID].base_paddr),
 	       snapshot_buffer + sizeof(uint32_t) + sizeof(struct dom_context), memslot[slotID].size);
 
 	/* Create a stack for this restored domain */
@@ -353,7 +347,6 @@ void write_ME_snapshot(avz_hyp_t *args)
 
 	/* We need to re-map the vbstore page corresponding to this slotID */
 	map_vbstore_pfn(domME->avz_shared->domID, domME->avz_shared->dom_desc.u.ME.vbstore_pfn);
-	LOG_DEBUG("State of the saved capsule: %d\n", domME->avz_shared->dom_desc.u.ME.state);
 
 	if (domME->avz_shared->dom_desc.u.ME.state != ME_state_stopped) {
 		BUG_ON(domME->avz_shared->dom_desc.u.ME.state != ME_state_hibernate);

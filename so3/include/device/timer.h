@@ -102,8 +102,7 @@ extern clocksource_timer_t clocksource_timer;
  */
 static inline u64 cyc2ns(u64 cycles)
 {
-	return ((u64)cycles * clocksource_timer.mult) >>
-	       clocksource_timer.shift;
+	return ((u64) cycles * clocksource_timer.mult) >> clocksource_timer.shift;
 }
 
 u64 get_s_time(void);

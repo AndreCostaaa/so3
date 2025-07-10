@@ -117,13 +117,13 @@ static void alloc_init_pte(uint32_t *l1pte, addr_t addr, addr_t end, addr_t pfn,
 
 		set_l2_pte_dcache(l2pte, (nocache ? L2_DCACHE_OFF : L2_DCACHE_WRITEALLOC));
 
-		LOG_DEBUG("Setting l2pte %p with contents: %x\n", l2pte, *l2pte);
+		DBG("Setting l2pte %p with contents: %x\n", l2pte, *l2pte);
 
 		pfn++;
 
 	} while (l2pte++, addr += PAGE_SIZE, addr != end);
 
-	mmu_page_table_flush((uint32_t)l2pgtable, (uint32_t)(l2pgtable + TTB_L2_ENTRIES));
+	mmu_page_table_flush((uint32_t) l2pgtable, (uint32_t) (l2pgtable + TTB_L2_ENTRIES));
 }
 
 /*
@@ -180,7 +180,7 @@ void create_mapping(void *l1pgtable, addr_t virt_base, addr_t phys_base, uint32_
 	addr = virt_base & PAGE_MASK;
 	length = ALIGN_UP(size + (virt_base & ~PAGE_MASK), PAGE_SIZE);
 
-	l1pte = l1pte_offset((uint32_t *)l1pgtable, addr);
+	l1pte = l1pte_offset((uint32_t *) l1pgtable, addr);
 
 	end = addr + length;
 
@@ -213,13 +213,13 @@ static void free_l2_mapping(uint32_t *l1pte, addr_t addr, addr_t end)
 	l2pte = l2pte_offset(l1pte, addr);
 
 	do {
-		LOG_DEBUG("Re-setting l2pte to 0: %p\n", l2pte);
+		DBG("Re-setting l2pte to 0: %p\n", l2pte);
 
 		*l2pte = 0; /* Free this entry */
 
 	} while (l2pte++, addr += PAGE_SIZE, addr != end);
 
-	mmu_page_table_flush((uint32_t)pgtable, (uint32_t)(pgtable + TTB_L2_ENTRIES));
+	mmu_page_table_flush((uint32_t) pgtable, (uint32_t) (pgtable + TTB_L2_ENTRIES));
 
 	for (i = 0, found = false, l2pte = l2pte_first(l1pte); !found && (i < TTB_L2_ENTRIES); i++)
 		found = (*(l2pte + i) != 0);
@@ -250,7 +250,7 @@ static void free_l1_mapping(uint32_t *l1pte, addr_t addr, addr_t end)
 
 		} while (l1pte++, addr += TTB_SECT_SIZE, addr != end);
 
-		mmu_page_table_flush((uint32_t)__l1pte, (uint32_t)l1pte);
+		mmu_page_table_flush((uint32_t) __l1pte, (uint32_t) l1pte);
 
 	} else {
 		/*
@@ -276,7 +276,7 @@ void release_mapping(void *pgtable, addr_t virt_base, uint32_t size)
 	addr = virt_base & PAGE_MASK;
 	length = ALIGN_UP(size + (virt_base & ~PAGE_MASK), PAGE_SIZE);
 
-	l1pte = l1pte_offset((uint32_t *)pgtable, addr);
+	l1pte = l1pte_offset((uint32_t *) pgtable, addr);
 
 	end = addr + length;
 
@@ -300,7 +300,7 @@ void mmu_configure(addr_t phys_base, addr_t fdt_addr)
 
 	unsigned int i;
 
-	uint32_t *__pgtable = (uint32_t *)(phys_base + TTB_L1_SYS_OFFSET);
+	uint32_t *__pgtable = (uint32_t *) (phys_base + TTB_L1_SYS_OFFSET);
 
 	icache_disable();
 	dcache_disable();
@@ -354,12 +354,12 @@ void mmu_configure(addr_t phys_base, addr_t fdt_addr)
 	dcache_enable();
 	icache_enable();
 
-	mmu_page_table_flush((uint32_t)__pgtable, (uint32_t)(__pgtable + TTB_L1_ENTRIES));
+	mmu_page_table_flush((uint32_t) __pgtable, (uint32_t) (__pgtable + TTB_L1_ENTRIES));
 
 #endif /* !CONFIG_SO3VIRT */
 
 	/* Update the system page table using the virtual address */
-	__sys_root_pgtable = (void *)(CONFIG_KERNEL_VADDR + TTB_L1_SYS_OFFSET);
+	__sys_root_pgtable = (void *) (CONFIG_KERNEL_VADDR + TTB_L1_SYS_OFFSET);
 }
 
 /*
@@ -373,7 +373,7 @@ void clear_l1pte(void *l1pgtable, addr_t vaddr)
 	if (l1pgtable == NULL)
 		l1pgtable = __sys_root_pgtable;
 
-	l1pte = l1pte_offset((uint32_t *)l1pgtable, vaddr);
+	l1pte = l1pte_offset((uint32_t *) l1pgtable, vaddr);
 
 	*l1pte = 0;
 
@@ -384,12 +384,12 @@ void clear_l1pte(void *l1pgtable, addr_t vaddr)
 void pgtable_copy_kernel_area(void *l1pgtable)
 {
 	int i1;
-	uint32_t *__l1pgtable = (uint32_t *)l1pgtable;
+	uint32_t *__l1pgtable = (uint32_t *) l1pgtable;
 
 	for (i1 = l1pte_index(CONFIG_KERNEL_VADDR); i1 < TTB_L1_ENTRIES; i1++)
-		__l1pgtable[i1] = ((uint32_t *)__sys_root_pgtable)[i1];
+		__l1pgtable[i1] = ((uint32_t *) __sys_root_pgtable)[i1];
 
-	mmu_page_table_flush((addr_t)__l1pgtable, (addr_t)(__l1pgtable + TTB_L1_ENTRIES));
+	mmu_page_table_flush((addr_t) __l1pgtable, (addr_t) (__l1pgtable + TTB_L1_ENTRIES));
 }
 
 /*
@@ -417,8 +417,8 @@ void *new_root_pgtable(void)
 	/* Let's copy 12 MB of hypervisor */
 
 	for (i = 0; i < 12; i++)
-		*l1pte_offset((u32 *)pgtable + i, avz_shared->hypervisor_vaddr) =
-			*l1pte_offset((u32 *)__sys_root_pgtable + i, avz_shared->hypervisor_vaddr);
+		*l1pte_offset((u32 *) pgtable + i, avz_shared->hypervisor_vaddr) =
+			*l1pte_offset((u32 *) __sys_root_pgtable + i, avz_shared->hypervisor_vaddr);
 #endif
 
 	return pgtable;
@@ -442,12 +442,12 @@ void reset_root_pgtable(void *pgtable, bool remove)
 	uint32_t *l1pte, *l2pte;
 
 	for (i = 0; i < l1pte_index(CONFIG_KERNEL_VADDR); i++) {
-		l1pte = (uint32_t *)pgtable + i;
+		l1pte = (uint32_t *) pgtable + i;
 
 		/* Check if a L2 page table is used */
 		if (*l1pte) {
 			if (!l1pte_is_sect(*l1pte)) {
-				l2pte = (uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
+				l2pte = (uint32_t *) __va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
 
 				free(l2pte);
 
@@ -461,13 +461,13 @@ void reset_root_pgtable(void *pgtable, bool remove)
 	if (remove)
 		free(pgtable);
 
-	mmu_page_table_flush((addr_t)pgtable, (addr_t)(pgtable + TTB_L1_ENTRIES));
+	mmu_page_table_flush((addr_t) pgtable, (addr_t) (pgtable + TTB_L1_ENTRIES));
 }
 
 void mmu_switch_kernel(void *pgtable_paddr)
 {
 #ifdef CONFIG_SO3VIRT
-	avz_shared->pagetable_paddr = (addr_t)pgtable_paddr;
+	avz_shared->pagetable_paddr = (addr_t) pgtable_paddr;
 #endif
 
 	flush_dcache_all();
@@ -477,8 +477,8 @@ void mmu_switch_kernel(void *pgtable_paddr)
 	 * be preserved if any.
 	 */
 
-	if (((uint32_t)pgtable_paddr & TTBR0_BASE_ADDR_MASK) != (uint32_t)pgtable_paddr)
-		WRITE_CP32((uint32_t)pgtable_paddr, TTBR0_32);
+	if (((uint32_t) pgtable_paddr & TTBR0_BASE_ADDR_MASK) != (uint32_t) pgtable_paddr)
+		WRITE_CP32((uint32_t) pgtable_paddr, TTBR0_32);
 	else
 		__mmu_switch_ttbr0(pgtable_paddr);
 
@@ -518,12 +518,12 @@ void duplicate_user_space(struct pcb *from, struct pcb *to)
 	l2pgtable_size = TTB_L2_ENTRIES * sizeof(uint32_t);
 
 	for (i = 0; i < l1pte_index(CONFIG_KERNEL_VADDR); i++) {
-		l1pte = (uint32_t *)from->pgtable + i;
+		l1pte = (uint32_t *) from->pgtable + i;
 
 		if (*l1pte) {
 			BUG_ON(l1pte_is_sect(*l1pte));
 
-			l1pte_dst = (uint32_t *)to->pgtable + i;
+			l1pte_dst = (uint32_t *) to->pgtable + i;
 
 			/* Allocate a new L2 page table for the copy */
 			l2pgtable_dst = memalign(l2pgtable_size, SZ_1K);
@@ -531,11 +531,11 @@ void duplicate_user_space(struct pcb *from, struct pcb *to)
 
 			memset(l2pgtable_dst, 0, l2pgtable_size);
 
-			*l1pte_dst = __pa((addr_t)l2pgtable_dst);
+			*l1pte_dst = __pa((addr_t) l2pgtable_dst);
 
 			set_l1_pte_page_dcache(l1pte_dst, L1_PAGE_DCACHE_WRITEALLOC);
 
-			l2pgtable = (uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
+			l2pgtable = (uint32_t *) __va(*l1pte & TTB_L1_PAGE_ADDR_MASK);
 
 			for (j = 0; j < 256; j++) {
 				l2pte = l2pgtable + j;
@@ -547,7 +547,7 @@ void duplicate_user_space(struct pcb *from, struct pcb *to)
 					BUG_ON(!paddr);
 
 					/* Add the new page to the process list */
-					add_page_to_proc(to, (page_t *)phys_to_page(paddr));
+					add_page_to_proc(to, (page_t *) phys_to_page(paddr));
 
 					create_mapping(current_pgtable(), FIXMAP_MAPPING, paddr, PAGE_SIZE, false);
 
@@ -555,9 +555,9 @@ void duplicate_user_space(struct pcb *from, struct pcb *to)
 
 					set_l2_pte_dcache(l2pte_dst, L2_DCACHE_WRITEALLOC);
 
-					vaddr = (void *)pte_index_to_vaddr(i, j);
+					vaddr = (void *) pte_index_to_vaddr(i, j);
 
-					memcpy((void *)FIXMAP_MAPPING, vaddr, PAGE_SIZE);
+					memcpy((void *) FIXMAP_MAPPING, vaddr, PAGE_SIZE);
 				}
 			}
 		}
@@ -569,7 +569,7 @@ void dump_pgtable(void *l1pgtable)
 {
 	int i, j;
 	uint32_t *l1pte, *l2pte;
-	uint32_t *__l1pgtable = (uint32_t *)l1pgtable;
+	uint32_t *__l1pgtable = (uint32_t *) l1pgtable;
 
 	lprintk("           ***** Page table dump *****\n");
 
@@ -590,7 +590,7 @@ void dump_pgtable(void *l1pgtable)
 
 				if (!l1pte_is_sect(*l1pte)) {
 					for (j = 0; j < 256; j++) {
-						l2pte = ((uint32_t *)__va(*l1pte & TTB_L1_PAGE_ADDR_MASK)) + j;
+						l2pte = ((uint32_t *) __va(*l1pte & TTB_L1_PAGE_ADDR_MASK)) + j;
 						if (*l2pte)
 							lprintk("      - L2 pte@%p (i2=%x) mapping %x  content: %x\n", l2pte, j,
 								pte_index_to_vaddr(i, j), *l2pte);

@@ -50,7 +50,6 @@ typedef void (*joystick_handler_t)(void *arg, int key);
 void display_led(int led_nr, bool on);
 void rpisense_matrix_off(void);
 
-void rpisense_joystick_handler_register(void *arg,
-					joystick_handler_t joystick_handler);
+void rpisense_joystick_handler_register(void *arg, joystick_handler_t joystick_handler);
 
 #endif /* RPISENSE_H */

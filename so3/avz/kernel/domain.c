@@ -137,12 +137,12 @@ static void complete_domain_destroy(struct domain *d)
 	sched_destroy_domain(d);
 
 	/* Remove the root page table */
-	reset_root_pgtable((void *)d->pagetable_vaddr, true);
+	reset_root_pgtable((void *) d->pagetable_vaddr, true);
 
 	/* Restore allocated memory for this domain */
 
-	free((void *)d->avz_shared);
-	free((void *)d->domain_stack);
+	free((void *) d->avz_shared);
+	free((void *) d->domain_stack);
 
 	free(d);
 }
@@ -302,14 +302,10 @@ void do_domctl(domctl_t *args)
 
 	case DOMCTL_get_AVZ_shared:
 		if (current_domain->avz_shared->domID == DOMID_AGENCY)
-			args->avz_shared_paddr =
-				memslot[MEMSLOT_AGENCY].ipa_addr +
-				memslot[MEMSLOT_AGENCY].size;
+			args->avz_shared_paddr = memslot[MEMSLOT_AGENCY].ipa_addr + memslot[MEMSLOT_AGENCY].size;
 		else
-			args->avz_shared_paddr =
-				memslot[current_domain->avz_shared->domID]
-					.ipa_addr +
-				memslot[current_domain->avz_shared->domID].size;
+			args->avz_shared_paddr = memslot[current_domain->avz_shared->domID].ipa_addr +
+						 memslot[current_domain->avz_shared->domID].size;
 		break;
 	}
 

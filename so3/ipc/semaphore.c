@@ -43,8 +43,7 @@ int sem_timeddown(sem_t *sem, uint64_t timeout)
 			 * We only attempt the xchg if the count is non-negative in order
 			 * to avoid unnecessary xchg operations.
 			 */
-			if ((atomic_read(&sem->count) >= 0) &&
-			    (atomic_xchg(&sem->count, -1) == 1))
+			if ((atomic_read(&sem->count) >= 0) && (atomic_xchg(&sem->count, -1) == 1))
 				break;
 
 			/* Add waiting tasks to the end of the waitqueue (FIFO) */
