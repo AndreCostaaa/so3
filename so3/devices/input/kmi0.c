@@ -67,7 +67,7 @@ irq_return_t pl050_int_keyboard(int irq, void *dummy)
 
 	/* As long as a receiver interrupt has been asserted… */
 	i = 0;
-	DBG("---- Scan codes:\n");
+	LOG_DEBUG("---- Scan codes:\n");
 	while (status & KMIIR_RXINTR) {
 		/*
 		 * Read from the data register. We care only about the first 2
@@ -82,7 +82,7 @@ irq_return_t pl050_int_keyboard(int irq, void *dummy)
 			packet[i++] = tmp;
 		}
 
-		DBG("0x%02x\n", tmp);
+		LOG_DEBUG("0x%02x\n", tmp);
 
 		/* Update status. */
 		status = ioread8(pl050_keyboard.base + KMI_IR);
